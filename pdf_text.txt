@@ -1,0 +1,969 @@
+ 
+LAPORAN PROGRES 
+ISB 310 SISTEM INFORMASI BERBASIS WEBSITE 
+STUDI KASUS WEBSITE BORMA 
+ 
+Diajukan untuk memenuhi laporan Evaluasi Tengah Semester 
+pada mata kuliah ISB-310 Sistem Informasi Berbasis Web 
+ 
+ 
+ 
+Disusun Oleh: 
+ 
+Arie Bagush 
+162023014 
+Mohd Hafiz Yazid Nst 
+162023018 
+Novila Arya Minar Saputra 
+162023024 
+Yasmin Faiqoh Ridho 
+162023027 
+ 
+ 
+PROGRAM STUDI SISTEM INFORMASI 
+FAKULTAS TEKNOLOGI INDUSTRI 
+INSTITUT TEKNOLOGI NASIONAL 
+BANDUNG 
+2026 
+ 
+
+ 
+DAFTAR ISI 
+DAFTAR ISI...................................................................................................................................2 
+BAB 1​
+PENDAHULUAN.......................................................................................................................... 3 
+A. Existing System (Sistem yang Berjalan Saat Ini)................................................................. 3 
+BAB 2.............................................................................................................................................. 5 
+PENGEMBANGAN PROYEK.....................................................................................................5 
+A. Kebutuhan User.....................................................................................................................5 
+B. Masalah yang Ada pada User................................................................................................6 
+C. Hasil Analisis........................................................................................................................ 7 
+D. Rancangan Bisnis Model Baru..............................................................................................9 
+E. Functional Requirement...................................................................................................... 12 
+F. Non-Functional Requirement...............................................................................................15 
+G. Use Case Diagram...............................................................................................................17 
+H. Entity Relational Diagram.................................................................................................. 18 
+I. Diagram BPMN....................................................................................................................19 
+J. Low Fidelity......................................................................................................................... 22 
+K. Timeline Pekerjaan..............................................................................................................27 
+L. Kegiatan per Orang..............................................................................................................29 
+ 
+2 
+
+ 
+BAB 1​
+PENDAHULUAN 
+A.​ Existing System (Sistem yang Berjalan Saat Ini) 
+​
+Saat ini, Borma Toserba beroperasi sepenuhnya dengan model ritel tradisional (offline). 
+Seluruh interaksi, informasi, dan transaksi terjadi secara fisik di lokasi cabang Borma. Untuk 
+memahami sistem yang berjalan, berikut adalah penjabaran aktor yang terlibat beserta alur 
+proses bisnisnya: 
+1.​ Identifikasi Aktor 
+a.​ Pelanggan: Pihak yang datang ke toko untuk mencari, memilih, dan membeli barang 
+kebutuhan. 
+b.​ Staf Toko: Pihak yang bertugas menata barang, menempelkan label harga fisik di rak, dan 
+membantu pelanggan di area toko. 
+c.​ Kasir: Pihak yang memindai barang, memverifikasi total belanja, dan memproses 
+transaksi pembayaran. 
+2.​ Alur Proses Bisnis 
+a.​ Jalur A: Belanja Langsung ke Toko (Offline) 
+i.​
+Pencarian Informasi & Barang. Pelanggan harus datang langsung ke lokasi toko 
+dan menyusuri lorong rak. Ketersediaan stok, harga, maupun informasi promo baru 
+bisa diketahui ketika pelanggan berada tepat di depan barang tersebut. 
+ii.​
+Pemilihan Barang. Pelanggan mengambil barang secara fisik dari rak dan 
+mengumpulkannya ke dalam keranjang atau troli yang disediakan oleh pihak toko. 
+iii.​
+Proses Transaksi. Pelanggan membawa keranjang/troli ke area kasir dan 
+mengantre. Kasir kemudian memindai (scan) barcode pada setiap barang satu per 
+satu secara manual untuk menghitung total belanjaan. 
+iv.​
+Pembayaran & Pengambilan Barang. Setelah total dihitung, pelanggan melakukan 
+pembayaran (menggunakan uang tunai atau non-tunai) kepada kasir. Pelanggan 
+menerima struk belanja fisik, lalu harus mengemas dan mengangkut sendiri barang 
+belanjaan tersebut dari toko ke rumah. 
+3 
+
+ 
+ 
+b.​ Jalur B: Layanan Pesan Antar (via WhatsApp) 
+i.​
+Pemesanan & Pencarian Informasi. Pelanggan menghubungi nomor WhatsApp 
+cabang Borma terdekat dan mengirimkan daftar barang yang ingin dibeli. 
+Pelanggan tidak bisa melihat katalog secara mandiri, sehingga harus bertanya 
+secara manual mengenai ketersediaan stok, harga, dan promo kepada admin. 
+ii.​
+Pengecekan Stok & Konfirmasi. Admin toko menerima pesan, kemudian berjalan 
+mengecek ketersediaan barang di rak secara fisik. Admin lalu membalas chat 
+untuk mengonfirmasi ada/tidaknya barang beserta rincian harganya. (Proses 
+tanya-jawab ini seringkali memakan waktu). 
+iii.​
+Pembayaran. Pelanggan melakukan pembayaran atas total belanjaan yang 
+diinformasikan, umumnya melalui metode khusus transfer bank BCA. 
+iv.​
+Pengemasan & Pengiriman. Setelah pesanan (deal) dan pembayaran dikonfirmasi, 
+staf toko mengemas barang belanjaan. Barang kemudian dikirimkan ke alamat 
+pelanggan menggunakan jasa kurir. 
+4 
+
+ 
+BAB 2 
+PENGEMBANGAN PROYEK 
+A.​ Kebutuhan User 
+Berdasarkan analisis terhadap sistem yang berjalan dan rencana pengembangan 
+platform digital, berikut adalah identifikasi kebutuhan pengguna terhadap sistem baru 
+yang akan dibangun: 
+1.​ Kebutuhan Pelanggan 
+a.​ Informasi Terkait Pengiriman Pesanan 
+Pelanggan membutuhkan kemudahan dan fleksibilitas untuk menerima barang 
+belanjaan tanpa harus datang ke lokasi. Sistem perlu memfasilitasi kebutuhan ini dengan 
+menyediakan informasi terkait kapan pengiriman, hingga kapan pesanan akan sampai 
+ditangan pembeli, sehingga pembeli tidak perlu lagi bertanya secara manual melalui 
+WhatsApp. 
+b.​ Pembuatan Keanggotaan Digital yang Praktis​
+​
+Pelanggan membutuhkan akses yang mudah dan cepat untuk mendaftar 
+keanggotaan toko. Hal ini dapat dijawab dengan kebutuhan fitur pendaftaran member 
+secara digital langsung di dalam website, sehingga pelanggan tidak perlu repot mengurus 
+kartu fisik. 
+c.​ Transparansi Harga Berdasarkan Status Pengguna 
+Pelanggan membutuhkan kejelasan informasi harga yang sesuai dengan profil 
+mereka. Sistem diwajibkan mampu membedakan status pengguna (sebagai member atau 
+non-member) saat mereka mengakses website, di mana harga produk yang ditampilkan 
+akan otomatis menyesuaikan dengan status keanggotaan pengguna tersebut. 
+d.​ Akses Promosi dan Hadiah yang Otomatis 
+Pelanggan membutuhkan kemudahan dalam mengklaim promo tanpa harus 
+menukarkan kupon secara manual. Sistem membutuhkan kemampuan untuk mendeteksi 
+syarat promo secara otomatis (misalnya: jika pelanggan memasukkan So Klin Liquid 
+1500ML ke keranjang) dan langsung menampilkan penawaran produk gratis (seperti 
+Molto Softener) pada halaman checkout. 
+ 
+5 
+
+ 
+2.​ Kebutuhan Admin dan Kurir 
+a.​ Manajemen Promosi 
+Admin toko membutuhkan halaman yang fleksibel untuk membuat, mengatur, dan 
+mengubah syarat dan ketentuan promosi. Admin harus bisa menentukan produk utama 
+apa yang memicu promo dan produk gratis apa yang akan didapatkan oleh pelanggan. 
+b.​ Manajemen Tugas Kurir 
+Admin membutuhkan halaman dasbor untuk membagi tugas pengantaran kepada 
+kurir internal yang tersedia berdasarkan letak cabang dan urutan pesanan. 
+c.​ Halaman Kurir 
+Kurir internal membutuhkan akses untuk mengubah status pesanan dari “Sedang 
+Dikirim” menjadi “Diterima” agar pelanggan mendapatkan notifikasi otomatis.​
+ 
+B.​ Masalah yang Ada pada User 
+1.​ Masalah pada Pelanggan 
+a.​ Kurangnya Transparansi Pengiriman 
+Pada sistem WhatsApp saat ini, pelanggan tidak memiliki informasi terhadap 
+proses pengiriman oleh kurir internal, sehingga pelanggan seringkali tidak tahu apakah 
+barang sudah dikirim atau masih dikemas. 
+b.​ Ketidakjelasan Estimasi Pengiriman 
+Tanpa adanya informasi atau manajemen kurir, pelanggan sulit menentukan kapan 
+mereka harus berada di rumah untuk menerima barang, karena tidak adanya informasi 
+terkait jadwal kurir internal. 
+c.​ Ketidakpraktisan Sistem Keanggotaan (Member) Fisik  
+Pembuatan kartu member saat ini kemungkinan masih mengharuskan pelanggan 
+mengisi formulir secara manual. Selain itu, kartu member fisik rawan hilang, rusak, atau 
+tertinggal saat pelanggan ingin berbelanja. 
+d.​ Ketidakjelasan Harga Khusus Member 
+Pelanggan kesulitan mengetahui secara langsung perbedaan harga antara member 
+dan non-member saat melihat barang. Informasi keuntungan harga ini biasanya baru 
+diketahui saat penghitungan di kasir, sehingga nilai plus menjadi member kurang 
+dirasakan sejak awal proses belanja. 
+6 
+
+ 
+e.​ Kerumitan Mengetahui dan Mengklaim Promo 
+Pelanggan sering kali terlewat mendapatkan hadiah atau promo (misalnya produk 
+gratis) karena kurangnya informasi, lupa mengambil barang hadiah di rak, atau sistem 
+penukaran yang masih manual. 
+ 
+2.​ Masalah pada Admin atau Kurir 
+a.​ Kesulitan Mengelola Skema Promosi 
+Admin tidak memiliki alat (sistem) yang praktis untuk mengatur skema promosi 
+bersyarat (seperti beli produk A gratis produk B). Pengaturan manual sangat rentan 
+terhadap kesalahan manusia (human error) baik dalam pencatatan stok hadiah maupun 
+saat transaksi di kasir. 
+b.​ Ketidakefisienan dalam Pembagian Tugas Kurir 
+Admin kesulitan dalam membagi tugas pengantaran secara cepat dan tepat karena 
+belum adanya dasbor yang memetakan pesanan berdasarkan letak cabang dan urutan 
+masuknya pesanan. Hal ini berpotensi menyebabkan tumpang tindih jadwal pengantaran 
+atau rute yang tidak optimal. 
+c.​ Hambatan Pelaporan Status Pengiriman 
+Kurir internal tidak memiliki halaman untuk memperbarui status pesanan secara 
+real-time (seperti status "Sedang Dikirim" atau "Diterima"). Akibatnya, kurir harus 
+melapor secara manual kepada admin, yang menyebabkan keterlambatan informasi 
+sampai ke tangan pelanggan. 
+d.​ Kesulitan Koordinasi Antar Cabang 
+Tanpa sistem yang terintegrasi berdasarkan letak cabang, admin sering kali 
+kesulitan mengidentifikasi kurir mana yang paling dekat dengan lokasi pelanggan, 
+sehingga proses penugasan menjadi lambat dan kurang terorganisir. 
+C.​ Hasil Analisis 
+Berdasarkan kondisi sistem saat ini, kebutuhan pelanggan, masalah yang ada pada 
+pelanggan dan kebutuhan Admin atau Kurir. Dihasilkanlah beberapa hal yang akan 
+dikembangkan pada website, diantaranya. 
+7 
+
+ 
+i.​
+Pelanggan membutuhkan sebuah platform digital seperti website untuk mengecek 
+ketersediaan stok, harga, dan promo secara real-time dari rumah tanpa harus 
+datang ke toko dan menanyakan lewat whatsapp. 
+ii.​
+Tersedianya katalog digital yang memudahkan pelanggan mencari dan memilih 
+produk secara praktis melalui fitur pencarian dan kategori, sehingga tidak perlu 
+menyusuri rak secara langsung di toko. 
+iii.​
+Pelanggan memerlukan fitur keranjang belanja yang secara otomatis mampu 
+mendeteksi syarat promo (seperti beli produk A gratis produk B) dan menerapkan 
+harga khusus member secara otomatis saat proses checkout. 
+iv.​
+Terdapat fitur pendaftaran member secara daring yang terintegrasi dengan profil 
+pengguna di website, sehingga pelanggan tidak lagi memerlukan kartu fisik dan 
+dapat langsung melihat transparansi harga khusus member. 
+v.​
+Terdapat halaman untuk manajemen kurir internal, dimana Admin memerlukan 
+sistem manajemen tugas untuk membagi pesanan kepada kurir internal 
+berdasarkan lokasi cabang terdekat dan urutan pesanan guna meningkatkan 
+efisiensi pengiriman. 
+vi.​
+Kurir internal dibekali akses untuk memperbarui status pesanan seperti “Sedang 
+Dikirim” atau “Diterima”, yang secara otomatis memberikan notifikasi dan 
+transparansi informasi kepada pelanggan mengenai estimasi waktu pesanan 
+dikirim atau diterima. 
+vii.​
+Halaman untuk sisi Admin untuk mengatur skema promosi dan memperbarui data 
+produk secara sistematis guna mengurangi potensi kesalahan manusia dalam 
+pengelolaan stok maupun harga. 
+Selain perubahan yang harus ada di atas, dalam website yang akan dibuat terdapat 
+empat aktor utama yang akan saling berinteraksi, diantaranya 
+i.​
+Pelanggan. Pelanggan di sini dapat mencari informasi produk dan promo pada 
+katalog digital, melakukan pendaftaran keanggotaan secara digital, melakukan 
+transaksi pembelian checkout secara daring, dan memantau status pengiriman 
+pesanan secara real-time. 
+ii.​
+Admin. Aktor ini bertanggung jawab untuk memastikan data di dalam website 
+selalu akurat, seperti mengelola produk (tambah/edit/hapus produk) agar katalog 
+8 
+
+ 
+digital selalu terbaru, mengatur harga produk, termasuk membedakan harga antara 
+akun member dan non-member, merancang dan menginput skema promosi 
+(seperti beli produk A gratis produk B) pada sistem agar tidak terjadi human 
+error, serta membagi tugas pengantaran kepada kurir internal yang tersedia 
+melalui dashboard manajemen tugas berdasarkan urutan pesanan dan rute. 
+iii.​
+Staff Operasional. Aktor ini berada di setiap cabang Borma dan bertanggung 
+jawab atas pemrosesan pesanan yang masuk secara fisik. Aktor ini juga bertugas 
+mengambil barang dari rak fisik sesuai dengan daftar belanjaan yang masuk ke 
+sistem, mengemas barang yang telah diambil agar siap dikirim, serta memastikan 
+ketersediaan stok fisik di cabangnya sinkron dengan apa yang tampil di website. 
+iv.​
+Kurir Internal. Kurir internal dapat menerima daftar penugasan pengiriman 
+berdasarkan pesanan yang masuk ke cabang, serta melakukan pembaruan status 
+pengiriman melalui halaman khusus kurir di website. 
+ 
+D.​ Rancangan Bisnis Model Baru 
+ ​
+Rancangan bisnis model baru pada Borma Toserba disusun sebagai bentuk 
+pengembangan dari sistem yang sebelumnya masih didominasi oleh proses belanja 
+langsung di toko dan layanan pesan antar melalui WhatsApp. Pada sistem yang berjalan, 
+pelanggan belum dapat mengakses informasi produk, harga, stok, dan promo secara 
+mandiri melalui platform digital. Selain itu, proses pengiriman, keanggotaan, dan promosi 
+masih dilakukan secara terbatas dan belum terintegrasi dalam satu sistem. Oleh karena 
+itu, model bisnis baru diarahkan pada pengembangan website berbasis e-commerce yang 
+mampu mendukung aktivitas belanja, pengelolaan promosi, keanggotaan digital, dan 
+pengiriman pesanan secara lebih efektif dan terstruktur. 
+Dalam rancangan ini, website tidak hanya berfungsi sebagai media informasi, 
+tetapi juga sebagai sarana utama interaksi antara pelanggan, admin, staff operasional, dan 
+kurir internal. Pelanggan dapat membuat akun, mengelola profil, mencari produk, melihat 
+harga, memanfaatkan promo, melakukan checkout, mendaftar sebagai member, serta 
+memantau status pesanan. Di sisi lain, admin dapat mengelola produk, pesanan, promosi, 
+voucher, pembuatan akun internal, serta pembagian tugas pengiriman. Staff operasional 
+bertugas memproses pesanan yang masuk, sedangkan kurir internal bertanggung jawab 
+9 
+
+ 
+untuk melakukan pengiriman dan memperbarui status pesanan di dalam sistem. Dengan 
+demikian, website yang dibangun menjadi pusat integrasi proses bisnis baru pada Borma 
+Toserba. 
+Agar sistem yang dirancang lengkap dan mudah dipahami, rancangan bisnis 
+model baru ini dibagi ke dalam dua kelompok utama, yaitu fitur standar e-commerce dan 
+fitur unggulan Borma. Fitur standar e-commerce berperan sebagai fondasi sistem agar 
+seluruh proses belanja online dapat berjalan secara utuh, sedangkan fitur unggulan Borma 
+menjadi nilai tambah yang membedakan sistem ini dari website e-commerce pada 
+umumnya. 
+1.​ Fitur Standar E-Commerce 
+Fitur standar e-commerce merupakan fitur dasar yang dibutuhkan agar sistem 
+dapat menjalankan proses belanja online secara lengkap dan sistematis. Fitur-fitur 
+tersebut meliputi: 
+a.​ Registrasi dan login pengguna 
+b.​ Profil pelanggan atau akun pelanggan 
+c.​ Katalog produk 
+d.​ Pencarian produk 
+e.​ Filter dan kategori produk 
+f.​ Halaman detail produk 
+g.​ Keranjang belanja 
+h.​ Checkout 
+i.​ Input alamat pengiriman 
+j.​ Informasi ongkir atau metode pengiriman 
+k.​ Riwayat pesanan 
+l.​ Pelacakan status pesanan 
+m.​ Notifikasi pesanan 
+n.​ Manajemen produk oleh admin 
+o.​ Manajemen pesanan oleh admin 
+p.​ Voucher pada saat checkout 
+Fitur voucher pada saat checkout termasuk ke dalam fitur standar e-commerce 
+karena umum digunakan dalam sistem belanja online. Namun, pada rancangan sistem 
+10 
+
+ 
+Borma, fitur ini dikembangkan dengan pengelolaan yang fleksibel oleh admin, baik dari 
+sisi keterangan umum maupun syarat dan ketentuannya. Admin dapat mengatur nama 
+atau kode voucher, bentuk potongan, nilai voucher, masa berlaku, minimum pembelian, 
+kuota penggunaan, serta status aktif atau tidak aktif. Dengan demikian, voucher tidak 
+hanya berfungsi sebagai potongan harga, tetapi juga menjadi bagian dari strategi promosi 
+yang terintegrasi dengan proses checkout. 
+2.​ Fitur Unggulan Borma 
+Fitur unggulan Borma merupakan fitur pengembangan yang menjadi pembeda 
+utama sistem ini dibandingkan website e-commerce standar lainnya. Fitur-fitur tersebut 
+meliputi: 
+a.​ Delivery menggunakan driver internal 
+b.​ Harga berbeda berdasarkan status member dan non-member 
+c.​ Promosi otomatis berbasis syarat tertentu 
+d.​ Pembuatan member digital melalui website 
+Delivery menggunakan driver internal dirancang agar proses pengiriman pesanan 
+dapat dikelola langsung oleh pihak Borma melalui sistem. Admin dapat membagi tugas 
+pengiriman kepada kurir internal berdasarkan cabang dan urutan pesanan, sementara 
+pelanggan dapat melihat status pengiriman secara lebih jelas. 
+Pembedaan harga berdasarkan status member dan non-member diterapkan agar 
+pelanggan dapat langsung melihat manfaat keanggotaan ketika mengakses website. 
+Sistem secara otomatis menampilkan harga sesuai dengan status pengguna, sehingga 
+transparansi harga menjadi lebih baik. 
+Promosi otomatis berbasis syarat tertentu memungkinkan sistem mendeteksi 
+pembelian produk yang memenuhi aturan promo dan secara otomatis menampilkan 
+hadiah atau bonus pada saat checkout. Contohnya, apabila pelanggan membeli So Klin 
+Liquid 1500ML, maka sistem dapat menampilkan produk gratis berupa Molto Softener 
+sesuai ketentuan yang telah diatur admin. 
+Pembuatan member digital melalui website bertujuan untuk mempermudah proses 
+pendaftaran keanggotaan tanpa harus menggunakan formulir manual atau kartu fisik. 
+11 
+
+ 
+Data keanggotaan tersimpan langsung pada akun pengguna, sehingga proses menjadi 
+lebih praktis, efisien, dan mudah dikelola. 
+3.​ Dampak Penerapan Model Bisnis Baru 
+Penerapan model bisnis baru ini diharapkan mampu meningkatkan kualitas 
+layanan Borma Toserba secara menyeluruh. Dari sisi pelanggan, sistem memberikan 
+kemudahan dalam mencari produk, memahami harga, menggunakan voucher, menikmati 
+promo, mendaftar member, serta memantau status pengiriman. Dari sisi internal, sistem 
+membantu admin dalam mengelola produk, pesanan, promosi, voucher, dan pengiriman 
+secara lebih terstruktur. Selain itu, staff operasional dan kurir internal juga dapat 
+menjalankan tugas dengan alur kerja yang lebih jelas dan efisien. Dengan demikian, 
+rancangan bisnis model baru ini tidak hanya mengikuti standar website e-commerce, 
+tetapi juga menghadirkan fitur-fitur improvement yang relevan dengan kebutuhan 
+operasional Borma Toserba. 
+ 
+E.​ Functional Requirement 
+Kebutuhan fungsional (functional requirements) merupakan pernyataan yang 
+mendeskripsikan kapabilitas, layanan, serta perilaku spesifik yang harus disediakan oleh 
+sistem untuk mendukung kebutuhan pengguna. Dalam pengembangan website Borma 
+Online, bagian ini merinci secara apa saja yang dilakukan oleh perangkat lunak guna 
+memberikan nilai tambah terhadap operasional bisnis, mulai dari manajemen katalog 
+hingga otomasi proses checkout. Berikut adalah daftar kebutuhan fungsional sistem yang 
+dipaparkan pada Tabel 2.1 di bawah ini. 
+Tabel 2.1 Functional Requirement 
+12 
+Kategori 
+ID 
+Pernyataan Kebutuhan Fungsional 
+Manajemen akun 
+dan keanggotaan 
+(member) 
+FR-1.1 
+Sistem memungkinkan pelanggan melakukan 
+registrasi ke dalam sistem. 
+FR-1.2 
+Sistem 
+mampu 
+menyediakan 
+antarmuka 
+otentikasi 
+login 
+bagi 
+seluruh 
+pengguna 
+(Pelanggan, Admin, Staf Operasional, dan Kurir 
+Internal) berdasarkan hak akses mereka. 
+
+ 
+13 
+FR-1.3 
+Sistem mampu menampilkan halaman utama 
+setelah pelanggan login ke dalam sistem. 
+FR-1.4 
+Sistem mampu memberikan otorisasi hanya 
+kepada Admin untuk membuat, mendaftarkan, 
+dan 
+mengelola 
+akun 
+khusus 
+bagi 
+Staf 
+Operasional dan Kurir Internal. 
+FR-1.5 
+Sistem 
+memungkinkan 
+pelanggan 
+untuk 
+mendaftar 
+keanggotaan 
+(member) 
+digital 
+langsung di dalam website tanpa kartu fisik. 
+FR-1.6 
+Sistem mampu membedakan dan menyesuaikan 
+harga produk yang ditampilkan secara otomatis 
+berdasarkan status pengguna (member atau 
+non-member). 
+FR-1.7 
+Sistem mampu menyediakan fitur logout dan 
+pemulihan kata sandi (forgot password) secara 
+mandiri 
+bagi 
+pelanggan 
+melalui 
+tautan 
+verifikasi keamanan. 
+FR-1.8 
+Sistem harus secara otomatis mengirimkan 
+notifikasi email konfirmasi dan informasi detail 
+akun kepada pelanggan setelah mereka berhasil 
+membuat/mendaftar member baru. 
+Manajemen Katalog 
+& Produk 
+FR-2.1 
+Sistem mampu menampilkan informasi detail 
+produk, harga, dan ketersediaan stok secara 
+real-time kepada pelanggan. 
+FR-2.2 
+Sistem mampu menyediakan fitur pencarian, 
+filter, dan kategori produk untuk memudahkan 
+navigasi belanja pelanggan. 
+FR-2.3 
+Sistem memungkinkan admin untuk mengelola 
+(menambah, 
+mengubah, 
+menghapus) 
+data 
+produk secara sistematis pada katalog. 
+
+ 
+14 
+Manajemen 
+Promosi & Voucher 
+FR-3.1 
+Sistem 
+mampu mendeteksi syarat promo 
+otomatis (contoh: beli produk A gratis produk 
+B) dan menerapkannya langsung di halaman 
+checkout. 
+FR-3.2 
+Sistem harus menyediakan halaman antarmuka 
+bagi admin untuk membuat dan mengatur syarat 
+serta ketentuan promosi bersyarat. 
+FR-3.3 
+Sistem memungkinkan admin untuk mengelola 
+parameter voucher meliputi kode unik, bentuk 
+potongan, masa berlaku, dan minimum belanja. 
+FR-3.4 
+Sistem memungkinkan pelanggan memasukkan 
+dan menggunakan kode voucher pada saat 
+melakukan checkout. 
+Manajemen Pesanan 
+& Transaksi 
+FR-4.1 
+Sistem mampu menyediakan keranjang belanja 
+untuk 
+mengakumulasi 
+pesanan 
+dan 
+memfasilitasi proses checkout secara daring. 
+FR-4.2 
+Sistem 
+mampu 
+memungkinkan 
+pelanggan 
+menginput alamat dan memberikan informasi 
+ongkos kirim atau metode pengiriman. 
+FR-4.3 
+Sistem mampu menyimpan riwayat pesanan 
+sehingga pelanggan dapat melihat kembali 
+transaksi sebelumnya. 
+FR-4.4 
+Sistem mampu mengirimkan pesanan yang 
+masuk ke cabang terdekat agar staf operasional 
+dapat melakukan pengambilan barang fisik dan 
+pengemasan. 
+FR-4.5 
+Sistem mampu memicu pengiriman notifikasi 
+email kepada pelanggan ketika invoice atau 
+faktur belanja diunduh/dicetak dari dalam 
+sistem. 
+
+ 
+ 
+F.​ Non-Functional Requirement 
+Kebutuhan non-fungsional (non-functional requirements) mendefinisikan atribut 
+kualitas (quality attributes), batasan desain (design constraints), serta standar antarmuka 
+eksternal yang harus dimiliki oleh sistem. Jika kebutuhan fungsional berfokus pada "apa" 
+yang dilakukan sistem, maka kebutuhan non-fungsional berfokus pada "bagaimana" 
+sistem tersebut berkinerja, mencakup aspek operasional, performa, keamanan, hingga 
+15 
+Manajemen 
+Pengiriman & Kurir 
+FR-5.1 
+Sistem mampu memiliki dashboard bagi admin 
+untuk membagi tugas pengantaran kepada kurir 
+internal berdasarkan lokasi cabang dan urutan 
+pesanan. 
+FR-5.2 
+Sistem mampu menyediakan halaman khusus 
+bagi kurir internal untuk melihat daftar 
+penugasan pengiriman mereka. 
+FR-5.3 
+Sistem mampu memungkinkan kurir internal 
+untuk memperbarui status pesanan di sistem 
+(contoh: mengubah dari "Sedang Dikirim" 
+menjadi "Diterima"). 
+FR-5.4 
+Sistem mampu memberikan fasilitas bagi 
+pelanggan untuk memantau status pesanan dan 
+estimasi kedatangan barang secara transparan. 
+Manajemen 
+Inventaris 
+FR-6.1 
+Sistem mampu memungkinkan staf operasional 
+cabang untuk memvalidasi dan menyinkronkan 
+ketersediaan stok fisik di rak agar sesuai di 
+website. 
+Manajemen 
+Notifikasi Sistem 
+FR-7.1 
+Sistem mampu memiliki push notification / 
+in-app 
+alerts 
+untuk 
+mengirimkan 
+secara 
+langsung kepada seluruh pengguna (Pelanggan, 
+Admin, Staf Operasional, setiap perubahan 
+status di semua kategori. 
+ 
+
+ 
+faktor budaya dan politik. Daftar kebutuhan non-fungsional untuk menjamin stabilitas 
+dan kualitas sistem Borma Online disajikan pada Tabel 2.2 di bawah ini, 
+Tabel 2.2 Non-functional Requirement 
+Atribut 
+ID 
+Pernyataan Kebutuhan Non-Fungsional 
+Operational 
+NFR-01 
+Antarmuka 
+sistem 
+harus 
+bersifat 
+mobile-responsive agar dapat dioperasikan 
+dengan optimal oleh Kurir Internal melalui 
+perangkat seluler di lapangan. 
+NFR-02 
+Sistem harus mampu terintegrasi secara 
+real-time dengan sistem inventaris fisik yang 
+ada di setiap cabang Borma. 
+NFR-03 
+Website harus dapat diakses dan berfungsi 
+dengan baik pada berbagai peramban web 
+(browser) populer seperti Google Chrome, 
+Mozilla Firefox, dan Safari. 
+Performance 
+NFR-04 
+Waktu respon sistem untuk setiap interaksi 
+pengguna (seperti memuat katalog atau 
+menambah barang ke keranjang) tidak boleh 
+melebihi 2 detik. 
+NFR-05 
+Pembaruan status pengiriman oleh kurir 
+harus tersinkronisasi dan tampil di sisi 
+pelanggan dalam waktu kurang dari 5 menit. 
+NFR-06 
+Sistem harus memiliki tingkat ketersediaan 
+(availability) 24 jam sehari untuk melayani 
+pesanan 
+pelanggan kapan saja, namun 
+pengantaran hanya dilakukan di jam kerja. 
+NFR-07 
+Sistem harus mampu melayani setidaknya 
+500 pengguna secara bersamaan pada waktu 
+beban puncak belanja. 
+Security 
+NFR-08 
+Sistem harus menerapkan Role-Based Access 
+16 
+
+ 
+Atribut 
+ID 
+Pernyataan Kebutuhan Non-Fungsional 
+Control (RBAC), di mana akses data sensitif 
+dibatasi sesuai peran (Pelanggan, Admin, 
+Staf Operasional, atau Kurir). 
+NFR-09 
+Informasi 
+pribadi 
+pelanggan 
+dan 
+data 
+transaksi harus dilindungi sesuai dengan 
+Undang-Undang Perlindungan Data Pribadi 
+yang berlaku di Indonesia. 
+NFR-10 
+Sistem harus memiliki pertahanan keamanan 
+yang kuat terhadap ancaman siber seperti 
+virus, malware, dan upaya akses ilegal. 
+Cultural & 
+Political 
+NFR-11 
+Sistem harus menggunakan Bahasa Indonesia 
+sebagai bahasa utama dan mata uang Rupiah 
+(IDR) untuk seluruh transaksi. 
+NFR-12 
+Sistem harus membatasi wilayah pemesanan 
+dan pengiriman hanya untuk area di dalam 
+jangkauan operasional cabang Borma di 
+Bandung dan sekitarnya. 
+G.​ Use Case Diagram 
+Use Case Diagram merepresentasikan bagaimana aktor dan apa yang dapat 
+mereka lakukan. Use Case Diagram dapat dilihat pada gambar di bawah ini. 
+17 
+
+ 
+ 
+Gambar 2.1 Use Case Diagram 
+H.​ Entity Relational Diagram 
+Entity Relationship Diagram (ERD) merupakan pemodelan data yang digunakan 
+untuk memvisualisasikan struktur penyimpanan data serta hubungan antar entitas yang 
+terlibat di dalam sistem. Dalam pengembangan website Borma Online, perancangan ERD 
+ini menggunakan notasi Crow’s Foot untuk menggambarkan hubungan antar entitas 
+18 
+
+ 
+secara mendetail, seperti hubungan antara pelanggan dengan pesanan, maupun pesanan 
+dengan produk melalui tabel perantara yang dapat dilihat pada gambar di bawah ini. 
+ 
+Gambar 2.2 Entity Relational Diagram 
+I.​ Diagram BPMN 
+Bagian ini memaparkan Business Process Model and Notation (BPMN) untuk 
+memvisualisasikan alur koordinasi kerja antar aktor dalam ekosistem Borma Online, 
+mulai dari proses pemesanan oleh pelanggan hingga tahap penyelesaian pengiriman oleh 
+kurir internal. Diagram ini berfungsi sebagai panduan operasional untuk memastikan 
+efisiensi kerja dan sinkronisasi data di setiap cabang tetap terjaga secara sistematis.  
+1.​ Proses Keseluruhan Internal dan External Borma Online (Level 1) 
+19 
+
+ 
+ 
+Gambar 2.3 BPMN Level 1 
+ 
+ 
+ 
+2.​ Melakukan Pembelian Produk (Level 2) 
+ 
+Gambar 2.4 BPMN Level 2 Pembelian Produk 
+3.​ Menerima Invoice Pesanan (Level 2) 
+ 
+Gambar 2.5 BPMN Level 2 Menerima Invoice Pesanan 
+ 
+ 
+ 
+ 
+ 
+ 
+20 
+
+ 
+4.​ Menyiapkan Pesanan (Level 2) 
+ 
+Gambar 2.6 BPMN Level 2 Menyiapkan Pesanan 
+5.​ Mengirimkan Pesanan (Level 2) 
+​
+ 
+Gambar 2.7 BPMN Level 2 Mengirimkan Pesanan 
+6.​ Menerima Pesanan (Level 2) 
+ 
+Gambar 2.8 BPMN Level 2 Menerima Pesanan 
+ 
+ 
+21 
+
+ 
+J.​ Low Fidelity 
+Rancangan Low Fidelity menyajikan kerangka dasar antarmuka (wireframe) 
+website Borma Online. Desain awal ini bertujuan untuk memvalidasi alur navigasi 
+pelanggan serta memastikan kemudahan penggunaan dasbor operasional bagi staf dan 
+kurir sebelum masuk ke tahap pengembangan visual yang lebih kompleks.  
+1.​ User UI 
+Tabel 2.3 Low Fidelity User UI 
+ 
+ 
+22 
+
+ 
+ 
+ 
+ 
+ 
+23 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+24 
+
+ 
+ 
+2.​ Admin UI 
+Tabel 2.4 Low Fidelity Admin UI 
+ 
+ 
+ 
+ 
+25 
+
+ 
+ 
+ 
+ 
+3.​ Driver UI 
+Tabel 2.5. Low Fidelity Driver UI 
+ 
+ 
+26 
+
+ 
+ 
+ 
+ 
+K.​ Timeline Pekerjaan 
+Proyek ini memiliki rentang waktu sekitar 3 bulan, dimana proyek ini diinisialisasi 
+dengan pencarian studi kasus pada tanggal 11 Maret 2026 hingga laporan akhir pada 
+tanggal 10 Juni 2026. Tabel di bawah ini merupakan pemaparan mendetail terkait 
+timeline pekerjaannya. 
+Tabel 2.6 Timeline Pekerjaan 
+Fase 
+Kegiatan 
+Rentang Waktu 
+Output 
+Inisiasi & Analisis 
+Pencarian studi kasus, 
+observasi 
+sistem 
+berjalan 
+(offline 
+& 
+WhatsApp), 
+serta 
+identifikasi kebutuhan 
+fungsional 
+dan 
+non-fungsional. 
+11 Maret – 15 
+April 
+Dokumen Analisis 
+Kebutuhan 
+Milestone 1 
+Penyusunan 
+dan 
+penyerahan 
+Laporan 
+16 April 
+Laporan Progres 
+27 
+
+ 
+Fase 
+Kegiatan 
+Rentang Waktu 
+Output 
+Progres untuk Evaluasi 
+Tengah Semester. 
+Desain Sistem 
+Perancangan 
+proses 
+bisnis 
+(BPMN), 
+pemodelan 
+data 
+(ERD), 
+dan 
+desain 
+antarmuka 
+(Low-Fidelity). 
+17 April – 20 
+April 
+Diagram Sistem & 
+Wireframe 
+Implementasi 
+Pembangunan 
+skema 
+basis 
+data 
+serta 
+pengkodean 
+fungsi 
+utama 
+(Backend 
+& 
+Frontend) 
+seperti 
+katalog, 
+keranjang, 
+dan modul kurir. 
+21 April – 31 
+Mei 
+Prototipe 
+Website 
+(Beta) 
+Testing 
+& 
+Finalisasi 
+Pengujian 
+sistem 
+secara 
+menyeluruh, 
+perbaikan kutu (bug 
+fixing), 
+serta 
+penyusunan dokumen 
+laporan akhir. 
+1 Juni – 9 Juni 
+Website 
+Final 
+& 
+Dokumentasi 
+Deliver 
+dan 
+Laporan Akhir 
+Penyerahan 
+laporan 
+akhir dan demonstrasi 
+proyek. 
+10 Juni 
+Laporan Akhir & 
+Demo 
+ 
+ 
+ 
+28 
+
+ 
+L.​ Kegiatan per Orang 
+Berdasarkan peran yang dibutuhkan untuk membangun website online shopping 
+Borma, di bawah ini adalah tabel distribusi tugas untuk masing-masing anggota 
+kelompok dari awal pembuatan laporan hingga nanti proyek diselesaikan. 
+Tabel 2.7 Kegiatan per-Orang 
+Nama 
+Peran 
+Tugas 
+Arie Bagush (162023014) 
+UI/UX Designer  
+1. 
+Mengerjakan 
+Use 
+Case 
+Diagram 
+berdasarkan 
+Fungsional Requirement. 
+2. Membuat BPMN Level 2 
+(Pelanggan Menerima Pesanan) 
+Mohd Hafiz Yazid Nst 
+(162023018) 
+Frontend Developer  1.​Mengerjakan Laporan Bagian 
+Hasil Analisis 
+2.​Merapihkan seluruh pemaparan 
+dari laporan. 
+3.​Menganalisa Existing System 
+pada Studi Kasus. 
+4.​Menganalisa dan Menentukan 
+Design Dari Model Proses yang 
+Baru. 
+5.​Merancang BPMN Level 2 
+(User Melakukan Pembelian, 
+Admin 
+Menerima 
+Invoice, 
+Kurir Mengirimkan Pesanan). 
+6.​Merancang 
+Low 
+Fidelity 
+Aplikasi. 
+7.​Membangun website dari sisi 
+Frontend dan Backend. 
+Novila Arya Minar Saputra 
+(162023024) 
+Project Manager & 
+Backend Developer 
+1.​Mengerjakan Laporan Bagian 
+Hasil Analisis 
+2.​Merapihkan seluruh pemaparan 
+dari laporan. 
+3.​Mengerjakan 
+Non-functional 
+Requirement pada laporan. 
+4.​Mengerjakan Entity Relational 
+Diagram. 
+5.​Mengerjakan sebagian BPMN. 
+6.​Membangun 
+skema 
+dan 
+implementasi database. 
+7.​Membangun website dari sisi 
+29 
+
+ 
+Frontend (20%) dan Backend 
+(80%). 
+Yasmin 
+Faiqoh 
+Ridho 
+(162023027) 
+QA (Quality 
+Assurance) 
+1, Membuat Frequent Requirment 
+2. Membuat ppt untuk progres 
+3. Merancang BPMN lvl 2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+30 

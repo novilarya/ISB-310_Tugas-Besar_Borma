@@ -48,6 +48,28 @@ class DatabaseSeeder extends Seeder
                 'role' => 'Kurir',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
+            ],
+            [
+                'id_user' => 4,
+                'nama' => 'User 1',
+                'email' => 'user@gmail.com',
+                'password' => Hash::make('12345678'),
+                'no_telepon' => '081234567894',
+                'role' => 'Pelanggan',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ]
+        ]);
+
+        DB::table('pelanggans')->insert([
+            [
+                'id_pelanggan' => 1,
+                'id_user' => 4,
+                'status_member' => 1,
+                'poin_member' => 100,
+                'alamat' => 'Jalan Gagak No 132', 
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
             ]
         ]);
 
@@ -57,6 +79,7 @@ class DatabaseSeeder extends Seeder
                 'nama_cabang' => 'Borma Gempol',
                 'alamat_cabang' => 'Jl. Gempol Sari No. 83',
                 'koordinat_gps' => '-6.950396317796121, 107.57854452904492',
+                'status' => 'Aktif',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -65,6 +88,7 @@ class DatabaseSeeder extends Seeder
                 'nama_cabang' => 'Borma Buah Batu',
                 'alamat_cabang' => 'Jl. Buah Batu No. 225',
                 'koordinat_gps' => '-6.955822369884887, 107.63231204501615',
+                'status' => 'Aktif',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -73,6 +97,7 @@ class DatabaseSeeder extends Seeder
                 'nama_cabang' => 'Borma Cijerah',
                 'alamat_cabang' => 'Jl. Cijerah No. 100',
                 'koordinat_gps' => '-6.935190682604853, 107.54584255435934',  
+                'status' => 'Aktif',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -81,6 +106,7 @@ class DatabaseSeeder extends Seeder
                 'nama_cabang' => 'Borma Cikutra',
                 'alamat_cabang' => 'Jl. Cikutra No. 186',
                 'koordinat_gps' => '-6.919538582489261, 107.6478291494488',
+                'status' => 'Aktif',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -89,6 +115,7 @@ class DatabaseSeeder extends Seeder
                 'nama_cabang' => 'Borma Kerkof',
                 'alamat_cabang' => 'Jl. Kerkof No. 186',
                 'koordinat_gps' => '-6.919538582489261, 107.6478291494488',
+                'status' => 'Aktif',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -97,6 +124,7 @@ class DatabaseSeeder extends Seeder
                 'nama_cabang' => 'Prama Banjaran',
                 'alamat_cabang' => 'Jl. Raya Banjaran No. 100',
                 'koordinat_gps' => '-7.092679391433424, 107.49744422882598',
+                'status' => 'Aktif',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -105,6 +133,7 @@ class DatabaseSeeder extends Seeder
                 'nama_cabang' => 'Prama Babakan Sari',
                 'alamat_cabang' => 'Jl. Babakan Sari No. 100',
                 'koordinat_gps' => '-6.919538582489261, 107.6478291494488',
+                'status' => 'Aktif',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -113,6 +142,7 @@ class DatabaseSeeder extends Seeder
                 'nama_cabang' => 'Prama Ciparay',
                 'alamat_cabang' => 'Jl. Ciparay No. 288',
                 'koordinat_gps' => '-6.919538582489261, 107.6478291494488',
+                'status' => 'Aktif',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -121,6 +151,7 @@ class DatabaseSeeder extends Seeder
                 'nama_cabang' => 'Prama Fresh Burangrang',
                 'alamat_cabang' => 'Jl. Burangrang No. 195',
                 'koordinat_gps' => '-6.923449815611088, 107.61130913025827',
+                'status' => 'Aktif',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -129,6 +160,7 @@ class DatabaseSeeder extends Seeder
                 'nama_cabang' => 'Prama Fresh Garuda',
                 'alamat_cabang' => 'Jl. Garuda No. 210',
                 'koordinat_gps' => '-6.919538582489261, 107.6478291494488',
+                'status' => 'Aktif',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -137,6 +169,7 @@ class DatabaseSeeder extends Seeder
                 'nama_cabang' => 'Prama Fresh Mekarwangi',
                 'alamat_cabang' => 'Jl. Mekarwangi No. 100',
                 'koordinat_gps' => '-6.919538582489261, 107.6478291494488',
+                'status' => 'Aktif',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -145,6 +178,7 @@ class DatabaseSeeder extends Seeder
                 'nama_cabang' => 'Prama Fresh Perintis',
                 'alamat_cabang' => 'Jl. Perintis Kemerdekaan No. 210',
                 'koordinat_gps' => '-6.919538582489261, 107.6478291494488',
+                'status' => 'Aktif',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -153,6 +187,7 @@ class DatabaseSeeder extends Seeder
                 'nama_cabang' => 'Prama Leles',
                 'alamat_cabang' => 'Jl. Raya Leles No. 200',
                 'koordinat_gps' => '-7.02109051795237, 107.5757697995567',
+                'status' => 'Aktif',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -161,6 +196,7 @@ class DatabaseSeeder extends Seeder
                 'nama_cabang' => 'Tikma Soreang',
                 'alamat_cabang' => 'Jl. Raya Soreang No. 200',
                 'koordinat_gps' => '-7.019687167687294, 107.48242338733801',
+                'status' => 'Aktif',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ]
@@ -360,6 +396,36 @@ class DatabaseSeeder extends Seeder
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ]
+        ]);
+
+        DB::table('kurirs')->insert([
+            'id_kurir' => 1,
+            'id_user' => 3,
+            'kendaraan' => 'Motor',
+            'warna_kendaraan' => 'Merah',
+            'plat_nomor' => 'D 1234 ABC',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now()
+        ]);
+        
+        DB::table('pesanans')->insert([
+            'id_pesanan' => 1,
+            'id_pelanggan' => 1,
+            'id_cabang' => 1,
+            'id_kurir' => 1,
+            'id_promo' => null,
+            'tanggal_pemesanan' => Carbon::now(),
+            'total_belanja' => 100000,
+            'biaya_pengiriman' => 15000,
+            'diskon_voucher' => 0,
+            'total_tagihan' => 115000,
+            'metode_pembayaran' => 'Cash On Delivery',
+            'alamat_pengiriman' => 'Jl. Contoh No. 123',
+            'status_pesanan' => 'Diterima',
+            'estimasi_tiba' => Carbon::now(),
+            'bukti_pengiriman' => 'bukti_pengiriman.jpg',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now()
         ]);
     }
 }   
