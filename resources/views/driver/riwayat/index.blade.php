@@ -1,0 +1,365 @@
+@extends('driver.layouts.app')
+
+@section('title', 'Riwayat Pengiriman')
+@section('header_sub', 'Riwayat Pengiriman')
+
+@push('styles')
+<style>
+    /* ================================================
+       PAGE HEADING
+    ================================================ */
+    .page-heading {
+        margin-bottom: 6px;
+    }
+
+    .page-heading h1 {
+        font-family: var(--font-headline);
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--color-neutral);
+        text-transform: uppercase;
+        line-height: 1.15;
+        margin-bottom: 4px;
+    }
+
+    .page-heading p {
+        font-family: var(--font-body);
+        font-size: 13px;
+        color: var(--color-text-muted);
+        margin-bottom: 16px;
+    }
+
+    /* ================================================
+       FILTER TABS
+    ================================================ */
+    .filter-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .filter-tab {
+        font-family: var(--font-body);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 8px 18px;
+        border-radius: 100px;
+        border: 1.5px solid var(--color-border);
+        background: var(--color-surface);
+        color: var(--color-neutral-soft);
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+    .filter-tab:hover {
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+    }
+
+    .filter-tab.active {
+        background: var(--color-primary);
+        border-color: var(--color-primary);
+        color: white;
+    }
+
+    /* ================================================
+       RIWAYAT LIST
+    ================================================ */
+    .riwayat-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .riwayat-item {
+        background: var(--color-surface);
+        border-radius: var(--radius-md);
+        border: 1.5px solid var(--color-border);
+        padding: 18px;
+        box-shadow: var(--shadow-card);
+        border-left: 4px solid var(--color-primary);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .riwayat-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(51, 17, 108, 0.12);
+    }
+
+    .riwayat-item.gagal {
+        border-left-color: var(--color-tertiary);
+    }
+
+    .riwayat-item-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .riwayat-order-id {
+        font-family: var(--font-body);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        margin-bottom: 2px;
+    }
+
+    .riwayat-order-name {
+        font-family: var(--font-headline);
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--color-neutral);
+    }
+
+    .riwayat-badge {
+        font-family: var(--font-body);
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 100px;
+        white-space: nowrap;
+    }
+
+    .badge-diterima {
+        background: var(--color-primary-pale);
+        color: var(--color-primary);
+        border: 1.5px solid var(--color-primary);
+    }
+
+    .badge-gagal {
+        background: #FDECEA;
+        color: var(--color-tertiary);
+        border: 1.5px solid var(--color-tertiary);
+    }
+
+    .riwayat-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 12px;
+    }
+
+    .riwayat-meta-detail {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--font-body);
+        font-size: 12px;
+        color: var(--color-neutral-soft);
+    }
+
+    .riwayat-meta-detail i {
+        font-size: 14px;
+        color: var(--color-primary);
+        width: 16px;
+        text-align: center;
+    }
+
+    .riwayat-reason {
+        background: #FDECEA;
+        border-radius: var(--radius-sm);
+        padding: 8px 12px;
+        margin-bottom: 12px;
+    }
+
+    .riwayat-reason p {
+        font-family: var(--font-body);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--color-tertiary);
+    }
+
+    .btn-detail {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: 12px;
+        background: var(--color-bg);
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--radius-sm);
+        font-family: var(--font-headline);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-neutral);
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-detail:hover {
+        background: var(--color-primary);
+        border-color: var(--color-primary);
+        color: white;
+    }
+
+    /* ================================================
+       SKELETON LOADER
+    ================================================ */
+    .skeleton-card {
+        background: var(--color-surface);
+        border-radius: var(--radius-md);
+        border: 1.5px solid var(--color-border);
+        padding: 18px;
+        border-left: 4px solid var(--color-border);
+    }
+
+    .skeleton-line {
+        height: 14px;
+        background: linear-gradient(90deg, var(--color-bg) 25%, var(--color-border) 50%, var(--color-bg) 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s ease-in-out infinite;
+        border-radius: 4px;
+        margin-bottom: 10px;
+    }
+
+    .skeleton-line.w-40 { width: 40%; }
+    .skeleton-line.w-60 { width: 60%; }
+    .skeleton-line.w-80 { width: 80%; }
+    .skeleton-line.w-100 { width: 100%; }
+
+    @keyframes shimmer {
+        0%   { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    /* ================================================
+       EMPTY STATE
+    ================================================ */
+    .empty-state {
+        text-align: center;
+        padding: 48px 20px;
+    }
+
+    .empty-state i {
+        font-size: 48px;
+        color: var(--color-border);
+        display: block;
+        margin-bottom: 12px;
+    }
+
+    .empty-state p {
+        font-family: var(--font-body);
+        font-size: 14px;
+        color: var(--color-text-muted);
+    }
+
+    /* ================================================
+       ANIMATION
+    ================================================ */
+    .fade-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.5s ease forwards;
+    }
+
+    @keyframes fadeUp {
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .delay-1 { animation-delay: 0.05s; }
+    .delay-2 { animation-delay: 0.12s; }
+</style>
+@endpush
+
+@section('content')
+
+{{-- ===== DRIVER INFO ===== --}}
+@if($kurir)
+<div class="driver-info-section fade-up" style="margin-bottom: 24px;">
+    <p style="font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 4px;">Driver Anda</p>
+    <h2 style="font-family: var(--font-headline); font-size: 24px; font-weight: 800; color: var(--color-neutral); text-transform: uppercase; margin-bottom: 8px;">
+        {{ strtoupper($kurir->user->nama ?? 'DRIVER') }}
+    </h2>
+    <p style="font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-text-muted);">
+        Cabang: <span style="color: var(--color-primary);">{{ strtoupper($kurir->cabang->nama_cabang ?? 'Tidak Diketahui') }} — {{ $kurir->kode_driver ?? '-' }}</span>
+    </p>
+</div>
+@endif
+
+{{-- ===== HEADING ===== --}}
+<div class="page-heading fade-up delay-1">
+    <h1>Riwayat</h1>
+    <p>Log aktivitas pengiriman selesai dan gagal.</p>
+</div>
+
+{{-- ===== FILTER TABS ===== --}}
+<div class="filter-tabs fade-up delay-2">
+    <a href="{{ route('driver.riwayat.index') }}"
+       class="filter-tab {{ !request('status') ? 'active' : '' }}">Semua</a>
+    <a href="{{ route('driver.riwayat.index', ['status' => 'diterima']) }}"
+       class="filter-tab {{ request('status') == 'diterima' ? 'active' : '' }}">Diterima</a>
+    <a href="{{ route('driver.riwayat.index', ['status' => 'gagal_kirim']) }}"
+       class="filter-tab {{ request('status') == 'gagal_kirim' ? 'active' : '' }}">Gagal Kirim</a>
+</div>
+
+{{-- ===== RIWAYAT LIST ===== --}}
+<div class="riwayat-list fade-up delay-3">
+    @forelse($riwayat as $pesanan)
+    <div class="riwayat-item {{ $pesanan->status_pesanan == 'gagal_kirim' ? 'gagal' : '' }}" id="riwayat-{{ $pesanan->id_pesanan }}">
+        <div class="riwayat-item-header">
+            <div>
+                <p class="riwayat-order-id">Order ID</p>
+                <p class="riwayat-order-name">#BM-{{ $pesanan->id_pesanan }}</p>
+            </div>
+            <span class="riwayat-badge {{ $pesanan->status_pesanan == 'gagal_kirim' ? 'badge-gagal' : 'badge-diterima' }}">
+                {{ strtoupper(str_replace('_', ' ', $pesanan->status_pesanan)) }}
+            </span>
+        </div>
+
+        <div class="riwayat-meta">
+            <div class="riwayat-meta-detail">
+                <i class="bi bi-person"></i>
+                <span>{{ $pesanan->pelanggan->user->nama ?? 'Pelanggan' }}</span>
+            </div>
+            <div class="riwayat-meta-detail">
+                <i class="bi bi-calendar3"></i>
+                <span>{{ \Carbon\Carbon::parse($pesanan->tanggal_pemesanan)->translatedFormat('d M Y, H:i') }}</span>
+            </div>
+        </div>
+
+        @if($pesanan->status_pesanan == 'gagal_kirim' && $pesanan->alasan_gagal)
+        <div class="riwayat-reason">
+            <p>Alasan: {{ $pesanan->alasan_gagal }}</p>
+        </div>
+        @endif
+
+        <a href="{{ route('driver.riwayat.show', $pesanan->id_pesanan) }}" class="btn-detail">
+            Lihat Detail
+        </a>
+    </div>
+    @empty
+    <div class="empty-state">
+        <i class="bi bi-clock-history"></i>
+        <p>Belum ada riwayat pengiriman.</p>
+    </div>
+    @endforelse
+</div>
+
+{{-- ===== SKELETON (contoh loading state) ===== --}}
+@if(isset($loading) && $loading)
+<div class="riwayat-list" style="margin-top: 14px;">
+    @for($i = 0; $i < 2; $i++)
+    <div class="skeleton-card">
+        <div class="skeleton-line w-40"></div>
+        <div class="skeleton-line w-60"></div>
+        <div class="skeleton-line w-80"></div>
+        <div class="skeleton-line w-100" style="height: 40px; margin-bottom: 0;"></div>
+    </div>
+    @endfor
+</div>
+@endif
+
+@endsection
