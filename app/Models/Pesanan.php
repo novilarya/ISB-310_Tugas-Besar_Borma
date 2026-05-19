@@ -4,14 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class pesanan extends Model
+class Pesanan extends Model
 {
-    protected $table = 'pesanan';
+    protected $table = 'pesanans';
     protected $primaryKey = 'id_pesanan';
     protected $fillable = [
         'id_pelanggan', 'id_cabang', 'id_kurir', 'id_promo', 'tanggal_pemesanan',
         'total_belanja', 'biaya_pengiriman', 'diskon_voucher', 'total_tagihan',
-        'metode_pembayaran', 'alamat_pengiriman', 'status_pesanan', 'estimasi_tiba', 'bukti_pengiriman'
+        'metode_pembayaran', 'alamat_pengiriman', 'status_pesanan', 'estimasi_tiba', 
+        'bukti_pengiriman', 'latitude', 'longitude', 'alasan_gagal', 'potongan_driver',
+        'review_rating', 'review_text'
     ];
 
     public function pelanggan() { 

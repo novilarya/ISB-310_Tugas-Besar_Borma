@@ -26,18 +26,21 @@ class DatabaseSeeder extends Seeder
             'nama_cabang' => 'ANTAPANI',
             'alamat_cabang' => 'Jl. Antapani No. 123, Bandung',
             'koordinat_gps' => '-6.9147,107.0842',
+            'status' => 'Aktif',
         ]);
 
         $cabangPusat = Cabang::create([
             'nama_cabang' => 'GUDANG PUSAT BOJONGSOANG',
             'alamat_cabang' => 'Jl. Bojongsoang, Bandung',
             'koordinat_gps' => '-6.9500,107.1000',
+            'status' => 'Aktif',
         ]);
 
         $cabangBelumadd = Cabang::create([
             'nama_cabang' => 'BELUM ADA',
             'alamat_cabang' => 'Alamat Belum Ditentukan',
             'koordinat_gps' => '-',
+            'status' => 'Tidak Aktif',
         ]);
 
         // ===== CREATE DRIVER USERS =====
@@ -61,19 +64,25 @@ class DatabaseSeeder extends Seeder
         $kurir1 = Kurir::create([
             'id_user' => $userDriver1->id_user,
             'id_cabang' => $cabangAntapani->id_cabang,
-            'kode_driver' => 'D45',
             'kendaraan' => 'Motor',
             'warna_kendaraan' => 'Hitam',
             'plat_nomor' => 'B 1234 ABC',
+            'penghasilan_kotor' => 1000000,
+            'penghasilan_bersih' => 900000,
+            'status_mengirim' => 'Sedang Mengirim',
+            'status_aktif' => 'Aktif',
         ]);
 
         $kurir2 = Kurir::create([
             'id_user' => $userDriver2->id_user,
             'id_cabang' => $cabangBelumadd->id_cabang,
-            'kode_driver' => 'D00',
             'kendaraan' => 'Mobil',
             'warna_kendaraan' => 'Putih',
             'plat_nomor' => 'B 5678 XYZ',
+            'penghasilan_kotor' => 1200000,
+            'penghasilan_bersih' => 1100000,
+            'status_mengirim' => 'Tidak Mengirim',
+            'status_aktif' => 'Aktif',
         ]);
 
         // ===== CREATE PELANGGAN =====
@@ -87,7 +96,7 @@ class DatabaseSeeder extends Seeder
 
         $pelCustomer1 = Pelanggan::create([
             'id_user' => $pelanggan1->id_user,
-            'status_member' => 'premium',
+            'status_member' => true,
             'poin_member' => 500,
             'alamat' => 'Jl. Merdeka 45, Bandung',
         ]);
@@ -102,7 +111,7 @@ class DatabaseSeeder extends Seeder
 
         $pelCustomer2 = Pelanggan::create([
             'id_user' => $pelanggan2->id_user,
-            'status_member' => 'reguler',
+            'status_member' => false,
             'poin_member' => 250,
             'alamat' => 'Jl. Gatot Subroto 78, Bandung',
         ]);
@@ -117,9 +126,52 @@ class DatabaseSeeder extends Seeder
 
         $pelCustomer3 = Pelanggan::create([
             'id_user' => $pelanggan3->id_user,
-            'status_member' => 'premium',
+            'status_member' => true,
             'poin_member' => 800,
             'alamat' => 'Jl. Ahmad Yani 234, Bandung',
+        ]);
+
+        // ===== PELANGGAN SESUAI WIREFRAME =====
+        $pelangganAndi = User::create([
+            'nama' => 'Andi Wijaya',
+            'email' => 'andi.wijaya@gmail.com',
+            'password' => bcrypt('password'),
+            'no_telepon' => '082211112222',
+            'role' => 'pelanggan',
+        ]);
+        $pelAndi = Pelanggan::create([
+            'id_user' => $pelangganAndi->id_user,
+            'status_member' => false,
+            'poin_member' => 100,
+            'alamat' => 'Jl. Pahlawan No. 1, Bandung',
+        ]);
+
+        $pelangganSiti = User::create([
+            'nama' => 'Siti Aminah',
+            'email' => 'siti.aminah@gmail.com',
+            'password' => bcrypt('password'),
+            'no_telepon' => '082233334444',
+            'role' => 'pelanggan',
+        ]);
+        $pelSiti = Pelanggan::create([
+            'id_user' => $pelangganSiti->id_user,
+            'status_member' => false,
+            'poin_member' => 120,
+            'alamat' => 'Jl. Sukajadi No. 2, Bandung',
+        ]);
+
+        $pelangganBudi = User::create([
+            'nama' => 'Budi Santoso',
+            'email' => 'budi.santoso@gmail.com',
+            'password' => bcrypt('password'),
+            'no_telepon' => '082255556666',
+            'role' => 'pelanggan',
+        ]);
+        $pelBudi = Pelanggan::create([
+            'id_user' => $pelangganBudi->id_user,
+            'status_member' => false,
+            'poin_member' => 150,
+            'alamat' => 'Jl. Setiabudi No. 3, Bandung',
         ]);
 
         // ===== CREATE PESANAN (DASHBOARD) =====
@@ -138,7 +190,6 @@ class DatabaseSeeder extends Seeder
             'alamat_pengiriman' => 'Jl. Merdeka 45, Bandung',
             'status_pesanan' => 'menunggu',
             'estimasi_tiba' => now()->addHours(3),
-            'catatan' => 'Pengiriman Stok Logistik',
         ]);
 
         // Tugas Aktif 2: Dalam Pengiriman
@@ -199,6 +250,68 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now()->subDays($i),
             ]);
         }
+
+        // ===== CREATE PESANAN (RIWAYAT) - SESUAI WIREFRAME =====
+        Pesanan::create([
+            'id_pesanan' => 9920998,
+            'id_pelanggan' => $pelBudi->id_pelanggan,
+            'id_cabang' => $cabangAntapani->id_cabang,
+            'id_kurir' => $kurir1->id_kurir,
+            'id_promo' => null,
+            'tanggal_pemesanan' => '2023-10-11 16:45:00',
+            'total_belanja' => 150000,
+            'biaya_pengiriman' => 15000,
+            'diskon_voucher' => 0,
+            'total_tagihan' => 165000,
+            'metode_pembayaran' => 'transfer',
+            'alamat_pengiriman' => 'Jl. Setiabudi No. 3, Bandung',
+            'status_pesanan' => 'diterima',
+            'estimasi_tiba' => '2023-10-11 17:30:00',
+            'updated_at' => '2023-10-11 17:35:00',
+            'latitude' => -6.8333,
+            'longitude' => 107.5833,
+        ]);
+
+        Pesanan::create([
+            'id_pesanan' => 9921005,
+            'id_pelanggan' => $pelSiti->id_pelanggan,
+            'id_cabang' => $cabangAntapani->id_cabang,
+            'id_kurir' => $kurir1->id_kurir,
+            'id_promo' => null,
+            'tanggal_pemesanan' => '2023-10-12 11:15:00',
+            'total_belanja' => 200000,
+            'biaya_pengiriman' => 20000,
+            'diskon_voucher' => 0,
+            'total_tagihan' => 220000,
+            'metode_pembayaran' => 'transfer',
+            'alamat_pengiriman' => 'Jl. Sukajadi No. 2, Bandung',
+            'status_pesanan' => 'gagal_kirim',
+            'estimasi_tiba' => '2023-10-12 12:00:00',
+            'alasan_gagal' => 'PENERIMA TIDAK DI TEMPAT',
+            'updated_at' => '2023-10-12 12:15:00',
+            'latitude' => -6.8833,
+            'longitude' => 107.5833,
+        ]);
+
+        Pesanan::create([
+            'id_pesanan' => 9921001,
+            'id_pelanggan' => $pelAndi->id_pelanggan,
+            'id_cabang' => $cabangAntapani->id_cabang,
+            'id_kurir' => $kurir1->id_kurir,
+            'id_promo' => null,
+            'tanggal_pemesanan' => '2023-10-12 14:30:00',
+            'total_belanja' => 100000,
+            'biaya_pengiriman' => 10000,
+            'diskon_voucher' => 0,
+            'total_tagihan' => 110000,
+            'metode_pembayaran' => 'transfer',
+            'alamat_pengiriman' => 'Jl. Pahlawan No. 1, Bandung',
+            'status_pesanan' => 'diterima',
+            'estimasi_tiba' => '2023-10-12 15:00:00',
+            'updated_at' => '2023-10-12 15:15:00',
+            'latitude' => -6.8999,
+            'longitude' => 107.6333,
+        ]);
     }
 }
 

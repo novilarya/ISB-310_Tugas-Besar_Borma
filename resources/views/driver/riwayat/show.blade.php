@@ -347,7 +347,56 @@
     .delay-3 { animation-delay: 0.20s; }
     .delay-4 { animation-delay: 0.28s; }
     .delay-5 { animation-delay: 0.36s; }
+    .delay-6 { animation-delay: 0.44s; }
+    .delay-7 { animation-delay: 0.52s; }
+
+    /* ================================================
+       MAP SECTION
+    ================================================ */
+    .map-container {
+        width: 100%;
+        height: 300px;
+        border-radius: var(--radius-md);
+        border: 1.5px solid var(--color-border);
+        overflow: hidden;
+        margin-bottom: 14px;
+    }
+
+    .coordinates-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .coordinate-card {
+        background: var(--color-bg);
+        border-radius: var(--radius-sm);
+        padding: 12px;
+        border: 1px solid var(--color-border);
+    }
+
+    .coordinate-label {
+        font-family: var(--font-body);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        margin-bottom: 4px;
+    }
+
+    .coordinate-value {
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--color-primary);
+        word-break: break-all;
+    }
 </style>
+
+<!-- Leaflet CSS & JS untuk Map -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 @endpush
 
 @section('content')
@@ -364,8 +413,51 @@
     </div>
 </div>
 
-{{-- ===== PENGHASILAN ===== --}}
+{{-- ===== LOKASI PENGIRIMAN / MAP ===== --}}
+@if($pesanan->latitude && $pesanan->longitude)
 <div class="section-card fade-up delay-1">
+    <h2 class="section-title">Lokasi Pengiriman</h2>
+    <div id="deliveryMap" class="map-container"></div>
+    <div class="coordinates-info">
+        <div class="coordinate-card">
+            <p class="coordinate-label">Latitude</p>
+            <p class="coordinate-value">{{ $pesanan->latitude }}</p>
+        </div>
+        <div class="coordinate-card">
+            <p class="coordinate-label">Longitude</p>
+            <p class="coordinate-value">{{ $pesanan->longitude }}</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize map
+        var map = L.map('deliveryMap').setView([{{ $pesanan->latitude }}, {{ $pesanan->longitude }}], 16);
+        
+        // Add map tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+        
+        // Add marker for delivery location
+        L.marker([{{ $pesanan->latitude }}, {{ $pesanan->longitude }}], {
+            icon: L.icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            })
+        }).bindPopup('<strong>Lokasi Pengiriman</strong><br>{{ $pesanan->alamat_pengiriman }}').addTo(map);
+    });
+</script>
+@endif
+
+{{-- ===== PENGHASILAN ===== --}}
+<div class="section-card fade-up delay-2">
     <h2 class="section-title">Penghasilan Pengiriman</h2>
     <div class="earning-grid">
         <div class="earning-card">
@@ -388,7 +480,7 @@
 </div>
 
 {{-- ===== DETAIL PENGIRIMAN ===== --}}
-<div class="section-card fade-up delay-2">
+<div class="section-card fade-up delay-3">
     <h2 class="section-title">Detail Pengiriman</h2>
     <div class="detail-grid">
         <div class="detail-item">
@@ -411,7 +503,7 @@
 </div>
 
 {{-- ===== INFO CUSTOMER ===== --}}
-<div class="section-card fade-up delay-3">
+<div class="section-card fade-up delay-4">
     <h2 class="section-title">Info Customer</h2>
     <div class="info-row">
         <p class="info-label">Nama</p>
@@ -428,7 +520,7 @@
 </div>
 
 {{-- ===== RINGKASAN ITEM ===== --}}
-<div class="section-card fade-up delay-4">
+<div class="section-card fade-up delay-5">
     <h2 class="section-title">Ringkasan Item</h2>
     @foreach($pesanan->details as $detail)
     <div class="item-row">
@@ -447,7 +539,7 @@
 </div>
 
 {{-- ===== REVIEW CUSTOMER ===== --}}
-<div class="section-card fade-up delay-5">
+<div class="section-card fade-up delay-6">
     <h2 class="section-title">Review Customer</h2>
     @if(isset($pesanan->review_rating) && $pesanan->review_rating)
     <div class="review-box">
@@ -465,7 +557,7 @@
 
 {{-- ===== BUKTI PENGIRIMAN ===== --}}
 @if($pesanan->bukti_pengiriman)
-<div class="section-card fade-up delay-5">
+<div class="section-card fade-up delay-7">
     <h2 class="section-title">Bukti Pengiriman</h2>
     <img src="{{ asset('storage/' . $pesanan->bukti_pengiriman) }}" alt="Bukti Pengiriman" class="bukti-photo">
 </div>
