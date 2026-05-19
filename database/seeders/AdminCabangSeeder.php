@@ -18,6 +18,7 @@ class AdminCabangSeeder extends Seeder
             'nama_cabang' => 'Borma Antapani',
             'alamat_cabang' => 'Jl. Terusan Jakarta No. 155, Antapani, Bandung',
             'koordinat_gps' => '-6.9147,107.6529',
+            'status' => 'Aktif',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -26,18 +27,18 @@ class AdminCabangSeeder extends Seeder
             'nama_cabang' => 'Borma Dago',
             'alamat_cabang' => 'Jl. Ir. H. Djuanda No. 53, Dago, Bandung',
             'koordinat_gps' => '-6.8835,107.6174',
+            'status' => 'Aktif',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        // 2. Seed Admin User yang terikat ke cabang
+        // 2. Seed Admin User
         $adminAntapaniId = DB::table('users')->insertGetId([
             'nama' => 'Admin Antapani',
             'email' => 'admin.antapani@borma.co.id',
             'password' => Hash::make('password'),
             'no_telepon' => '081234567890',
             'role' => 'Admin',
-            'id_cabang' => $cabangAntapani,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -48,31 +49,27 @@ class AdminCabangSeeder extends Seeder
             'password' => Hash::make('password'),
             'no_telepon' => '081298765432',
             'role' => 'Admin',
-            'id_cabang' => $cabangDago,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
         // Tambahkan ke tabel admin_cabangs untuk relasi Multi-Admin -> Cabang
-        DB::table('admin_cabangs')->insert([
-            [
-                'id_user' => $adminAntapaniId,
-                'id_cabang' => $cabangAntapani,
-                'gaji' => 5500000.00,
-                'tanggal_masuk' => now()->subMonths(12),
-                'status_karyawan' => 'Aktif',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'id_user' => $adminDagoId,
-                'id_cabang' => $cabangDago,
-                'gaji' => 5200000.00,
-                'tanggal_masuk' => now()->subMonths(8),
-                'status_karyawan' => 'Aktif',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        $adminCabangAntapaniId = DB::table('admin_cabangs')->insertGetId([
+            'id_user' => $adminAntapaniId,
+            'id_cabang' => $cabangAntapani,
+            'tanggal_masuk' => now()->subMonths(12),
+            'status_karyawan' => 'Aktif',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $adminCabangDagoId = DB::table('admin_cabangs')->insertGetId([
+            'id_user' => $adminDagoId,
+            'id_cabang' => $cabangDago,
+            'tanggal_masuk' => now()->subMonths(8),
+            'status_karyawan' => 'Aktif',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         // 3. Seed Produk Master
@@ -81,7 +78,7 @@ class AdminCabangSeeder extends Seeder
             'kategori' => 'Kebutuhan Pokok',
             'deskripsi' => 'Minyak goreng berkualitas tinggi dari kelapa sawit pilihan. Menghasilkan gorengan renyah dan sehat untuk keluarga.',
             'harga_reguler' => 34500,
-            'harga_member' => 32000,
+            'harga_member' => 33800, // Diskon 700 (2.03%) - range 1%-2.5% (345 - 862.5)
             'gambar_produk' => 'default.jpg',
             'created_at' => now(),
             'updated_at' => now(),
@@ -92,7 +89,7 @@ class AdminCabangSeeder extends Seeder
             'kategori' => 'Kebutuhan Pokok',
             'deskripsi' => 'Beras pandan wangi premium kualitas terbaik. Nasi pulen dan beraroma harum alami.',
             'harga_reguler' => 75000,
-            'harga_member' => 72000,
+            'harga_member' => 73000, // Diskon 2000 (Flat) - range 1000 - 2500
             'gambar_produk' => 'default.jpg',
             'created_at' => now(),
             'updated_at' => now(),
@@ -103,7 +100,7 @@ class AdminCabangSeeder extends Seeder
             'kategori' => 'Minuman',
             'deskripsi' => 'Susu UHT full cream segar, cocok untuk segala usia. Kaya kalsium dan vitamin D.',
             'harga_reguler' => 18500,
-            'harga_member' => 16500,
+            'harga_member' => 18100, // Diskon 400 (2.16%) - range 1%-2.5% (185 - 462.5)
             'gambar_produk' => 'default.jpg',
             'created_at' => now(),
             'updated_at' => now(),
@@ -114,7 +111,7 @@ class AdminCabangSeeder extends Seeder
             'kategori' => 'Kebersihan',
             'deskripsi' => 'Sabun cuci piring dengan formula anti-bakteri. Efektif membersihkan lemak dan noda membandel.',
             'harga_reguler' => 15500,
-            'harga_member' => 14000,
+            'harga_member' => 15200, // Diskon 300 (1.94%) - range 1%-2.5% (155 - 387.5)
             'gambar_produk' => 'default.jpg',
             'created_at' => now(),
             'updated_at' => now(),
@@ -125,7 +122,7 @@ class AdminCabangSeeder extends Seeder
             'kategori' => 'Snack',
             'deskripsi' => 'Keripik kentang ringan dengan rasa sapi panggang yang gurih. Camilan favorit keluarga.',
             'harga_reguler' => 12000,
-            'harga_member' => 10500,
+            'harga_member' => 11800, // Diskon 200 (1.67%) - range 1%-2.5% (120 - 300)
             'gambar_produk' => 'default.jpg',
             'created_at' => now(),
             'updated_at' => now(),
@@ -136,7 +133,7 @@ class AdminCabangSeeder extends Seeder
             'kategori' => 'Minuman',
             'deskripsi' => 'Teh pucuk harum yang segar dan nikmat. Dari daun teh pucuk pilihan.',
             'harga_reguler' => 4500,
-            'harga_member' => 4000,
+            'harga_member' => 4400, // Diskon 100 (2.22%) - range 1%-2.5% (45 - 112.5)
             'gambar_produk' => 'default.jpg',
             'created_at' => now(),
             'updated_at' => now(),
@@ -160,10 +157,10 @@ class AdminCabangSeeder extends Seeder
         ]);
 
         // 5. Seed History Harga awal
-        DB::table('history_produk')->insert([
-            ['id_produk' => $produk1, 'harga_reguler_lama' => null, 'harga_reguler_baru' => 34500, 'harga_member_lama' => null, 'harga_member_baru' => 32000, 'admin' => 'Admin Antapani', 'created_at' => now()->subMonths(2), 'updated_at' => now()->subMonths(2)],
-            ['id_produk' => $produk1, 'harga_reguler_lama' => 33000, 'harga_reguler_baru' => 34500, 'harga_member_lama' => 31000, 'harga_member_baru' => 32000, 'admin' => 'Admin Antapani', 'created_at' => now()->subDays(15), 'updated_at' => now()->subDays(15)],
-            ['id_produk' => $produk2, 'harga_reguler_lama' => null, 'harga_reguler_baru' => 75000, 'harga_member_lama' => null, 'harga_member_baru' => 72000, 'admin' => 'Admin Antapani', 'created_at' => now()->subMonths(3), 'updated_at' => now()->subMonths(3)],
+        DB::table('history_produks')->insert([
+            ['id_produk' => $produk1, 'harga_reguler_lama' => null, 'harga_reguler_baru' => 34500, 'harga_member_lama' => null, 'harga_member_baru' => 33800, 'id_admin_cabang' => $adminCabangAntapaniId, 'created_at' => now()->subMonths(2), 'updated_at' => now()->subMonths(2)],
+            ['id_produk' => $produk1, 'harga_reguler_lama' => 33000, 'harga_reguler_baru' => 34500, 'harga_member_lama' => 32340, 'harga_member_baru' => 33800, 'id_admin_cabang' => $adminCabangAntapaniId, 'created_at' => now()->subDays(15), 'updated_at' => now()->subDays(15)],
+            ['id_produk' => $produk2, 'harga_reguler_lama' => null, 'harga_reguler_baru' => 75000, 'harga_member_lama' => null, 'harga_member_baru' => 73000, 'id_admin_cabang' => $adminCabangAntapaniId, 'created_at' => now()->subMonths(3), 'updated_at' => now()->subMonths(3)],
         ]);
     }
 }

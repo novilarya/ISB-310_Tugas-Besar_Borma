@@ -1,4 +1,4 @@
-@extends('layouts.admin-cabang')
+@extends('admin-cabang.layouts.admin-cabang')
 
 @section('title', 'Dashboard - Admin Cabang')
 
@@ -246,7 +246,7 @@
                 @endif
                 <div class="info">
                     <h6>{{ $product->produk->nama_produk ?? '-' }}</h6>
-                    <small>{{ number_format($product->terjual ?? 0, 0, ',', '.') }} terjual · Stok: {{ $product->jumlah_stok }}</small>
+                    <small>{{ number_format($product->jumlah_terjual ?? 0, 0, ',', '.') }} terjual · Stok: {{ $product->jumlah_stok }}</small>
                 </div>
                 <a href="{{ route('admin-cabang.promo') }}" class="btn-action btn-action-outline btn-action-sm">Promo</a>
             </div>

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('promos', function (Blueprint $table) {
             $table->id('id_promo');
+            $table->foreignId('id_cabang')->constrained('cabangs', 'id_cabang');
             $table->foreignId('id_produk_pemicu')->constrained('produks', 'id_produk');
             $table->foreignId('id_produk_hadiah')->nullable()->constrained('produks', 'id_produk');
             $table->string('nama_voucher');

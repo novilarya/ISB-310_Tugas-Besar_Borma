@@ -2,14 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class user extends Model
+class User extends Authenticatable
 {
     use Notifiable;
 
-    protected $fillable = ['nama', 'email', 'password', 'no_telepon', 'role'];
+    protected $primaryKey = 'id_user';
+
+    protected $fillable = ['nama', 'email', 'password', 'no_telepon', 'role', 'settings'];
+
+    protected $hidden = ['password'];
+
+    protected $casts = [
+        'settings' => 'array',
+    ];
 
     public function pelanggan() {
         return $this->hasOne(Pelanggan::class, 'id_user', 'id_user');
@@ -17,5 +25,9 @@ class user extends Model
 
     public function kurir() {
         return $this->hasOne(Kurir::class, 'id_user', 'id_user');
+    }
+
+    public function adminCabang() {
+        return $this->hasOne(AdminCabang::class, 'id_user', 'id_user');
     }
 }

@@ -17,6 +17,11 @@ class ProductController extends Controller
         return auth()->user()?->adminCabang?->id_cabang ?? 1;
     }
 
+    private function getIdAdminCabang(): ?int
+    {
+        return auth()->user()?->adminCabang?->id_admin_cabang;
+    }
+
     /**
      * READ — Daftar produk berdasarkan cabang.
      */
@@ -51,13 +56,13 @@ class ProductController extends Controller
             $query->where('jumlah_stok', '<=', 0);
         }
 
-        // Sorting — JOIN hanya untuk tabel paginated, bukan KPI
-        $allowedSort = ['id_produk_cabang', 'jumlah_stok', 'terjual', 'nama_produk', 'kategori'];
+        // Sorting
+        $allowedSort = ['id_produk_cabang', 'jumlah_stok', 'jumlah_terjual', 'nama_produk', 'kategori'];
         if (in_array($sort, ['nama_produk', 'kategori'])) {
             $query->join('produks', 'produk_cabangs.id_produk', '=', 'produks.id_produk')
                   ->orderBy("produks.{$sort}", $direction)
                   ->select('produk_cabangs.*');
-        } elseif (in_array($sort, ['id_produk_cabang', 'jumlah_stok', 'terjual'])) {
+        } elseif (in_array($sort, ['id_produk_cabang', 'jumlah_stok', 'jumlah_terjual'])) {
             $query->orderBy($sort, $direction);
         }
 
@@ -68,7 +73,8 @@ class ProductController extends Controller
 
         // KPI: Promo Aktif
         $today      = now()->toDateString();
-        $promoAktif = Promo::where('tanggal_mulai', '<=', $today)
+        $promoAktif = Promo::where('id_cabang', $idCabang)
+                           ->where('tanggal_mulai', '<=', $today)
                            ->where('tanggal_berakhir', '>=', $today)
                            ->count();
 
@@ -81,7 +87,7 @@ class ProductController extends Controller
             ->map(fn($group) => [
                 'jumlah_sku'  => $group->count(),
                 'total_stok'  => $group->sum('jumlah_stok'),
-                'total_terjual' => $group->sum('terjual'),
+                'total_terjual' => $group->sum('jumlah_terjual'),
             ])
             ->sortByDesc('total_stok');
 
@@ -155,7 +161,8 @@ class ProductController extends Controller
                 ->with('error', 'Produk tidak ditemukan di cabang ini.');
         }
 
-        $riwayatHarga = HistoryProduk::where('id_produk', $produkCabang->id_produk)
+        $riwayatHarga = HistoryProduk::with('adminCabang.user')
+            ->where('id_produk', $produkCabang->id_produk)
             ->orderByDesc('created_at')
             ->get();
 
@@ -179,9 +186,38 @@ class ProductController extends Controller
 
         $idCabang    = $this->getIdCabang();
         $hargaReguler = (int) $request->harga_reguler;
-        $hargaMember  = $request->harga_member
-            ? (int) $request->harga_member
-            : max(0, $hargaReguler - 2500);
+
+        if ($request->filled('harga_member')) {
+            $hargaMember = (int) $request->harga_member;
+            $potongan = $hargaReguler - $hargaMember;
+
+            if ($hargaReguler < 50000) {
+                // Potongan persen: range 1% - 2.5%
+                $minPotongan = $hargaReguler * 0.01;
+                $maxPotongan = $hargaReguler * 0.025;
+                if ($potongan < $minPotongan || $potongan > $maxPotongan) {
+                    return back()->withErrors([
+                        'harga_member' => "Untuk harga reguler di bawah Rp 50.000, potongan harga member wajib berupa persentase 1% s/d 2,5% (potongan saat ini: Rp " . number_format($potongan, 0, ',', '.') . " atau sekitar " . round($potongan / $hargaReguler * 100, 2) . "%, range diperbolehkan: Rp " . number_format($minPotongan, 0, ',', '.') . " s/d Rp " . number_format($maxPotongan, 0, ',', '.') . ")."
+                    ])->withInput();
+                }
+            } else {
+                // Potongan rupiah flat: range 1.000 - 2.500
+                if ($potongan < 1000 || $potongan > 2500) {
+                    return back()->withErrors([
+                        'harga_member' => "Untuk harga reguler Rp 50.000 ke atas, potongan harga member wajib berkisar antara Rp 1.000 s/d Rp 2.500 (potongan saat ini: Rp " . number_format($potongan, 0, ',', '.') . ")."
+                    ])->withInput();
+                }
+            }
+        } else {
+            // Otomatis hitung jika kosong
+            if ($hargaReguler < 50000) {
+                // Default 2% potongan
+                $hargaMember = (int) round($hargaReguler * 0.98);
+            } else {
+                // Default Rp 2.000 potongan
+                $hargaMember = $hargaReguler - 2000;
+            }
+        }
 
         // Upload gambar
         $gambarPath = 'default.jpg';
@@ -201,10 +237,10 @@ class ProductController extends Controller
 
         // Stok per cabang
         ProdukCabang::create([
-            'id_produk'   => $product->id_produk,
-            'id_cabang'   => $idCabang,
-            'jumlah_stok' => $request->jumlah_stok,
-            'terjual'     => 0,
+            'id_produk'       => $product->id_produk,
+            'id_cabang'       => $idCabang,
+            'jumlah_stok'     => $request->jumlah_stok,
+            'jumlah_terjual'  => 0,
         ]);
 
         // Catat history harga awal
@@ -212,7 +248,7 @@ class ProductController extends Controller
             'id_produk'          => $product->id_produk,
             'harga_reguler_baru' => $hargaReguler,
             'harga_member_baru'  => $hargaMember,
-            'admin'              => 'Admin Cabang',
+            'id_admin_cabang'    => $this->getIdAdminCabang(),
         ]);
 
         return redirect()->route('admin-cabang.produk')
@@ -250,9 +286,38 @@ class ProductController extends Controller
         $oldHarga        = $product->harga_reguler;
         $oldHargaMember  = $product->harga_member;
         $newHarga        = (int) $request->harga_reguler;
-        $newHargaMember  = $request->harga_member
-            ? (int) $request->harga_member
-            : max(0, $newHarga - 2500);
+
+        if ($request->filled('harga_member')) {
+            $newHargaMember = (int) $request->harga_member;
+            $potongan = $newHarga - $newHargaMember;
+
+            if ($newHarga < 50000) {
+                // Potongan persen: range 1% - 2.5%
+                $minPotongan = $newHarga * 0.01;
+                $maxPotongan = $newHarga * 0.025;
+                if ($potongan < $minPotongan || $potongan > $maxPotongan) {
+                    return back()->withErrors([
+                        'harga_member' => "Untuk harga reguler di bawah Rp 50.000, potongan harga member wajib berupa persentase 1% s/d 2,5% (potongan saat ini: Rp " . number_format($potongan, 0, ',', '.') . " atau sekitar " . round($potongan / $newHarga * 100, 2) . "%, range diperbolehkan: Rp " . number_format($minPotongan, 0, ',', '.') . " s/d Rp " . number_format($maxPotongan, 0, ',', '.') . ")."
+                    ])->withInput();
+                }
+            } else {
+                // Potongan rupiah flat: range 1.000 - 2.500
+                if ($potongan < 1000 || $potongan > 2500) {
+                    return back()->withErrors([
+                        'harga_member' => "Untuk harga reguler Rp 50.000 ke atas, potongan harga member wajib berkisar antara Rp 1.000 s/d Rp 2.500 (potongan saat ini: Rp " . number_format($potongan, 0, ',', '.') . ")."
+                    ])->withInput();
+                }
+            }
+        } else {
+            // Otomatis hitung jika kosong
+            if ($newHarga < 50000) {
+                // Default 2% potongan
+                $newHargaMember = (int) round($newHarga * 0.98);
+            } else {
+                // Default Rp 2.000 potongan
+                $newHargaMember = $newHarga - 2000;
+            }
+        }
 
         $dataToUpdate = [
             'nama_produk'   => $request->nama_produk,
@@ -284,7 +349,7 @@ class ProductController extends Controller
                 'harga_reguler_baru' => $newHarga,
                 'harga_member_lama'  => $oldHargaMember,
                 'harga_member_baru'  => $newHargaMember,
-                'admin'              => 'Admin Cabang',
+                'id_admin_cabang'    => $this->getIdAdminCabang(),
             ]);
         }
 
@@ -310,5 +375,69 @@ class ProductController extends Controller
 
         return redirect()->route('admin-cabang.produk')
             ->with('success', 'Produk berhasil dihapus dari cabang ini.');
+    }
+
+    /**
+     * EXPORT — Download daftar produk cabang berformat CSV.
+     */
+    public function exportCsv(Request $request)
+    {
+        $idCabang = $this->getIdCabang();
+        $search    = $request->query('search');
+        $category  = $request->query('category');
+        $status    = $request->query('status');
+
+        $query = ProdukCabang::with('produk')->where('id_cabang', $idCabang);
+
+        if ($search) {
+            $query->whereHas('produk', fn($q) =>
+                $q->where('nama_produk', 'like', "%{$search}%")
+                  ->orWhere('kategori', 'like', "%{$search}%")
+            );
+        }
+
+        if ($category && $category !== 'Semua Kategori') {
+            $query->whereHas('produk', fn($q) => $q->where('kategori', $category));
+        }
+
+        if ($status === 'tersedia') {
+            $query->where('jumlah_stok', '>=', 20);
+        } elseif ($status === 'tipis') {
+            $query->where('jumlah_stok', '>', 0)->where('jumlah_stok', '<', 20);
+        } elseif ($status === 'habis') {
+            $query->where('jumlah_stok', '<=', 0);
+        }
+
+        $produkCabangs = $query->get();
+
+        $filename = "laporan_produk_cabang_" . now()->format('Y_m_d') . ".csv";
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function() use ($produkCabangs) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['ID SKU Cabang', 'ID SKU Master', 'Nama Produk', 'Kategori', 'Harga Reguler', 'Harga Member', 'Stok', 'Terjual']);
+
+            foreach ($produkCabangs as $pc) {
+                fputcsv($file, [
+                    "SKU-CB-" . str_pad($pc->id_produk_cabang, 3, '0', STR_PAD_LEFT),
+                    "SKU-MT-" . str_pad($pc->id_produk, 3, '0', STR_PAD_LEFT),
+                    $pc->produk->nama_produk ?? '-',
+                    $pc->produk->kategori ?? '-',
+                    $pc->produk->harga_reguler ?? 0,
+                    $pc->produk->harga_member ?? 0,
+                    $pc->jumlah_stok,
+                    $pc->jumlah_terjual
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

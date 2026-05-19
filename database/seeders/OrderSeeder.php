@@ -47,8 +47,8 @@ class OrderSeeder extends Seeder
 
         // ── 3. Kurir ─────────────────────────────────────────────────────
         $kurirUsers = [
-            ['nama' => 'Asep Kurir', 'email' => 'asep.kurir@borma.co.id', 'kendaraan' => 'Motor Honda Beat',   'warna' => 'Hitam', 'plat' => 'D 1234 ABC'],
-            ['nama' => 'Budi Kurir', 'email' => 'budi.kurir@borma.co.id', 'kendaraan' => 'Motor Yamaha NMAX', 'warna' => 'Putih', 'plat' => 'D 5678 DEF'],
+            ['nama' => 'Asep Kurir', 'email' => 'asep.kurir@borma.co.id', 'kendaraan' => 'Motor Honda Beat',   'warna' => 'Hitam', 'plat' => 'D 1234 ABC', 'id_cabang' => 1],
+            ['nama' => 'Budi Kurir', 'email' => 'budi.kurir@borma.co.id', 'kendaraan' => 'Motor Yamaha NMAX', 'warna' => 'Putih', 'plat' => 'D 5678 DEF', 'id_cabang' => 2],
         ];
         $kurirIds = [];
         foreach ($kurirUsers as $k) {
@@ -58,9 +58,17 @@ class OrderSeeder extends Seeder
                 'role' => 'Kurir', 'created_at' => now(), 'updated_at' => now(),
             ]);
             $kurirIds[] = DB::table('kurirs')->insertGetId([
-                'id_user' => $uid, 'kendaraan' => $k['kendaraan'],
-                'warna_kendaraan' => $k['warna'], 'plat_nomor' => $k['plat'],
-                'created_at' => now(), 'updated_at' => now(),
+                'id_user' => $uid,
+                'kendaraan' => $k['kendaraan'],
+                'warna_kendaraan' => $k['warna'],
+                'plat_nomor' => $k['plat'],
+                'id_cabang' => $k['id_cabang'],
+                'penghasilan_kotor' => 0.00,
+                'penghasilan_bersih' => 0.00,
+                'status_mengirim' => 'Tidak Mengirim',
+                'status_aktif' => 'Aktif',
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
         }
 

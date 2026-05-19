@@ -9,7 +9,7 @@ class AuthController extends Controller
 {
     public function showInternalLoginForm()
     {
-        return view('internal-login');
+        return view('auth.internal-login');
     }
 
     public function authenticateInternal(Request $request)
@@ -24,16 +24,15 @@ class AuthController extends Controller
 
             $user = Auth::user();
             
+            // Role enum dari migration: 'Pelanggan', 'Admin', 'Staf Operasional', 'Kurir'
             switch ($user->role) {
-                case 'Super Admin':
-                case 'Admin Super': 
+                case 'Staf Operasional':
                     return redirect()->intended('superadmin/dashboard');
-                case 'Admin Cabang':
                 case 'Admin':
                     return redirect()->intended('admin-cabang/dashboard');
                 case 'Kurir':
-                case 'Driver': 
                     return redirect()->intended('kurir/dashboard');
+                case 'Pelanggan':
                 default:
                     Auth::logout();
                     return back()->withErrors([
@@ -52,6 +51,6 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/internal/login');
+        return redirect('internal/login');
     }
 }

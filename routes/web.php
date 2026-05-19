@@ -15,6 +15,7 @@ Route::prefix('admin-cabang')->middleware('auth')->group(function () {
 
     // Produk
     Route::get('/produk', [\App\Http\Controllers\AdminCabang\ProductController::class, 'index'])->name('admin-cabang.produk');
+    Route::get('/produk/export-csv', [\App\Http\Controllers\AdminCabang\ProductController::class, 'exportCsv'])->name('admin-cabang.produk.export-csv');
     Route::post('/produk/store', [\App\Http\Controllers\AdminCabang\ProductController::class, 'store'])->name('admin-cabang.produk.store');
     Route::get('/produk/detail', [\App\Http\Controllers\AdminCabang\ProductController::class, 'detail'])->name('admin-cabang.produk.detail');
     Route::put('/produk/update/{id}', [\App\Http\Controllers\AdminCabang\ProductController::class, 'update'])->name('admin-cabang.produk.update');

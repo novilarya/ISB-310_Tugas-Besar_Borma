@@ -12,8 +12,9 @@ class PromoSeeder extends Seeder
     {
         $today = Carbon::today();
 
-        // Promo aktif — "Beli 2 Gratis 1 Minyak Goreng"
+        // Promo aktif — "Beli 2 Gratis 1 Minyak Goreng" (Branch 1)
         DB::table('promos')->insert([
+            'id_cabang'         => 1,
             'id_produk_pemicu'  => 1, // Minyak Goreng Bimoli
             'id_produk_hadiah'  => 1,
             'nama_voucher'      => 'Beli 2 Gratis 1 Minyak Goreng',
@@ -30,8 +31,9 @@ class PromoSeeder extends Seeder
             'updated_at'        => now(),
         ]);
 
-        // Promo aktif — "Diskon 15% Beras Pandan Wangi"
+        // Promo aktif — "Diskon 15% Beras Pandan Wangi" (Branch 1)
         DB::table('promos')->insert([
+            'id_cabang'         => 1,
             'id_produk_pemicu'  => 2, // Beras Pandan Wangi
             'id_produk_hadiah'  => null,
             'nama_voucher'      => 'Diskon 15% Beras Premium',
@@ -48,8 +50,9 @@ class PromoSeeder extends Seeder
             'updated_at'        => now(),
         ]);
 
-        // Promo terjadwal — "Spesial Akhir Bulan"
+        // Promo terjadwal — "Spesial Akhir Bulan" (Branch 2)
         DB::table('promos')->insert([
+            'id_cabang'         => 2,
             'id_produk_pemicu'  => 3, // Susu UHT
             'id_produk_hadiah'  => null,
             'nama_voucher'      => 'Spesial Akhir Bulan - Diskon 20%',
@@ -66,8 +69,9 @@ class PromoSeeder extends Seeder
             'updated_at'        => now(),
         ]);
 
-        // Promo sudah berakhir — "Promo Lebaran"
+        // Promo sudah berakhir — "Promo Lebaran" (Branch 2)
         DB::table('promos')->insert([
+            'id_cabang'         => 2,
             'id_produk_pemicu'  => 4, // Sabun Cuci
             'id_produk_hadiah'  => null,
             'nama_voucher'      => 'Promo Lebaran - Hemat 25%',

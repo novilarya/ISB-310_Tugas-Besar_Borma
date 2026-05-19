@@ -1,0 +1,253 @@
+@extends('admin-cabang.layouts.admin-cabang')
+@section('title', 'Promo & Voucher - Borma Toserba')
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/admin-cabang.css') }}">
+@endpush
+
+@section('content')
+{{-- Header --}}
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div class="page-header-text">
+        <h1 class="mb-2 page-title">Promo & Voucher</h1>
+        <p class="m-0 page-subtitle">Kelola kampanye diskon dan kode voucher untuk cabang Anda.</p>
+    </div>
+    <button class="btn-primary-custom" data-bs-toggle="modal" data-bs-target="#tambahPromoModal">
+        <i class="bi bi-plus-lg me-2"></i> Buat Promo Baru
+    </button>
+</div>
+
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius:12px;border:none;font-weight:600;">
+    <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+@if($errors->any())
+<div class="alert alert-danger alert-dismissible fade show" style="border-radius:12px;border:none;font-weight:600;">
+    <i class="bi bi-x-circle-fill me-2"></i> {{ $errors->first() }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
+{{-- KPI Cards --}}
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="glass-card kpi-card-interactive hover-primary">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="kpi-title text-primary-custom">Promo Aktif</div>
+                <div class="icon-box bg-primary-light"><i class="bi bi-ticket-perforated"></i></div>
+            </div>
+            <div class="kpi-value" style="color:var(--borma-primary);">{{ $totalAktif }}</div>
+            <p class="text-muted mt-2 mb-0" style="font-size:0.8rem;font-weight:600;">Sedang berjalan</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card kpi-card-interactive hover-secondary">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="kpi-title">Terjadwal</div>
+                <div class="icon-box bg-secondary-light"><i class="bi bi-calendar-event-fill"></i></div>
+            </div>
+            <div class="kpi-value">{{ $totalTerjadwal }}</div>
+            <p class="text-muted mt-2 mb-0" style="font-size:0.8rem;font-weight:600;">Akan datang</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card kpi-card-interactive hover-tertiary">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="kpi-title text-tertiary-custom">Berakhir</div>
+                <div class="icon-box bg-tertiary-light"><i class="bi bi-archive-fill"></i></div>
+            </div>
+            <div class="kpi-value" style="color:var(--borma-tertiary);">{{ $totalBerakhir }}</div>
+            <p class="text-muted mt-2 mb-0" style="font-size:0.8rem;font-weight:600;">Sudah habis masa berlaku</p>
+        </div>
+    </div>
+</div>
+
+{{-- Filter Bar --}}
+<div class="mb-5">
+    <div class="glass-card mb-4" style="padding: 16px 24px;">
+        <form action="{{ route('admin-cabang.promo') }}" method="GET" class="row g-3 w-100 align-items-center m-0">
+            <div class="col-md-5 ps-0">
+                <div class="search-input">
+                    <i class="bi bi-search"></i>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama promo atau kode voucher...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select name="status" class="form-select filter-select-lg" onchange="this.form.submit()">
+                    <option value="">Semua Status</option>
+                    <option value="aktif" {{ request('status')=='aktif'?'selected':'' }}>Aktif</option>
+                    <option value="terjadwal" {{ request('status')=='terjadwal'?'selected':'' }}>Terjadwal</option>
+                    <option value="berakhir" {{ request('status')=='berakhir'?'selected':'' }}>Berakhir</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn-primary-custom w-100" style="padding:10px 16px;"><i class="bi bi-funnel-fill me-1"></i> Filter</button>
+            </div>
+            @if(request('search') || request('status'))
+            <div class="col-md-2">
+                <a href="{{ route('admin-cabang.promo') }}" class="btn btn-outline-secondary w-100" style="border-radius:8px;font-weight:700;"><i class="bi bi-arrow-counterclockwise me-1"></i> Reset</a>
+            </div>
+            @endif
+        </form>
+    </div>
+</div>
+
+{{-- Table --}}
+<div class="table-produk">
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    <a href="{{ request()->fullUrlWithQuery(['sort'=>'nama_voucher','direction'=>request('sort')=='nama_voucher'&&request('direction')=='asc'?'desc':'asc']) }}" class="text-primary-custom text-decoration-none">
+                        Nama Promo @if(request('sort')=='nama_voucher')<i class="bi bi-sort-{{ request('direction')=='asc'?'up':'down' }}"></i>@else<i class="bi bi-arrow-down-up text-muted" style="font-size:.7rem;"></i>@endif
+                    </a>
+                </th>
+                <th>Kode Voucher</th>
+                <th>Pemicu Produk</th>
+                <th>
+                    <a href="{{ request()->fullUrlWithQuery(['sort'=>'potongan_harga','direction'=>request('sort')=='potongan_harga'&&request('direction')=='asc'?'desc':'asc']) }}" class="text-primary-custom text-decoration-none">
+                        Potongan @if(request('sort')=='potongan_harga')<i class="bi bi-sort-{{ request('direction')=='asc'?'up':'down' }}"></i>@else<i class="bi bi-arrow-down-up text-muted" style="font-size:.7rem;"></i>@endif
+                    </a>
+                </th>
+                <th>
+                    <a href="{{ request()->fullUrlWithQuery(['sort'=>'tanggal_berakhir','direction'=>request('sort')=='tanggal_berakhir'&&request('direction')=='asc'?'desc':'asc']) }}" class="text-primary-custom text-decoration-none">
+                        Periode @if(request('sort')=='tanggal_berakhir')<i class="bi bi-sort-{{ request('direction')=='asc'?'up':'down' }}"></i>@else<i class="bi bi-arrow-down-up text-muted" style="font-size:.7rem;"></i>@endif
+                    </a>
+                </th>
+                <th>
+                    <a href="{{ request()->fullUrlWithQuery(['sort'=>'kuota_promo','direction'=>request('sort')=='kuota_promo'&&request('direction')=='asc'?'desc':'asc']) }}" class="text-primary-custom text-decoration-none">
+                        Kuota @if(request('sort')=='kuota_promo')<i class="bi bi-sort-{{ request('direction')=='asc'?'up':'down' }}"></i>@else<i class="bi bi-arrow-down-up text-muted" style="font-size:.7rem;"></i>@endif
+                    </a>
+                </th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($promos as $promo)
+            @php
+                $st = $promo->statusPromo();
+                $sisa = $promo->sisaHari();
+            @endphp
+            <tr>
+                <td>
+                    <div style="font-weight:800;color:var(--borma-neutral);">{{ $promo->nama_voucher }}</div>
+                    @if($promo->id_produk_hadiah)
+                        <div class="text-muted" style="font-size:.75rem;"><i class="bi bi-gift-fill me-1 text-success"></i>Hadiah: {{ $promo->produkHadiah->nama_produk ?? '-' }}</div>
+                    @endif
+                </td>
+                <td>
+                    @if($promo->kode_voucher)
+                        <span style="font-family:monospace;font-weight:800;background:rgba(51,17,108,.08);color:var(--borma-primary);padding:4px 10px;border-radius:6px;font-size:.82rem;letter-spacing:1px;">{{ $promo->kode_voucher }}</span>
+                    @else
+                        <span class="text-muted" style="font-size:.8rem;">— Tanpa kode —</span>
+                    @endif
+                </td>
+                <td>
+                    <div style="font-weight:700;font-size:.85rem;">{{ $promo->produkPemicu->nama_produk ?? '-' }}</div>
+                    <div class="text-muted" style="font-size:.75rem;">Min. beli {{ $promo->kuantitas_pemicu }} pcs</div>
+                </td>
+                <td>
+                    <div style="font-weight:800;color:var(--borma-tertiary);font-size:1rem;">Rp {{ number_format($promo->potongan_harga, 0, ',', '.') }}</div>
+                    @if($promo->min_transaksi > 0)
+                        <div class="text-muted" style="font-size:.72rem;">Min. transaksi Rp {{ number_format($promo->min_transaksi, 0, ',', '.') }}</div>
+                    @endif
+                </td>
+                <td>
+                    <div style="font-size:.8rem;font-weight:700;">{{ $promo->tanggal_mulai->format('d M Y') }}</div>
+                    <div class="text-muted" style="font-size:.75rem;">s/d {{ $promo->tanggal_berakhir->format('d M Y') }}</div>
+                    @if($st === 'aktif')
+                        <div class="{{ $sisa <= 3 ? 'text-danger' : 'text-muted' }}" style="font-size:.7rem;font-weight:800;margin-top:2px;">
+                            <i class="bi bi-clock"></i> {{ $sisa >= 0 ? $sisa . ' hari lagi' : 'Habis' }}
+                        </div>
+                    @endif
+                </td>
+                <td>
+                    <div style="font-weight:800;font-size:1rem;color:var(--borma-primary);">{{ number_format($promo->kuota_promo, 0, ',', '.') }}</div>
+                    <div class="text-muted" style="font-size:.72rem;"></div>
+                </td>
+                <td>
+                    @if($st === 'aktif')
+                        <span class="status-badge-modern status-selesai"></i> Aktif</span>
+                    @elseif($st === 'terjadwal')
+                        <span class="status-badge-modern status-pending"> Terjadwal</span>
+                    @else
+                        <span class="status-badge-modern status-disabled" style="background:#F3F4F6;color:#6B7280;border:1px solid #E5E7EB;"></i> Berakhir</span>
+                    @endif
+                </td>
+                <td>
+                    <div style="display:flex;gap:6px;align-items:center;">
+                        {{-- Edit --}}
+                        <button class="btn-icon-member btn-edit-member" title="Edit Promo" data-bs-toggle="modal" data-bs-target="#editPromoModal"
+                            data-id="{{ $promo->id_promo }}"
+                            data-nama="{{ $promo->nama_voucher }}"
+                            data-kode="{{ $promo->kode_voucher }}"
+                            data-pemicu="{{ $promo->id_produk_pemicu }}"
+                            data-hadiah="{{ $promo->id_produk_hadiah }}"
+                            data-qty-pemicu="{{ $promo->kuantitas_pemicu }}"
+                            data-qty-hadiah="{{ $promo->kuantitas_hadiah }}"
+                            data-potongan="{{ $promo->potongan_harga }}"
+                            data-min="{{ $promo->min_transaksi }}"
+                            data-max="{{ $promo->max_promo }}"
+                            data-kuota="{{ $promo->kuota_promo }}"
+                            data-mulai="{{ $promo->tanggal_mulai->format('Y-m-d') }}"
+                            data-berakhir="{{ $promo->tanggal_berakhir->format('Y-m-d') }}">
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+                        {{-- Delete --}}
+                        <form action="{{ route('admin-cabang.promo.delete', $promo->id_promo) }}" method="POST" class="d-inline"
+                            onsubmit="return confirm('Hapus promo &quot;{{ $promo->nama_voucher }}&quot;?');">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="btn-icon-member btn-delete-member" title="Hapus"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="8" class="text-center py-5 text-muted">
+                    <i class="bi bi-tags" style="font-size:3rem;opacity:.2;"></i>
+                    <p class="mt-3 mb-0" style="font-weight:600;">Belum ada data promo.</p>
+                </td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    <div class="pagination-custom mt-4 mb-2 px-3">
+        <span class="text-muted me-auto pagination-info">
+            Menampilkan {{ $promos->firstItem() ?? 0 }} – {{ $promos->lastItem() ?? 0 }} dari {{ $promos->total() }} promo
+        </span>
+        <div class="pagination-links-styled">
+            {{ $promos->links('pagination::bootstrap-5') }}
+        </div>
+    </div>
+</div>
+
+
+@include('admin-cabang.modal.promo')
+
+@push('scripts')
+<script>
+document.querySelectorAll('.btn-edit-member[data-bs-target="#editPromoModal"]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        var d = this.dataset;
+        document.getElementById('eNama').value      = d.nama;
+        document.getElementById('eKode').value      = d.kode || '';
+        document.getElementById('ePemicu').value    = d.pemicu;
+        document.getElementById('eHadiah').value    = d.hadiah || '';
+        document.getElementById('eQtyPemicu').value = d.qtyPemicu;
+        document.getElementById('eQtyHadiah').value = d.qtyHadiah;
+        document.getElementById('ePotongan').value  = d.potongan;
+        document.getElementById('eMin').value       = d.min;
+        document.getElementById('eMax').value       = d.max;
+        document.getElementById('eKuota').value     = d.kuota;
+        document.getElementById('eMulai').value     = d.mulai;
+        document.getElementById('eBerakhir').value  = d.berakhir;
+        document.getElementById('editPromoForm').action = '/admin-cabang/promo/update/' + d.id;
+    });
+});
+</script>
+@endpush
+@endsection

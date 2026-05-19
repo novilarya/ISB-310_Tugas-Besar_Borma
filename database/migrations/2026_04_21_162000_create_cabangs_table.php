@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nama_cabang');
             $table->text('alamat_cabang');
             $table->string('koordinat_gps');
+            $table->string('status');
             $table->timestamps();
         });
     }

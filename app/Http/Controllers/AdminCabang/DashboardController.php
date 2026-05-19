@@ -48,11 +48,12 @@ class DashboardController extends Controller
 
         // ── Promo & Voucher ─────────────────────────────────────────────
         $todayStr  = now()->toDateString();
-        $promoAktif = Promo::where('tanggal_mulai', '<=', $todayStr)
+        $promoAktif = Promo::where('id_cabang', $idCabang)
+            ->where('tanggal_mulai', '<=', $todayStr)
             ->where('tanggal_berakhir', '>=', $todayStr)
             ->count();
         
-        $promoQuota = Promo::sum('kuota_promo');
+        $promoQuota = Promo::where('id_cabang', $idCabang)->sum('kuota_promo');
         $promoDigunakan = $allOrders->whereNotNull('id_promo')->count();
 
         // ── Poin & Reward ───────────────────────────────────────────────
@@ -101,10 +102,10 @@ class DashboardController extends Controller
         $pieLabels = $topKategori->pluck('kategori')->toArray();
         $pieData   = $topKategori->pluck('total')->map(fn($v) => (float)$v)->toArray();
 
-        // ── Top 2 Produk Terlaris (by terjual di produk_cabangs) ────────
+        // ── Top 2 Produk Terlaris (by jumlah_terjual di produk_cabangs) ─
         $topTerlaris = ProdukCabang::with('produk')
             ->where('id_cabang', $idCabang)
-            ->orderByDesc('terjual')
+            ->orderByDesc('jumlah_terjual')
             ->limit(2)
             ->get();
 

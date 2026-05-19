@@ -114,10 +114,6 @@
         border: none;
         cursor: pointer;
         transition: all 0.2s;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
     }
     .btn-action-primary {
         background-color: var(--borma-primary);
@@ -134,10 +130,6 @@
     .btn-action-outline:hover {
         border-color: var(--borma-primary);
         color: var(--borma-primary);
-    }
-    .btn-action-sm {
-        padding: 6px 12px;
-        font-size: 0.7rem;
     }
     
     /* Quick Access */

@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id('id_admin_cabang');
             $table->unsignedBigInteger('id_user');
             $table->unsignedBigInteger('id_cabang');
-            $table->decimal('gaji', 15, 2)->default(0);
             $table->date('tanggal_masuk')->nullable();
             $table->string('status_karyawan')->default('Aktif');
             $table->timestamps();
