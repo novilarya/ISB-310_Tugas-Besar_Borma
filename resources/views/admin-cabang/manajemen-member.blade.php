@@ -78,33 +78,24 @@
 <div class="mb-5">
     <div class="glass-card mb-4" style="padding: 16px 24px;">
         <form action="{{ route('admin-cabang.member') }}" method="GET" id="filterMemberForm" class="row g-3 w-100 align-items-center m-0">
-            <div class="col-md-5 ps-0">
-                <div class="search-input">
+            <div class="col-md-7 ps-0">
+                <div class="search-input w-100">
                     <i class="bi bi-search"></i>
-                    <input type="text" name="search" id="search" value="{{ request('search') }}"
-                        placeholder="Cari nama, email, atau no. telepon..."
-                        autocomplete="off">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, email, atau no. telepon..." class="w-100">
                 </div>
             </div>
-            <div class="col-md-3">
-                <select name="status" class="form-select filter-select-lg" onchange="this.form.submit()">
+            <div class="col-md-4">
+                <select name="status" class="form-select filter-select-lg w-100" onchange="this.form.submit()">
                     <option value="">Semua Status</option>
                     <option value="member" {{ request('status') == 'member' ? 'selected' : '' }}>Member Aktif</option>
                     <option value="non-member" {{ request('status') == 'non-member' ? 'selected' : '' }}>Non Member</option>
                 </select>
             </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn-primary-custom w-100" style="padding: 10px 16px;">
-                    <i class="bi bi-funnel-fill me-1"></i> Filter
-                </button>
-            </div>
-            @if(request('search') || request('status'))
-            <div class="col-md-2">
-                <a href="{{ route('admin-cabang.member') }}" class="btn btn-outline-secondary w-100" style="border-radius: 8px; font-weight: 700;">
-                    <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+            <div class="col-md-1 pe-0 text-end">
+                <a href="{{ route('admin-cabang.member') }}" class="btn-action btn-action-outline w-100 d-flex justify-content-center align-items-center" style="height: 42px;" title="Reset Filter">
+                    <i class="bi bi-arrow-counterclockwise"></i>
                 </a>
             </div>
-            @endif
         </form>
     </div>
 </div>

@@ -236,7 +236,7 @@
                         {{ $p->nama_produk }}
                     </span>
                     <div class="bar-wrap">
-                        <div class="bar-fill" style="width:{{ round(($p->total_terjual/$maxTerjual)*100) }}%;background:{{ $i==0?'var(--borma-secondary)':($i==1?'var(--borma-primary)':'#818CF8') }};"></div>
+                        <div class="bar-fill" style="width:{{ round(($p->total_terjual/$maxTerjual)*100) }}%;background:var(--borma-primary);"></div>
                     </div>
                     <span class="value">{{ $p->total_terjual }} pcs</span>
                 </div>
@@ -249,12 +249,12 @@
     <div class="col-lg-5">
         <div class="glass-card h-100" style="padding: 24px;">
             <div class="kpi-title mb-4">PENDAPATAN PER KATEGORI</div>
-            @php $maxKat = $penjualanKategori->max('total_revenue') ?: 1; $colors = ['var(--borma-primary)','var(--borma-tertiary)','#8B5CF6','#059669','#F59E0B']; @endphp
+            @php $maxKat = $penjualanKategori->max('total_revenue') ?: 1; @endphp
             @forelse($penjualanKategori as $i => $k)
             <div class="chart-bar-h">
                 <span class="label" style="width: 120px;">{{ $k->kategori }}</span>
                 <div class="bar-wrap">
-                    <div class="bar-fill" style="width:{{ round(($k->total_revenue/$maxKat)*100) }}%;background:{{ $colors[$i%5] }};"></div>
+                    <div class="bar-fill" style="width:{{ round(($k->total_revenue/$maxKat)*100) }}%;background:var(--borma-primary);"></div>
                 </div>
                 <span class="value" style="font-size:.7rem;">Rp {{ number_format($k->total_revenue/1000,0,',','.')}}rb</span>
             </div>

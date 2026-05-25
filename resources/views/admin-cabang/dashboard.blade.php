@@ -91,23 +91,15 @@
 </div>
 
 <!-- Charts -->
-<div class="row g-4 mb-5">
-    <div class="col-lg-8">
+<div class="row g-4 mb-4">
+    <div class="col-12">
         <div class="glass-card">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h6 class="kpi-title m-0">Trend Penjualan (7 Hari Terakhir)</h6>
                 <span class="badge-modern badge-primary">Real-time</span>
             </div>
-            <div class="chart-container">
+            <div class="chart-container" style="height: 350px;">
                 <canvas id="salesTrendChart"></canvas>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4">
-        <div class="glass-card">
-            <h6 class="kpi-title mb-4">Top Kategori Terjual</h6>
-            <div class="chart-container">
-                <canvas id="categoryPieChart"></canvas>
             </div>
         </div>
     </div>
@@ -232,6 +224,14 @@
 
     <!-- Right Column -->
     <div class="col-lg-4">
+        <!-- Top Kategori Terjual -->
+        <div class="glass-card mb-4">
+            <h6 class="kpi-title mb-4">Top Kategori Terjual</h6>
+            <div class="chart-container" style="height: 280px;">
+                <canvas id="categoryPieChart"></canvas>
+            </div>
+        </div>
+
         <!-- Produk Highlights -->
         <div class="glass-card mb-4">
             <h6 class="kpi-title mb-4">Produk Highlights</h6>

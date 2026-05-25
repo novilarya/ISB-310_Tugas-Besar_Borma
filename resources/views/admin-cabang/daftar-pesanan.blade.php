@@ -129,19 +129,14 @@
                     <option value="Diterima"       {{ request('status')=='Diterima'       ? 'selected':'' }}>Selesai</option>
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-calendar3"></i></span>
-                    <input type="date" name="date" value="{{ request('date') }}" class="form-control border-start-0 filter-select-md" onchange="this.form.submit()">
+                    <span class="input-group-text bg-white border-end-0" style="border-radius: 8px 0 0 8px; border: 1px solid #E5E7EB; border-right: none; height: 42px;"><i class="bi bi-calendar3"></i></span>
+                    <input type="date" name="date" value="{{ request('date') }}" class="form-control border-start-0" style="border-radius: 0 8px 8px 0; border: 1px solid #E5E7EB; font-weight: 700; height: 42px; color: var(--borma-neutral);" onchange="this.form.submit()">
                 </div>
             </div>
-            <div class="col-md-1">
-                <button type="submit" class="btn-action btn-action-primary w-100" style="height:42px;">
-                    <i class="bi bi-search"></i>
-                </button>
-            </div>
             <div class="col-md-1 pe-0 text-end">
-                <a href="{{ route('admin-cabang.pesanan') }}" class="btn-action btn-action-outline w-100 d-flex justify-content-center align-items-center" style="height:42px;" title="Reset">
+                <a href="{{ route('admin-cabang.pesanan') }}" class="btn-action btn-action-outline w-100 d-flex justify-content-center align-items-center" style="height: 42px;" title="Reset Filter">
                     <i class="bi bi-arrow-counterclockwise"></i>
                 </a>
             </div>
@@ -203,21 +198,15 @@
                     {{-- Pelanggan --}}
                     <td>
                         <div style="font-weight:800;">{{ $pesanan->pelanggan->user->nama ?? '-' }}</div>
-                        <div class="text-muted" style="font-size:0.78rem;"><i class="bi bi-telephone-fill me-1"></i>{{ $pesanan->pelanggan->user->no_telepon ?? '-' }}</div>
                     </td>
                     {{-- Tagihan --}}
                     <td>
                         <div style="font-weight:800;color:var(--borma-tertiary);font-size:1rem;">Rp {{ number_format($pesanan->total_tagihan, 0, ',', '.') }}</div>
-                        <div class="text-muted" style="font-size:0.78rem;">{{ $pesanan->details->sum('jumlah') }} item · {{ $pesanan->metode_pembayaran }}</div>
                     </td>
                     {{-- Driver --}}
                     <td>
                         @if($pesanan->kurir)
                             <div style="font-weight:700;font-size:0.82rem;"><i class="bi bi-person-fill me-1 text-primary-custom"></i>{{ $pesanan->kurir->user->nama ?? '-' }}</div>
-                            <div class="text-muted" style="font-size:0.75rem;">{{ $pesanan->kurir->plat_nomor }}</div>
-                            @if($pesanan->estimasi_tiba)
-                            <div style="font-size:0.72rem;color:#6B7280;"><i class="bi bi-clock me-1"></i>Est. {{ \Carbon\Carbon::parse($pesanan->estimasi_tiba)->format('H:i') }}</div>
-                            @endif
                         @else
                             <span class="text-muted" style="font-size:0.8rem;">—</span>
                         @endif
@@ -231,7 +220,7 @@
                             </div>
                         @else
                             <span class="status-badge-modern {{ $st['class'] }}">
-                                <i class="bi {{ $st['icon'] }}"></i>{{ $st['label'] }}
+                                {{ $st['label'] }}
                             </span>
                         @endif
                     </td>

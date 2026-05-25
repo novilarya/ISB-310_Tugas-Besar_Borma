@@ -134,17 +134,7 @@
 
 <script>
 function markAllAsRead() {
-    const unreadItems = document.querySelectorAll('.notif-unread');
-    unreadItems.forEach(item => {
-        item.classList.remove('notif-unread');
-    });
-    
-    // Optional: update notification badge in topbar if it exists
-    const badge = document.querySelector('.badge-notif');
-    if (badge) badge.style.display = 'none';
-    
-    const countText = document.querySelector('.dropdown-menu .bg-danger.rounded-pill');
-    if (countText) countText.innerText = '0 Baru';
+    markAllAsReadFromTopbar();
 }
 </script>
 @endsection

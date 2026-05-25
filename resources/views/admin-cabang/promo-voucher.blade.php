@@ -67,28 +67,25 @@
 <div class="mb-5">
     <div class="glass-card mb-4" style="padding: 16px 24px;">
         <form action="{{ route('admin-cabang.promo') }}" method="GET" class="row g-3 w-100 align-items-center m-0">
-            <div class="col-md-5 ps-0">
-                <div class="search-input">
+            <div class="col-md-7 ps-0">
+                <div class="search-input w-100">
                     <i class="bi bi-search"></i>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama promo atau kode voucher...">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama promo atau kode voucher..." class="w-100">
                 </div>
             </div>
-            <div class="col-md-3">
-                <select name="status" class="form-select filter-select-lg" onchange="this.form.submit()">
+            <div class="col-md-4">
+                <select name="status" class="form-select filter-select-lg w-100" onchange="this.form.submit()">
                     <option value="">Semua Status</option>
                     <option value="aktif" {{ request('status')=='aktif'?'selected':'' }}>Aktif</option>
                     <option value="terjadwal" {{ request('status')=='terjadwal'?'selected':'' }}>Terjadwal</option>
                     <option value="berakhir" {{ request('status')=='berakhir'?'selected':'' }}>Berakhir</option>
                 </select>
             </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn-primary-custom w-100" style="padding:10px 16px;"><i class="bi bi-funnel-fill me-1"></i> Filter</button>
+            <div class="col-md-1 pe-0 text-end">
+                <a href="{{ route('admin-cabang.promo') }}" class="btn-action btn-action-outline w-100 d-flex justify-content-center align-items-center" style="height: 42px;" title="Reset Filter">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
             </div>
-            @if(request('search') || request('status'))
-            <div class="col-md-2">
-                <a href="{{ route('admin-cabang.promo') }}" class="btn btn-outline-secondary w-100" style="border-radius:8px;font-weight:700;"><i class="bi bi-arrow-counterclockwise me-1"></i> Reset</a>
-            </div>
-            @endif
         </form>
     </div>
 </div>
@@ -169,11 +166,11 @@
                 </td>
                 <td>
                     @if($st === 'aktif')
-                        <span class="status-badge-modern status-selesai"></i> Aktif</span>
+                        <span class="status-badge-modern status-selesai">Aktif</span>
                     @elseif($st === 'terjadwal')
-                        <span class="status-badge-modern status-pending"> Terjadwal</span>
+                        <span class="status-badge-modern status-pending">Terjadwal</span>
                     @else
-                        <span class="status-badge-modern status-disabled" style="background:#F3F4F6;color:#6B7280;border:1px solid #E5E7EB;"></i> Berakhir</span>
+                        <span class="status-badge-modern status-disabled" style="background:#F3F4F6;color:#6B7280;border:1px solid #E5E7EB;">Berakhir</span>
                     @endif
                 </td>
                 <td>

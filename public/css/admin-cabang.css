@@ -78,7 +78,7 @@
     .table-modern th {
         font-size: 0.7rem;
         font-weight: 800;
-        color: #6B7280;
+        color: var(--borma-primary);
         text-transform: uppercase;
         letter-spacing: 1px;
         padding: 0 16px 8px;
@@ -292,18 +292,18 @@ Product Page Specific Styles
     border-collapse: collapse;
 }
 .table-produk th {
-    background: var(--borma-primary);
-    color: var(--borma-secondary);
+    background: #ffffff;
+    color: var(--borma-primary);
     font-size: 0.75rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 1px;
     padding: 18px 24px;
     text-align: left;
-    border-bottom: none;
+    border-bottom: 2px solid #F3F4F6;
 }
 .table-produk th a {
-    color: var(--borma-secondary) !important;
+    color: var(--borma-primary) !important;
     text-decoration: none;
     transition: opacity 0.2s ease;
 }
@@ -311,7 +311,7 @@ Product Page Specific Styles
     opacity: 0.8;
 }
 .table-produk th i {
-    color: var(--borma-secondary) !important;
+    color: var(--borma-primary) !important;
     opacity: 0.8;
 }
 .table-produk td {
@@ -548,28 +548,15 @@ Product Page Specific Styles
     align-items: center;
     gap: 6px;
 }
-.status-badge-modern::before {
-    content: '';
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-}
-
 .status-pending { background: #FFFBEB; color: #D97706; border: 1px solid #FDE68A; }
-.status-pending::before { background: #D97706; }
 
 .status-proses { background: rgba(51, 17, 108, 0.05); color: var(--borma-primary); border: 1px solid rgba(51, 17, 108, 0.1); }
-.status-proses::before { background: var(--borma-primary); }
 
 .status-dikirim { background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; }
-.status-dikirim::before { background: #2563EB; }
 
 .status-selesai { background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; }
-.status-selesai::before { background: #059669; }
 
 .status-siap { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
-.status-siap::before { background: #DC2626; }
 
 .action-icons i.bi-check-lg { background: #059669; }
 .action-icons i.bi-check-lg:hover { background: #047857; transform: translateY(-2px) scale(1.05); box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4); }

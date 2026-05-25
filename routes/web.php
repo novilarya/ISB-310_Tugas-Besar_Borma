@@ -58,3 +58,13 @@ Route::prefix('admin-cabang')->middleware('auth')->group(function () {
     Route::post('/pengaturan/password',   [\App\Http\Controllers\AdminCabang\SettingController::class, 'updatePassword'])->name('admin-cabang.pengaturan.password');
     Route::post('/pengaturan/notifikasi', [\App\Http\Controllers\AdminCabang\SettingController::class, 'updateNotifikasi'])->name('admin-cabang.pengaturan.notifikasi');
 });
+
+Route::get('/preview-invoice', function () {
+    $pesanan = \App\Models\Pesanan::with(['pelanggan.user', 'details.produk', 'cabang'])->first();
+    if (!$pesanan) {
+        return "Belum ada data pesanan di database. Silakan jalankan seeder terlebih dahulu.";
+    }
+    return new \App\Mail\InvoiceMail($pesanan);
+})->name('preview.invoice');
+
+Route::get('/invoice/nota/{id}', [\App\Http\Controllers\AdminCabang\OrderController::class, 'publicNota'])->name('public.pesanan.nota');

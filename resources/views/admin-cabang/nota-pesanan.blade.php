@@ -159,7 +159,7 @@
 <div class="no-print" style="margin-top: 24px; text-align: center; display: flex; gap: 12px; justify-content: center;">
     <button onclick="window.print()"
         style="background:#33116C;color:white;border:none;padding:10px 24px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;">
-        🖨️ Cetak Nota
+        Cetak Nota
     </button>
     <button onclick="window.close()"
         style="background:#F3F4F6;color:#374151;border:none;padding:10px 24px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;">

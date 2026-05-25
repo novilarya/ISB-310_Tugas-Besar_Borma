@@ -22,7 +22,6 @@
     </div>
 </div>
 
-
 @if(session('success'))
 <div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 12px; border: none; font-weight: 600;">
   <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
@@ -77,7 +76,184 @@
     </div>
 </div>
 
-<!-- Main Table Area -->
+<!-- Part 1: Analisis Penjualan Produk -->
+<div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+    <div>
+        <h5 class="m-0" style="font-weight: 800; color: var(--borma-neutral);">Analisis Penjualan Produk</h5>
+        <p class="text-muted m-0" style="font-size: 0.85rem;">Berdasarkan periode waktu yang dipilih.</p>
+    </div>
+    <form action="{{ route('admin-cabang.produk') }}" method="GET" class="m-0 p-0">
+        <!-- Preserve existing query strings except period -->
+        @foreach(request()->except(['period', 'page']) as $key => $value)
+            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+        @endforeach
+        <select name="period" class="form-select border-0 bg-white shadow-sm" style="font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--borma-primary);" onchange="this.form.submit()">
+            <option value="semua" {{ request('period', 'semua') == 'semua' ? 'selected' : '' }}>Semua Waktu</option>
+            <option value="harian" {{ request('period') == 'harian' ? 'selected' : '' }}>Hari Ini</option>
+            <option value="mingguan" {{ request('period') == 'mingguan' ? 'selected' : '' }}>Minggu Ini</option>
+            <option value="bulanan" {{ request('period') == 'bulanan' ? 'selected' : '' }}>Bulan Ini</option>
+        </select>
+    </form>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-lg-6">
+        <div class="analysis-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="analysis-card-title m-0">
+                    Produk Terlaris
+                    <i class="bi bi-arrow-up-circle-fill text-success ms-3"></i>
+                </div>
+            </div>
+            
+            @forelse($topProduk as $pc)
+            <div class="list-item-modern {{ $loop->last ? 'border-bottom-0 pb-0' : '' }}">
+                @if(!empty($pc->produk->gambar_produk) && $pc->produk->gambar_produk !== 'default.jpg')
+                    <img src="{{ asset('storage/produk/' . $pc->produk->gambar_produk) }}" alt="{{ $pc->produk->nama_produk }}" class="icon-box" style="object-fit: cover; border-radius: 8px;">
+                @else
+                    <div class="icon-box bg-light text-muted" style="border-radius: 8px;"><i class="bi bi-image"></i></div>
+                @endif
+                <div class="info">
+                    <h6>{{ $pc->produk->nama_produk }}</h6>
+                    <small class="text-muted">Stok: <strong class="{{ $pc->jumlah_stok < 20 ? 'text-danger' : '' }}">{{ $pc->jumlah_stok }}</strong> unit</small>
+                </div>
+                <div class="text-end d-flex flex-column align-items-end justify-content-center">
+                    <h4 class="text-primary-custom mb-0" style="font-weight: 800; font-family: var(--font-heading);">{{ number_format($pc->period_sales, 0, ',', '.') }}</h4>
+                    <span class="badge bg-light text-dark" style="font-size: 0.7rem; border: 1px solid #E5E7EB;">Terjual</span>
+                </div>
+            </div>
+            @empty
+            <p class="text-muted text-center py-3">Belum ada data penjualan di periode ini.</p>
+            @endforelse
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="analysis-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="analysis-card-title text-tertiary-custom m-0">
+                    Produk Kurang Laku
+                    <i class="bi bi-arrow-down-circle-fill text-tertiary-custom ms-3"></i>
+                </div>
+            </div>
+            
+            @forelse($bottomProduk as $pc)
+            <div class="list-item-modern {{ $loop->last ? 'border-bottom-0 pb-0' : '' }}">
+                @if(!empty($pc->produk->gambar_produk) && $pc->produk->gambar_produk !== 'default.jpg')
+                    <img src="{{ asset('storage/produk/' . $pc->produk->gambar_produk) }}" alt="{{ $pc->produk->nama_produk }}" class="icon-box" style="object-fit: cover; border-radius: 8px;">
+                @else
+                    <div class="icon-box bg-light text-muted" style="border-radius: 8px;"><i class="bi bi-image"></i></div>
+                @endif
+                <div class="info">
+                    <h6>{{ $pc->produk->nama_produk }}</h6>
+                    <small class="text-muted">Stok: <strong class="{{ $pc->jumlah_stok < 20 ? 'text-danger' : '' }}">{{ $pc->jumlah_stok }}</strong> unit</small>
+                </div>
+                <div class="text-end d-flex flex-column align-items-end justify-content-center">
+                    <h4 class="text-tertiary-custom mb-0" style="font-weight: 800; font-family: var(--font-heading);">{{ number_format($pc->period_sales, 0, ',', '.') }}</h4>
+                    <span class="badge bg-light text-dark" style="font-size: 0.7rem; border: 1px solid #E5E7EB;">Terjual</span>
+                </div>
+            </div>
+            @empty
+            <p class="text-muted text-center py-3">Belum ada data penjualan di periode ini.</p>
+            @endforelse
+        </div>
+    </div>
+</div>
+
+<!-- Part 2: Distribusi Stok per Kategori -->
+<div class="d-flex justify-content-between align-items-center mt-5 mb-3">
+    <div>
+        <h5 class="m-0" style="font-weight: 800; color: var(--borma-neutral);">Distribusi Stok per Kategori</h5>
+        <p class="text-muted m-0" style="font-size: 0.85rem;">Statistik sebaran stok dan performa penjualan per kategori barang.</p>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-12">
+        <div class="glass-card">
+            <div class="row g-4 align-items-start">
+                {{-- Kolom Kiri: Chart Bar --}}
+                <div class="col-lg-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="kpi-title m-0">Grafik Sebaran Stok</h6>
+                        <span class="badge-modern badge-primary" style="font-size:0.68rem;">
+                            <i class="bi bi-database-fill me-1"></i>Data Real
+                        </span>
+                    </div>
+                    <div style="height: 220px; position:relative;">
+                        <canvas id="kategoriStokChart"></canvas>
+                    </div>
+                </div>
+
+                {{-- Kolom Kanan: Tabel Ringkasan + Stats --}}
+                <div class="col-lg-7">
+                    <h6 class="kpi-title mb-3">Ringkasan per Kategori</h6>
+                    <table class="table" style="font-size:0.83rem; margin-bottom:0;">
+                        <thead>
+                            <tr style="background:rgba(0,0,0,0.02);">
+                                <th class="text-muted" style="font-weight:700; border-bottom:2px solid #E5E7EB;">Kategori</th>
+                                <th class="text-muted text-center" style="font-weight:700; border-bottom:2px solid #E5E7EB;">SKU</th>
+                                <th class="text-muted text-center" style="font-weight:700; border-bottom:2px solid #E5E7EB;">Total Stok</th>
+                                <th class="text-muted text-center" style="font-weight:700; border-bottom:2px solid #E5E7EB;">Terjual</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($distribusiKategori as $kategori => $data)
+                            <tr>
+                                <td style="font-weight:700; color:var(--borma-neutral);">{{ $kategori }}</td>
+                                <td class="text-center text-muted">{{ $data['jumlah_sku'] }} produk</td>
+                                <td class="text-center">
+                                    <strong class="{{ $data['total_stok'] < 20 ? 'text-danger' : 'text-success' }}">
+                                        {{ number_format($data['total_stok'], 0, ',', '.') }}
+                                    </strong>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge-modern badge-primary" style="font-size:0.72rem;">
+                                        {{ number_format($data['total_terjual'], 0, ',', '.') }}
+                                    </span>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr><td colspan="4" class="text-center text-muted py-3">Belum ada data.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+
+                    {{-- Footer Stats --}}
+                    <div class="d-flex gap-4 mt-4 pt-3" style="border-top:1px dashed #E5E7EB;">
+                        <div>
+                            <div style="font-size:0.7rem;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.5px;">Stok Habis</div>
+                            <div style="font-size:1.2rem;font-weight:800;color:var(--borma-tertiary);">{{ $stokHabis }}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.7rem;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.5px;">Promo Aktif</div>
+                            <div style="font-size:1.2rem;font-weight:800;color:var(--borma-secondary);">{{ $promoAktif }}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.7rem;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.5px;">Total Kategori</div>
+                            <div style="font-size:1.2rem;font-weight:800;color:var(--borma-primary);">{{ $distribusiKategori->count() }}</div>
+                        </div>
+                        <div class="ms-auto text-end">
+                             <div style="font-size:0.7rem;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.5px;">Terakhir Update</div>
+                             <div style="font-size:0.82rem;font-weight:700;color:#6B7280;">
+                                 {{ $lastUpdated ? \Carbon\Carbon::parse($lastUpdated)->diffForHumans() : '-' }}
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Part 3: Daftar Inventaris & Main Table Area -->
+<div class="d-flex justify-content-between align-items-center mt-5 mb-3">
+    <div>
+        <h5 class="m-0" style="font-weight: 800; color: var(--borma-neutral);">Daftar Inventaris Produk</h5>
+        <p class="text-muted m-0" style="font-size: 0.85rem;">Cari, saring, dan kelola detail produk cabang Anda.</p>
+    </div>
+</div>
+
 <div class="mb-5">
     <div class="glass-card mb-4" style="padding: 16px 24px;">
         <form action="{{ route('admin-cabang.produk') }}" method="GET" class="row g-3 w-100 align-items-center m-0">
@@ -188,171 +364,6 @@
             <span class="text-muted me-auto pagination-info">Menampilkan {{ $produkCabangsPaginated->firstItem() ?? 0 }} - {{ $produkCabangsPaginated->lastItem() ?? 0 }} dari {{ $produkCabangsPaginated->total() }} produk</span>
             <div class="pagination-links-styled">
                 {{ $produkCabangsPaginated->links('pagination::bootstrap-5') }}
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Sekat Analisis Produk -->
-<div class="d-flex justify-content-between align-items-center mt-5 mb-3">
-    <div>
-        <h5 class="m-0" style="font-weight: 800; color: var(--borma-neutral);">Analisis Penjualan Produk</h5>
-        <p class="text-muted m-0" style="font-size: 0.85rem;">Berdasarkan periode waktu yang dipilih.</p>
-    </div>
-    <form action="{{ route('admin-cabang.produk') }}" method="GET" class="m-0 p-0">
-        <!-- Preserve existing query strings except period -->
-        @foreach(request()->except(['period', 'page']) as $key => $value)
-            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-        @endforeach
-        <select name="period" class="form-select border-0 bg-white shadow-sm" style="font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--borma-primary);" onchange="this.form.submit()">
-            <option value="semua" {{ request('period', 'semua') == 'semua' ? 'selected' : '' }}>Semua Waktu</option>
-            <option value="harian" {{ request('period') == 'harian' ? 'selected' : '' }}>Hari Ini</option>
-            <option value="mingguan" {{ request('period') == 'mingguan' ? 'selected' : '' }}>Minggu Ini</option>
-            <option value="bulanan" {{ request('period') == 'bulanan' ? 'selected' : '' }}>Bulan Ini</option>
-        </select>
-    </form>
-</div>
-
-<div class="row g-4 mb-5">
-    <div class="col-lg-6">
-        <div class="analysis-card">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="analysis-card-title m-0">
-                    Produk Terlaris
-                    <i class="bi bi-arrow-up-circle-fill text-success ms-3"></i>
-                </div>
-            </div>
-            
-            @forelse($topProduk as $pc)
-            <div class="list-item-modern {{ $loop->last ? 'border-bottom-0 pb-0' : '' }}">
-                @if(!empty($pc->produk->gambar_produk) && $pc->produk->gambar_produk !== 'default.jpg')
-                    <img src="{{ asset('storage/produk/' . $pc->produk->gambar_produk) }}" alt="{{ $pc->produk->nama_produk }}" class="icon-box" style="object-fit: cover; border-radius: 8px;">
-                @else
-                    <div class="icon-box bg-light text-muted" style="border-radius: 8px;"><i class="bi bi-image"></i></div>
-                @endif
-                <div class="info">
-                    <h6>{{ $pc->produk->nama_produk }}</h6>
-                    <small class="text-muted">Stok: <strong class="{{ $pc->jumlah_stok < 20 ? 'text-danger' : '' }}">{{ $pc->jumlah_stok }}</strong> unit</small>
-                </div>
-                <div class="text-end d-flex flex-column align-items-end justify-content-center">
-                    <h4 class="text-primary-custom mb-0" style="font-weight: 800; font-family: var(--font-heading);">{{ number_format($pc->period_sales, 0, ',', '.') }}</h4>
-                    <span class="badge bg-light text-dark" style="font-size: 0.7rem; border: 1px solid #E5E7EB;">Terjual</span>
-                </div>
-            </div>
-            @empty
-            <p class="text-muted text-center py-3">Belum ada data penjualan di periode ini.</p>
-            @endforelse
-            </div>
-    </div>
-    
-    <div class="col-lg-6">
-        <div class="analysis-card">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="analysis-card-title text-tertiary-custom m-0">
-                    Produk Kurang Laku
-                    <i class="bi bi-arrow-down-circle-fill text-tertiary-custom ms-3"></i>
-                </div>
-            </div>
-            
-            @forelse($bottomProduk as $pc)
-            <div class="list-item-modern {{ $loop->last ? 'border-bottom-0 pb-0' : '' }}">
-                @if(!empty($pc->produk->gambar_produk) && $pc->produk->gambar_produk !== 'default.jpg')
-                    <img src="{{ asset('storage/produk/' . $pc->produk->gambar_produk) }}" alt="{{ $pc->produk->nama_produk }}" class="icon-box" style="object-fit: cover; border-radius: 8px;">
-                @else
-                    <div class="icon-box bg-light text-muted" style="border-radius: 8px;"><i class="bi bi-image"></i></div>
-                @endif
-                <div class="info">
-                    <h6>{{ $pc->produk->nama_produk }}</h6>
-                    <small class="text-muted">Stok: <strong class="{{ $pc->jumlah_stok < 20 ? 'text-danger' : '' }}">{{ $pc->jumlah_stok }}</strong> unit</small>
-                </div>
-                <div class="text-end d-flex flex-column align-items-end justify-content-center">
-                    <h4 class="text-tertiary-custom mb-0" style="font-weight: 800; font-family: var(--font-heading);">{{ number_format($pc->period_sales, 0, ',', '.') }}</h4>
-                    <span class="badge bg-light text-dark" style="font-size: 0.7rem; border: 1px solid #E5E7EB;">Terjual</span>
-                </div>
-            </div>
-            @empty
-            <p class="text-muted text-center py-3">Belum ada data penjualan di periode ini.</p>
-            @endforelse
-        </div>
-    </div>
-</div>
-
-<!-- Bottom Highlight Section -->
-<div class="row mt-4 mb-5">
-    <div class="col-12">
-        <div class="glass-card">
-            <div class="row g-4 align-items-start">
-
-                {{-- Kolom Kiri: Chart Bar --}}
-                <div class="col-lg-5">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="kpi-title m-0">Distribusi Stok per Kategori</h6>
-                        <span class="badge-modern badge-primary" style="font-size:0.68rem;">
-                            <i class="bi bi-database-fill me-1"></i>Data Real
-                        </span>
-                    </div>
-                    <div style="height: 220px; position:relative;">
-                        <canvas id="kategoriStokChart"></canvas>
-                    </div>
-                </div>
-
-                {{-- Kolom Kanan: Tabel Ringkasan + Stats --}}
-                <div class="col-lg-7">
-                    <h6 class="kpi-title mb-3">Ringkasan per Kategori</h6>
-                    <table class="table" style="font-size:0.83rem; margin-bottom:0;">
-                        <thead>
-                            <tr style="background:rgba(0,0,0,0.02);">
-                                <th class="text-muted" style="font-weight:700; border-bottom:2px solid #E5E7EB;">Kategori</th>
-                                <th class="text-muted text-center" style="font-weight:700; border-bottom:2px solid #E5E7EB;">SKU</th>
-                                <th class="text-muted text-center" style="font-weight:700; border-bottom:2px solid #E5E7EB;">Total Stok</th>
-                                <th class="text-muted text-center" style="font-weight:700; border-bottom:2px solid #E5E7EB;">Terjual</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($distribusiKategori as $kategori => $data)
-                            <tr>
-                                <td style="font-weight:700; color:var(--borma-neutral);">{{ $kategori }}</td>
-                                <td class="text-center text-muted">{{ $data['jumlah_sku'] }} produk</td>
-                                <td class="text-center">
-                                    <strong class="{{ $data['total_stok'] < 20 ? 'text-danger' : 'text-success' }}">
-                                        {{ number_format($data['total_stok'], 0, ',', '.') }}
-                                    </strong>
-                                </td>
-                                <td class="text-center">
-                                    <span class="badge-modern badge-primary" style="font-size:0.72rem;">
-                                        {{ number_format($data['total_terjual'], 0, ',', '.') }}
-                                    </span>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr><td colspan="4" class="text-center text-muted py-3">Belum ada data.</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-
-                    {{-- Footer Stats --}}
-                    <div class="d-flex gap-4 mt-4 pt-3" style="border-top:1px dashed #E5E7EB;">
-                        <div>
-                            <div style="font-size:0.7rem;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.5px;">Stok Habis</div>
-                            <div style="font-size:1.2rem;font-weight:800;color:var(--borma-tertiary);">{{ $stokHabis }}</div>
-                        </div>
-                        <div>
-                            <div style="font-size:0.7rem;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.5px;">Promo Aktif</div>
-                            <div style="font-size:1.2rem;font-weight:800;color:var(--borma-secondary);">{{ $promoAktif }}</div>
-                        </div>
-                        <div>
-                            <div style="font-size:0.7rem;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.5px;">Total Kategori</div>
-                            <div style="font-size:1.2rem;font-weight:800;color:var(--borma-primary);">{{ $distribusiKategori->count() }}</div>
-                        </div>
-                        <div class="ms-auto text-end">
-                            <div style="font-size:0.7rem;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.5px;">Terakhir Update</div>
-                            <div style="font-size:0.82rem;font-weight:700;color:#6B7280;">
-                                {{ $lastUpdated ? \Carbon\Carbon::parse($lastUpdated)->diffForHumans() : '-' }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>

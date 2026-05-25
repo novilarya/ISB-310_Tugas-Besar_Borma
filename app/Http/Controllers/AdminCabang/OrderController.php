@@ -8,6 +8,9 @@ use App\Models\ProdukCabang;
 use App\Models\Kurir;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use App\Mail\InvoiceMail;
 
 class OrderController extends Controller
 {
@@ -130,7 +133,20 @@ class OrderController extends Controller
         if ($pesanan->status_pesanan !== 'Menunggu') return back()->with('error', 'Pesanan tidak dalam status Menunggu.');
 
         $pesanan->update(['status_pesanan' => 'Disiapkan']);
-        return back()->with('success', '#BRM-9' . str_pad($id, 3, '0', STR_PAD_LEFT) . ' dikonfirmasi.');
+
+        // Eager load relations for invoice email
+        $pesanan->load(['pelanggan.user', 'details.produk', 'cabang']);
+
+        // Kirim email invoice otomatis ke pelanggan
+        try {
+            if ($pesanan->pelanggan && $pesanan->pelanggan->user && $pesanan->pelanggan->user->email) {
+                Mail::to($pesanan->pelanggan->user->email)->send(new InvoiceMail($pesanan));
+            }
+        } catch (\Exception $e) {
+            Log::error('Gagal mengirim email invoice pesanan #' . $pesanan->id_pesanan . ': ' . $e->getMessage());
+        }
+
+        return back()->with('success', '#BRM-9' . str_pad($id, 3, '0', STR_PAD_LEFT) . ' dikonfirmasi dan email invoice telah dikirim.');
     }
 
     public function dispatch(string $id)
@@ -207,5 +223,14 @@ class OrderController extends Controller
             ->whereIn('status_pesanan', ['Mencari Kurir', 'Sedang Dikirim'])
             ->orderByDesc('created_at')->get();
         return response()->json($pesanan);
+    }
+
+    public function publicNota(string $id)
+    {
+        $pesanan = Pesanan::with(['pelanggan.user', 'details.produk', 'kurir.user', 'cabang'])
+            ->where('id_pesanan', $id)
+            ->firstOrFail();
+
+        return view('admin-cabang.nota-pesanan', compact('pesanan'));
     }
 }

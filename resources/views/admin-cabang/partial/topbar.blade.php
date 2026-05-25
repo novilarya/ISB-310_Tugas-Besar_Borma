@@ -14,7 +14,12 @@
             <div class="dropdown-menu dropdown-menu-end p-0" style="width: 320px;">
                 <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
                     <h6 class="m-0 font-weight-bold" style="font-family: var(--font-heading); color: var(--borma-primary);">Notifikasi</h6>
-                    <span class="badge bg-danger rounded-pill">3 Baru</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-danger rounded-pill badge-count-text" style="font-size: 0.7rem;">3 Baru</span>
+                        <a href="#" onclick="markAllAsReadFromTopbar(event)" class="text-muted hover-primary" style="font-size: 0.72rem; font-weight: 700; text-decoration: none; transition: color 0.2s;" title="Tandai semua dibaca">
+                            <i class="bi bi-check2-all" style="font-size: 1.1rem; vertical-align: middle;"></i>
+                        </a>
+                    </div>
                 </div>
                 <div style="max-height: 300px; overflow-y: auto;">
                     <a href="{{ route('admin-cabang.pesanan') }}" class="notif-item">
@@ -84,3 +89,39 @@
         </div>
     </div>
 </header>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Check if all notifications are marked as read in localStorage
+    if (localStorage.getItem('all_notifs_read') === 'true') {
+        const badge = document.querySelector('.badge-notif');
+        if (badge) badge.style.display = 'none';
+
+        const countText = document.querySelector('.badge-count-text');
+        if (countText) countText.innerText = '0 Baru';
+
+        // Also, on the notifications page itself if open:
+        const unreadItems = document.querySelectorAll('.notif-unread');
+        unreadItems.forEach(item => {
+            item.classList.remove('notif-unread');
+        });
+    }
+});
+
+function markAllAsReadFromTopbar(e) {
+    if (e) e.preventDefault();
+    localStorage.setItem('all_notifs_read', 'true');
+
+    const badge = document.querySelector('.badge-notif');
+    if (badge) badge.style.display = 'none';
+
+    const countText = document.querySelector('.badge-count-text');
+    if (countText) countText.innerText = '0 Baru';
+
+    // If we are currently on the notifikasi list page, also clear them there
+    const unreadItems = document.querySelectorAll('.notif-unread');
+    unreadItems.forEach(item => {
+        item.classList.remove('notif-unread');
+    });
+}
+</script>
