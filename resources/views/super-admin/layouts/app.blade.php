@@ -100,5 +100,79 @@
             }
         });
     </script>
+
+    <!-- Table Sorting Logic -->
+    <script>
+        function setupTableSorting() {
+            document.querySelectorAll('table.sortable').forEach(table => {
+                const headers = table.querySelectorAll('th.sort-header');
+                const tbody = table.querySelector('tbody');
+                if (!tbody) return;
+
+                headers.forEach(header => {
+                    // Add initial icon if not exists
+                    if(!header.querySelector('.sort-icon')) {
+                        header.innerHTML += ' <i class="fa-solid fa-sort sort-icon ml-1 opacity-50 text-[10px]"></i>';
+                    }
+                    header.classList.add('cursor-pointer', 'hover:text-borma-purple', 'dark:hover:text-borma-yellow', 'transition-colors', 'select-none');
+
+                    header.addEventListener('click', () => {
+                        const index = Array.from(header.parentElement.children).indexOf(header);
+                        const isAscending = header.classList.contains('asc');
+                        
+                        // Reset all headers
+                        headers.forEach(h => {
+                            h.classList.remove('asc', 'desc');
+                            const icon = h.querySelector('.sort-icon');
+                            if(icon) {
+                                icon.className = 'fa-solid fa-sort sort-icon ml-1 opacity-50 text-[10px]';
+                            }
+                        });
+
+                        // Set current header state
+                        if (isAscending) {
+                            header.classList.add('desc');
+                            header.querySelector('.sort-icon').className = 'fa-solid fa-sort-down sort-icon ml-1 text-borma-purple dark:text-borma-yellow text-[10px]';
+                        } else {
+                            header.classList.add('asc');
+                            header.querySelector('.sort-icon').className = 'fa-solid fa-sort-up sort-icon ml-1 text-borma-purple dark:text-borma-yellow text-[10px]';
+                        }
+
+                        // Sort rows
+                        let rows = Array.from(tbody.querySelectorAll('tr.sortable-row'));
+                        
+                        rows.sort((a, b) => {
+                            let aText = a.children[index].textContent.trim();
+                            let bText = b.children[index].textContent.trim();
+                            
+                            // Parse as numbers if possible, removing common formatting like "Rp", ".", "km"
+                            let aNum = parseFloat(aText.replace(/[^0-9,-]+/g,"").replace(",", "."));
+                            let bNum = parseFloat(bText.replace(/[^0-9,-]+/g,"").replace(",", "."));
+                            
+                            if (!isNaN(aNum) && !isNaN(bNum) && aText.match(/\d/) && bText.match(/\d/)) {
+                                return isAscending ? bNum - aNum : aNum - bNum;
+                            }
+                            
+                            return isAscending ? bText.localeCompare(aText) : aText.localeCompare(bText);
+                        });
+
+                        // Re-append rows
+                        rows.forEach(row => {
+                            tbody.appendChild(row);
+                            // If row has a detail row, append it right after
+                            if(row.hasAttribute('data-detail-id')) {
+                                let detailId = row.getAttribute('data-detail-id');
+                                let detailRow = document.getElementById(detailId);
+                                if(detailRow) tbody.appendChild(detailRow);
+                            }
+                        });
+                    });
+                });
+            });
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', setupTableSorting);
+    </script>
 </body>
 </html>

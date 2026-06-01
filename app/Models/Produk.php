@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class produk extends Model
+class Produk extends Model
 {
     protected $table = 'produks';
     protected $primaryKey = 'id_produk';
@@ -12,5 +12,9 @@ class produk extends Model
 
     public function inventarisCabang() {
         return $this->hasMany(ProdukCabang::class, 'id_produk');
+    }
+
+    public function details() {
+        return $this->hasMany(PesananProduk::class, 'id_produk');
     }
 }

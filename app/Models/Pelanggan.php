@@ -4,11 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class pelanggan extends Model
+class Pelanggan extends Model
 {
     protected $table = 'pelanggans';
     protected $primaryKey = 'id_pelanggan';
-    protected $fillable = ['id_user', 'status_member', 'poin_member', 'alamat'];
+    protected $fillable = ['id_user', 'status_member', 'poin_member', 'provinsi', 'kota_kabupaten', 'kecamatan', 'alamat'];
 
     public function user() {
         return $this->belongsTo(User::class, 'id_user');

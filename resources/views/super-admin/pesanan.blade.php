@@ -22,44 +22,44 @@
     </div>
 
     <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
+        <table class="w-full text-left border-collapse sortable">
             <thead>
                 <tr class="border-b border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/50 text-sm">
-                    <th class="pb-4 font-medium px-4">ID Pesanan</th>
-                    <th class="pb-4 font-medium px-4">Tanggal</th>
-                    <th class="pb-4 font-medium px-4">Pelanggan</th>
-                    <th class="pb-4 font-medium px-4">Cabang</th>
-                    <th class="pb-4 font-medium px-4">Total</th>
-                    <th class="pb-4 font-medium px-4">Status</th>
+                    <th class="pb-4 font-medium px-4 sort-header">ID Pesanan</th>
+                    <th class="pb-4 font-medium px-4 sort-header">Tanggal</th>
+                    <th class="pb-4 font-medium px-4 sort-header">Pelanggan</th>
+                    <th class="pb-4 font-medium px-4 sort-header">Cabang</th>
+                    <th class="pb-4 font-medium px-4 sort-header">Total</th>
+                    <th class="pb-4 font-medium px-4 sort-header">Status</th>
                     <th class="pb-4 font-medium px-4 text-right">Aksi</th>
                 </tr>
             </thead>
             <tbody class="text-sm">
                 @forelse($pesanan as $item)
-                <tr class="border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                    <td class="py-4 px-4 font-bold text-slate-800 dark:text-white">{{ $item->id }}</td>
-                    <td class="py-4 px-4 text-slate-600 dark:text-white/80">{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y H:i') }}</td>
-                    <td class="py-4 px-4 text-slate-600 dark:text-white/80">{{ $item->pelanggan }}</td>
-                    <td class="py-4 px-4 text-slate-600 dark:text-white/80">{{ $item->cabang }}</td>
-                    <td class="py-4 px-4 font-bold text-borma-purple dark:text-borma-yellow">Rp {{ number_format($item->total, 0, ',', '.') }}</td>
+                <tr class="border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors sortable-row">
+                    <td class="py-4 px-4 font-bold text-slate-800 dark:text-white">ORD-{{ str_pad($item->id_pesanan, 4, '0', STR_PAD_LEFT) }}</td>
+                    <td class="py-4 px-4 text-slate-600 dark:text-white/80">{{ \Carbon\Carbon::parse($item->tanggal_pemesanan)->format('d M Y H:i') }}</td>
+                    <td class="py-4 px-4 text-slate-600 dark:text-white/80">{{ $item->pelanggan->user->nama ?? '-' }}</td>
+                    <td class="py-4 px-4 text-slate-600 dark:text-white/80">{{ $item->cabang->nama_cabang ?? '-' }}</td>
+                    <td class="py-4 px-4 font-bold text-borma-purple dark:text-borma-yellow">Rp {{ number_format($item->total_tagihan, 0, ',', '.') }}</td>
                     <td class="py-4 px-4">
                         @php
                             $statusClasses = [
-                                'Selesai' => 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20',
-                                'Dikirim' => 'bg-yellow-100 dark:bg-borma-yellow/20 text-yellow-700 dark:text-borma-yellow border-yellow-200 dark:border-borma-yellow/20',
+                                'Diterima' => 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20',
+                                'Sedang Dikirim' => 'bg-yellow-100 dark:bg-borma-yellow/20 text-yellow-700 dark:text-borma-yellow border-yellow-200 dark:border-borma-yellow/20',
                                 'Menunggu' => 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20',
-                                'Dikemas' => 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
+                                'Disiapkan' => 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
                             ];
-                            $classes = $statusClasses[$item->status] ?? 'bg-slate-100 dark:bg-gray-500/20 text-slate-700 dark:text-gray-400 border-slate-200 dark:border-gray-500/20';
+                            $classes = $statusClasses[$item->status_pesanan] ?? 'bg-slate-100 dark:bg-gray-500/20 text-slate-700 dark:text-gray-400 border-slate-200 dark:border-gray-500/20';
                         @endphp
                         <span class="px-3 py-1 rounded-full text-xs font-bold border {{ $classes }}">
-                            {{ $item->status }}
+                            {{ $item->status_pesanan }}
                         </span>
                     </td>
                     <td class="py-4 px-4 text-right">
-                        <button class="text-borma-purple dark:text-borma-yellow hover:text-purple-700 dark:hover:text-yellow-300 font-bold text-sm bg-slate-100 dark:bg-white/10 px-3 py-1.5 rounded-lg transition-colors">
+                        <a href="{{ route('superadmin.pesanan.detail', $item->id_pesanan) }}" class="text-borma-purple dark:text-borma-yellow hover:text-purple-700 dark:hover:text-yellow-300 font-bold text-sm bg-slate-100 dark:bg-white/10 px-3 py-1.5 rounded-lg transition-colors inline-block">
                             Detail
-                        </button>
+                        </a>
                     </td>
                 </tr>
                 @empty

@@ -20,28 +20,42 @@
             {{ session('success') }}
         </div>
         @endif
+        
+        @if($errors->any())
+        <div class="bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/20 p-4 rounded-xl mb-6">
+            <ul class="list-disc list-inside">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
 
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left border-collapse sortable">
                 <thead>
                     <tr class="border-b border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/50 text-sm">
-                        <th class="pb-4 font-medium px-4">Nama</th>
-                        <th class="pb-4 font-medium px-4">Email</th>
-                        <th class="pb-4 font-medium px-4">No Telepon</th>
+                        <th class="pb-4 font-medium px-4 sort-header">Nama</th>
+                        <th class="pb-4 font-medium px-4 sort-header">Cabang</th>
+                        <th class="pb-4 font-medium px-4 sort-header">Status</th>
                         <th class="pb-4 font-medium px-4 text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="text-sm">
                     @forelse($adminCabangs as $item)
-                    <tr class="border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                        <td class="py-4 px-4 font-bold text-slate-800 dark:text-white">{{ $item->nama }}</td>
-                        <td class="py-4 px-4 text-slate-600 dark:text-white/80">{{ $item->email }}</td>
-                        <td class="py-4 px-4 text-slate-600 dark:text-white/80">{{ $item->no_telepon }}</td>
+                    <tr class="border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors sortable-row">
+                        <td class="py-4 px-4 font-bold text-slate-800 dark:text-white">{{ $item->user->nama ?? '-' }}</td>
+                        <td class="py-4 px-4 text-slate-600 dark:text-white/80">{{ $item->cabang->nama_cabang ?? '-' }}</td>
+                        <td class="py-4 px-4">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border {{ $item->status_karyawan == 'Aktif' ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20' : 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20' }}">
+                                {{ $item->status_karyawan }}
+                            </span>
+                        </td>
                         <td class="py-4 px-4 text-right flex justify-end gap-2">
-                            <button onclick="openEditModal('{{ $item->id_user }}', '{{ addslashes($item->nama) }}', '{{ addslashes($item->email) }}', '{{ addslashes($item->no_telepon) }}')" class="text-borma-purple dark:text-borma-yellow hover:text-purple-700 dark:hover:text-yellow-300 font-bold text-sm bg-slate-100 dark:bg-white/10 px-3 py-1.5 rounded-lg transition-colors">
+                            <button onclick="openEditModal('{{ $item->id_admin_cabang }}', '{{ addslashes($item->user->nama ?? '') }}', '{{ addslashes($item->user->email ?? '') }}', '{{ addslashes($item->user->no_telepon ?? '') }}', '{{ $item->id_cabang }}', '{{ $item->tanggal_masuk }}', '{{ $item->status_karyawan }}')" class="text-borma-purple dark:text-borma-yellow hover:text-purple-700 dark:hover:text-yellow-300 font-bold text-sm bg-slate-100 dark:bg-white/10 px-3 py-1.5 rounded-lg transition-colors">
                                 Kelola
                             </button>
-                            <form action="{{ route('superadmin.admin_cabang.destroy', $item->id_user) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus admin ini?');">
+                            <form action="{{ route('superadmin.admin_cabang.destroy', $item->id_admin_cabang) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus admin ini?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-red-500 hover:text-red-700 font-bold text-sm bg-red-50 dark:bg-red-500/10 px-3 py-1.5 rounded-lg transition-colors">
@@ -85,11 +99,36 @@
                     </div>
                     <div>
                         <label for="password" class="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1">Password</label>
-                        <input type="password" name="password" id="password" required class="w-full px-4 py-2 bg-transparent border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow focus:border-transparent outline-none transition-all text-slate-800 dark:text-white">
+                        <div class="relative">
+                            <input type="password" name="password" id="password" required class="w-full px-4 py-2 pr-10 bg-transparent border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow focus:border-transparent outline-none transition-all text-slate-800 dark:text-white" placeholder="Min. 8 karakter (kombinasi huruf & angka/simbol)">
+                            <button type="button" onclick="togglePasswordVisibility('password', 'password_icon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
+                                <i class="fa-solid fa-eye" id="password_icon"></i>
+                            </button>
+                        </div>
                     </div>
                     <div>
                         <label for="no_telepon" class="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1">No Telepon</label>
                         <input type="text" name="no_telepon" id="no_telepon" required class="w-full px-4 py-2 bg-transparent border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow focus:border-transparent outline-none transition-all text-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="id_cabang" class="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1">Cabang</label>
+                        <select name="id_cabang" id="id_cabang" required class="w-full px-4 py-2 bg-white dark:bg-borma-dark border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow focus:border-transparent outline-none transition-all text-slate-800 dark:text-white">
+                            <option value="">Pilih Cabang</option>
+                            @foreach($cabangs as $c)
+                            <option value="{{ $c->id_cabang }}">{{ $c->nama_cabang }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label for="tanggal_masuk" class="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1">Tanggal Masuk</label>
+                        <input type="date" name="tanggal_masuk" id="tanggal_masuk" required class="w-full px-4 py-2 bg-transparent border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow focus:border-transparent outline-none transition-all text-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="status_karyawan" class="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1">Status Karyawan</label>
+                        <select name="status_karyawan" id="status_karyawan" required class="w-full px-4 py-2 bg-white dark:bg-borma-dark border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow focus:border-transparent outline-none transition-all text-slate-800 dark:text-white">
+                            <option value="Aktif">Aktif</option>
+                            <option value="Tidak Aktif">Tidak Aktif</option>
+                        </select>
                     </div>
                 </div>
                 
@@ -131,11 +170,35 @@
                     </div>
                     <div>
                         <label for="edit_password" class="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1">Password (Kosongkan jika tidak diubah)</label>
-                        <input type="password" name="password" id="edit_password" class="w-full px-4 py-2 bg-transparent border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow focus:border-transparent outline-none transition-all text-slate-800 dark:text-white">
+                        <div class="relative">
+                            <input type="password" name="password" id="edit_password" class="w-full px-4 py-2 pr-10 bg-transparent border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow focus:border-transparent outline-none transition-all text-slate-800 dark:text-white" placeholder="Min. 8 karakter (kombinasi huruf & angka/simbol)">
+                            <button type="button" onclick="togglePasswordVisibility('edit_password', 'edit_password_icon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
+                                <i class="fa-solid fa-eye" id="edit_password_icon"></i>
+                            </button>
+                        </div>
                     </div>
                     <div>
                         <label for="edit_no_telepon" class="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1">No Telepon</label>
                         <input type="text" name="no_telepon" id="edit_no_telepon" required class="w-full px-4 py-2 bg-transparent border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow focus:border-transparent outline-none transition-all text-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="edit_id_cabang" class="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1">Cabang</label>
+                        <select name="id_cabang" id="edit_id_cabang" required class="w-full px-4 py-2 bg-white dark:bg-borma-dark border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow focus:border-transparent outline-none transition-all text-slate-800 dark:text-white">
+                            @foreach($cabangs as $c)
+                            <option value="{{ $c->id_cabang }}">{{ $c->nama_cabang }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label for="edit_tanggal_masuk" class="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1">Tanggal Masuk</label>
+                        <input type="date" name="tanggal_masuk" id="edit_tanggal_masuk" required class="w-full px-4 py-2 bg-transparent border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow focus:border-transparent outline-none transition-all text-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="edit_status_karyawan" class="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1">Status Karyawan</label>
+                        <select name="status_karyawan" id="edit_status_karyawan" required class="w-full px-4 py-2 bg-white dark:bg-borma-dark border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow focus:border-transparent outline-none transition-all text-slate-800 dark:text-white">
+                            <option value="Aktif">Aktif</option>
+                            <option value="Tidak Aktif">Tidak Aktif</option>
+                        </select>
                     </div>
                 </div>
                 
@@ -180,11 +243,28 @@
         }, 300);
     }
 
-    function openEditModal(id, nama, email, telepon) {
+    function togglePasswordVisibility(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
+    function openEditModal(id, nama, email, telepon, id_cabang, tanggal_masuk, status_karyawan) {
         document.getElementById('edit_nama').value = nama;
         document.getElementById('edit_email').value = email;
         document.getElementById('edit_password').value = '';
         document.getElementById('edit_no_telepon').value = telepon;
+        document.getElementById('edit_id_cabang').value = id_cabang;
+        document.getElementById('edit_tanggal_masuk').value = tanggal_masuk;
+        document.getElementById('edit_status_karyawan').value = status_karyawan;
         
         // Set action form url
         const form = document.getElementById('editAdminForm');

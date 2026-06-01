@@ -16,6 +16,9 @@ return new class extends Migration
             $table->foreignId('id_user')->constrained('users', 'id_user')->onDelete('cascade');
             $table->boolean('status_member')->default(false);
             $table->integer('poin_member')->default(0);
+            $table->string('provinsi');
+            $table->string('kota_kabupaten');
+            $table->string('kecamatan');
             $table->text('alamat');
             $table->timestamps();
         });

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class cabang extends Model
+class Cabang extends Model
 {
     protected $table = 'cabangs';
     protected $primaryKey = 'id_cabang';
@@ -16,5 +16,9 @@ class cabang extends Model
 
     public function pesanan() {
         return $this->hasMany(Pesanan::class, 'id_cabang');
+    }
+
+    public function adminCabangs() {
+        return $this->hasMany(AdminCabang::class, 'id_cabang', 'id_cabang');
     }
 }

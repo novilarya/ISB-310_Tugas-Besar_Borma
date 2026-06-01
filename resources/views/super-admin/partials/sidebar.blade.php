@@ -7,27 +7,50 @@
     </div>
     
     <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
+        @if(auth()->user()->canAccessMenu('superadmin_dashboard'))
         <a href="{{ route('superadmin.dashboard') }}" class="{{ request()->routeIs('superadmin.dashboard') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
             <i class="fa-solid fa-chart-line w-5"></i> Dashboard
         </a>
+        @endif
+        
+        @if(auth()->user()->canAccessMenu('superadmin_pesanan'))
         <a href="{{ route('superadmin.pesanan') }}" class="{{ request()->routeIs('superadmin.pesanan') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
             <i class="fa-solid fa-cart-flatbed w-5"></i> Manajemen Pesanan
         </a>
-        <a href="{{ route('superadmin.cabang') }}" class="{{ request()->routeIs('superadmin.cabang') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
+        @endif
+        
+        @if(auth()->user()->canAccessMenu('superadmin_cabang'))
+        <a href="{{ route('superadmin.cabang') }}" class="{{ request()->routeIs('superadmin.cabang', 'superadmin.cabang.detail') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
             <i class="fa-solid fa-store w-5"></i> Manajemen Cabang
         </a>
-        <a href="{{ route('superadmin.admin_cabang') }}" class="{{ request()->routeIs('superadmin.admin_cabang') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
-            <i class="fa-solid fa-user-tie w-5"></i> Admin Cabang
-        </a>
+        @endif
+
+        @if(auth()->user()->canAccessMenu('superadmin_member'))
         <a href="{{ route('superadmin.member') }}" class="{{ request()->routeIs('superadmin.member') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
             <i class="fa-solid fa-address-card w-5"></i> Manajemen Member
         </a>
+        @endif
+        
+        @if(auth()->user()->canAccessMenu('superadmin_pengemudi'))
         <a href="{{ route('superadmin.pengemudi') }}" class="{{ request()->routeIs('superadmin.pengemudi') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
             <i class="fa-solid fa-users w-5"></i> Manajemen Pengemudi
         </a>
-        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all">
+        @endif
+        
+        @if(auth()->user()->canAccessMenu('superadmin_promo'))
+        <a href="{{ route('superadmin.promo') }}" class="{{ request()->routeIs('superadmin.promo') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
             <i class="fa-solid fa-ticket w-5"></i> Voucher & Promo
         </a>
+        @endif
+
+        @if(auth()->user()->role === 'Admin Super')
+        <div class="pt-4 mt-4 border-t border-slate-200 dark:border-white/10">
+            <p class="px-4 text-xs font-semibold text-slate-400 dark:text-white/40 uppercase tracking-wider mb-2">Pengaturan</p>
+            <a href="{{ route('superadmin.hak_akses') }}" class="{{ request()->routeIs('superadmin.hak_akses') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
+                <i class="fa-solid fa-shield-halved w-5"></i> Hak Akses (RBAC)
+            </a>
+        </div>
+        @endif
     </nav>
 
     <div class="p-4 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/20">

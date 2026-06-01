@@ -51,7 +51,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'id_user' => 4,
-                'nama' => 'User 1',
+                'nama' => 'Agus Lele',
                 'email' => 'user@gmail.com',
                 'password' => Hash::make('12345678'),
                 'no_telepon' => '081234567894',
@@ -67,6 +67,9 @@ class DatabaseSeeder extends Seeder
                 'id_user' => 4,
                 'status_member' => 1,
                 'poin_member' => 100,
+                'provinsi' => 'Jawa Barat',
+                'kota_kabupaten' => 'Kota Bandung',
+                'kecamatan' => 'Cibeunying Kaler',
                 'alamat' => 'Jalan Gagak No 132', 
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
@@ -197,6 +200,18 @@ class DatabaseSeeder extends Seeder
                 'alamat_cabang' => 'Jl. Raya Soreang No. 200',
                 'koordinat_gps' => '-7.019687167687294, 107.48242338733801',
                 'status' => 'Aktif',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ]
+        ]);
+
+        DB::table('admin_cabangs')->insert([
+            [
+                'id_admin_cabang' => 1,
+                'id_user' => 2,
+                'id_cabang' => 1,
+                'tanggal_masuk' => Carbon::now(),
+                'status_karyawan' => 'Aktif',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ]
@@ -404,28 +419,113 @@ class DatabaseSeeder extends Seeder
             'kendaraan' => 'Motor',
             'warna_kendaraan' => 'Merah',
             'plat_nomor' => 'D 1234 ABC',
+            'id_cabang' => 1,
+            'penghasilan_kotor' => 0,
+            'penghasilan_bersih' => 0,
+            'status_mengirim' => 'Tidak Mengirim',
+            'status_aktif' => 'Aktif',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ]);
         
         DB::table('pesanans')->insert([
-            'id_pesanan' => 1,
-            'id_pelanggan' => 1,
-            'id_cabang' => 1,
-            'id_kurir' => 1,
-            'id_promo' => null,
-            'tanggal_pemesanan' => Carbon::now(),
-            'total_belanja' => 100000,
-            'biaya_pengiriman' => 15000,
-            'diskon_voucher' => 0,
-            'total_tagihan' => 115000,
-            'metode_pembayaran' => 'Cash On Delivery',
-            'alamat_pengiriman' => 'Jl. Contoh No. 123',
-            'status_pesanan' => 'Diterima',
-            'estimasi_tiba' => Carbon::now(),
-            'bukti_pengiriman' => 'bukti_pengiriman.jpg',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now()
+            [
+                'id_pesanan' => 1,
+                'id_pelanggan' => 1,
+                'id_cabang' => 1,
+                'id_kurir' => 1,
+                'id_promo' => null,
+                'tanggal_pemesanan' => Carbon::now(),
+                'total_belanja' => 310000,
+                'biaya_pengiriman' => 15000,
+                'diskon_voucher' => 0,
+                'total_tagihan' => 325000,
+                'metode_pembayaran' => 'Cash On Delivery',
+                'alamat_pengiriman' => 'Jl. Contoh No. 123',
+                'status_pesanan' => 'Diterima',
+                'estimasi_tiba' => Carbon::now(),
+                'bukti_pengiriman' => 'bukti_pengiriman.jpg',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'id_pesanan' => 2,
+                'id_pelanggan' => 1,
+                'id_cabang' => 3,
+                'id_kurir' => 1,
+                'id_promo' => null,
+                'tanggal_pemesanan' => Carbon::now(),
+                'total_belanja' => 203000,
+                'biaya_pengiriman' => 15000,
+                'diskon_voucher' => 0,
+                'total_tagihan' => 218000,
+                'metode_pembayaran' => 'Transfer',
+                'alamat_pengiriman' => 'Jl. Contoh No. 123',
+                'status_pesanan' => 'Sedang Dikirim',
+                'estimasi_tiba' => Carbon::now(),
+                'bukti_pengiriman' => 'bukti_pengiriman.jpg',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
         ]);
+
+        DB::table('pesanan_produks')->insert([
+            [
+                'id_pesanan_produk' => 1,
+                'id_pesanan' => 1,
+                'id_produk' => 1,
+                'jumlah' => 1,
+                'harga_satuan' => 240000,
+                'subtotal' => 240000,
+                'catatan_produk' => null,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'id_pesanan_produk' => 2,
+                'id_pesanan' => 1,
+                'id_produk' => 2,
+                'jumlah' => 2,
+                'harga_satuan' => 35000,
+                'subtotal' => 70000,
+                'catatan_produk' => null,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'id_pesanan_produk' => 3,
+                'id_pesanan' => 2,
+                'id_produk' => 3,
+                'jumlah' => 1,
+                'harga_satuan' => 17000,
+                'subtotal' => 17000,
+                'catatan_produk' => null,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'id_pesanan_produk' => 4,
+                'id_pesanan' => 2,
+                'id_produk' => 4,
+                'jumlah' => 2,
+                'harga_satuan' => 28000,
+                'subtotal' => 56000,
+                'catatan_produk' => null,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'id_pesanan_produk' => 5,
+                'id_pesanan' => 2,
+                'id_produk' => 5,
+                'jumlah' => 1,
+                'harga_satuan' => 130000,
+                'subtotal' => 130000,
+                'catatan_produk' => 'Tenderloin Daging Sapi',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+        ]);
+
     }
 }   

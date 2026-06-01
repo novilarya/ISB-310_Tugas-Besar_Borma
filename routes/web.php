@@ -1,33 +1,71 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\SuperAdminController;
-
 use App\Http\Controllers\AuthController;
 
-Route::get('/superadmin/dashboard', [SuperAdminController::class, 'index'])->name('superadmin.dashboard');
-Route::get('/superadmin/pesanan', [SuperAdminController::class, 'pesanan'])->name('superadmin.pesanan');
-Route::get('/superadmin/pengemudi', [SuperAdminController::class, 'pengemudi'])->name('superadmin.pengemudi');
-Route::get('/superadmin/cabang', [SuperAdminController::class, 'cabang'])->name('superadmin.cabang');
-Route::post('/superadmin/cabang', [SuperAdminController::class, 'storeCabang'])->name('superadmin.cabang.store');
-Route::put('/superadmin/cabang/{id}', [SuperAdminController::class, 'updateCabang'])->name('superadmin.cabang.update');
+// Super Admin Controllers
+use App\Http\Controllers\SuperAdmin\DashboardController;
+use App\Http\Controllers\SuperAdmin\PesananController;
+use App\Http\Controllers\SuperAdmin\PengemudiController;
+use App\Http\Controllers\SuperAdmin\CabangController;
+use App\Http\Controllers\SuperAdmin\AdminCabangController;
+use App\Http\Controllers\SuperAdmin\MemberController;
+use App\Http\Controllers\SuperAdmin\PromoController;
+use App\Http\Controllers\SuperAdmin\HakAksesController;
 
-Route::get('/superadmin/admin-cabang', [SuperAdminController::class, 'adminCabang'])->name('superadmin.admin_cabang');
-Route::post('/superadmin/admin-cabang', [SuperAdminController::class, 'storeAdminCabang'])->name('superadmin.admin_cabang.store');
-Route::put('/superadmin/admin-cabang/{id}', [SuperAdminController::class, 'updateAdminCabang'])->name('superadmin.admin_cabang.update');
-Route::delete('/superadmin/admin-cabang/{id}', [SuperAdminController::class, 'destroyAdminCabang'])->name('superadmin.admin_cabang.destroy');
-
-Route::get('/superadmin/member', [SuperAdminController::class, 'member'])->name('superadmin.member');
-Route::put('/superadmin/member/{id}', [SuperAdminController::class, 'updateMember'])->name('superadmin.member.update');
-Route::delete('/superadmin/member/{id}', [SuperAdminController::class, 'destroyMember'])->name('superadmin.member.destroy');
+// Auth Routes
 Route::get('/internal/login', [AuthController::class, 'showInternalLoginForm'])->name('internal.login');
 Route::post('/internal/login', [AuthController::class, 'authenticateInternal'])->name('internal.login.post');
 Route::post('/internal/logout', [AuthController::class, 'logout'])->name('internal.logout');
 
+
+// Super Admin Routes
+Route::prefix('superadmin')->name('superadmin.')->group(function () {
+    
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/pesanan', [PesananController::class, 'pesanan'])->name('pesanan');
+    Route::get('/pesanan/{id}', [PesananController::class, 'pesananDetail'])->name('pesanan.detail');
+
+    Route::get('/pengemudi', [PengemudiController::class, 'pengemudi'])->name('pengemudi');
+    Route::post('/pengemudi', [PengemudiController::class, 'storePengemudi'])->name('pengemudi.store');
+    Route::put('/pengemudi/{id}', [PengemudiController::class, 'updatePengemudi'])->name('pengemudi.update');
+    Route::delete('/pengemudi/{id}', [PengemudiController::class, 'destroyPengemudi'])->name('pengemudi.destroy');
+    Route::get('/pengemudi/{id}', [PengemudiController::class, 'pengemudiDetail'])->name('pengemudi.detail');
+
+    Route::get('/cabang', [CabangController::class, 'cabang'])->name('cabang');
+    Route::post('/cabang', [CabangController::class, 'storeCabang'])->name('cabang.store');
+    Route::put('/cabang/{id}', [CabangController::class, 'updateCabang'])->name('cabang.update');
+    Route::delete('/cabang/{id}', [CabangController::class, 'destroyCabang'])->name('cabang.destroy');
+    Route::get('/cabang/{id}', [CabangController::class, 'cabangDetail'])->name('cabang.detail');
+
+    Route::get('/admin-cabang', [AdminCabangController::class, 'adminCabang'])->name('admin_cabang');
+    Route::post('/admin-cabang', [AdminCabangController::class, 'storeAdminCabang'])->name('admin_cabang.store');
+    Route::put('/admin-cabang/{id}', [AdminCabangController::class, 'updateAdminCabang'])->name('admin_cabang.update');
+    Route::delete('/admin-cabang/{id}', [AdminCabangController::class, 'destroyAdminCabang'])->name('admin_cabang.destroy');
+
+    Route::get('/member', [MemberController::class, 'member'])->name('member');
+    Route::get('/member/{id}', [MemberController::class, 'detailMember'])->name('member.detail');
+    Route::put('/member/{id}', [MemberController::class, 'updateMember'])->name('member.update');
+    Route::delete('/member/{id}', [MemberController::class, 'destroyMember'])->name('member.destroy');
+
+    Route::get('/promo', [PromoController::class, 'promo'])->name('promo');
+    Route::post('/promo', [PromoController::class, 'storePromo'])->name('promo.store');
+    Route::put('/promo/update/{id}', [PromoController::class, 'updatePromo'])->name('promo.update');
+    Route::delete('/promo/delete/{id}', [PromoController::class, 'destroyPromo'])->name('promo.delete');
+
+    Route::get('/hak-akses', [HakAksesController::class, 'hakAkses'])->name('hak_akses');
+    Route::post('/hak-akses/{userId}', [HakAksesController::class, 'updateHakAkses'])->name('hak_akses.update');
+});
+
+
+// Admin Cabang Routes
 Route::get('/admincabang/dashboard', function () {
     return 'Admin Cabang Dashboard';
 })->name('admincabang.dashboard');
 
+
+// Kurir Routes
 Route::get('/kurir/dashboard', function () {
     return 'Kurir Dashboard';
 })->name('kurir.dashboard');

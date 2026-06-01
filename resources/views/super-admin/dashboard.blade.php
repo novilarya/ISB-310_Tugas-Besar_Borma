@@ -123,18 +123,18 @@
         <div class="bg-gradient-to-br from-slate-100 dark:from-borma-purple/50 to-transparent dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl p-6">
             <h4 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Aksi Cepat</h4>
             <div class="grid grid-cols-2 gap-3">
-                <button class="bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-xl p-4 text-left transition-all group shadow-sm dark:shadow-none">
+                <a href="{{ route('superadmin.cabang') }}" class="bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-xl p-4 text-left transition-all group shadow-sm dark:shadow-none">
                     <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-borma-yellow/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                         <i class="fa-solid fa-store text-borma-purple dark:text-borma-yellow"></i>
                     </div>
-                    <span class="text-sm font-bold text-slate-700 dark:text-white block">Tambah Cabang</span>
-                </button>
-                <button class="bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-xl p-4 text-left transition-all group shadow-sm dark:shadow-none">
+                    <span class="text-sm font-bold text-slate-700 dark:text-white block">Manajemen Cabang</span>
+                </a>
+                <a href="{{ route('superadmin.promo') }}" class="bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-xl p-4 text-left transition-all group shadow-sm dark:shadow-none">
                     <div class="w-10 h-10 rounded-full bg-purple-50 dark:bg-purple-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                         <i class="fa-solid fa-ticket text-purple-600 dark:text-purple-400"></i>
                     </div>
-                    <span class="text-sm font-bold text-slate-700 dark:text-white block">Buat Promo</span>
-                </button>
+                    <span class="text-sm font-bold text-slate-700 dark:text-white block">Voucher & Promo</span>
+                </a>
             </div>
         </div>
 
@@ -144,12 +144,12 @@
             
             <div class="flex justify-between items-center mb-4 pb-4 border-b border-slate-100 dark:border-white/10">
                 <span class="text-slate-600 dark:text-white/70 flex items-center gap-2"><i class="fa-solid fa-motorcycle text-slate-400 dark:text-white/40"></i> Armada Aktif</span>
-                <span class="font-bold text-lg text-slate-800 dark:text-white">24 <span class="text-sm text-slate-400 dark:text-white/40 font-normal">/ 30</span></span>
+                <span class="font-bold text-lg text-slate-800 dark:text-white">{{ $armadaAktif }} <span class="text-sm text-slate-400 dark:text-white/40 font-normal">/ {{ $totalKurir }}</span></span>
             </div>
             
             <div class="flex justify-between items-center mb-6">
                 <span class="text-slate-600 dark:text-white/70 flex items-center gap-2"><i class="fa-solid fa-box text-slate-400 dark:text-white/40"></i> Menunggu Pickup</span>
-                <span class="font-bold text-lg text-red-500 dark:text-red-400">18</span>
+                <span class="font-bold text-lg {{ $menungguPickup > 0 ? 'text-red-500 dark:text-red-400' : 'text-slate-800 dark:text-white' }}">{{ $menungguPickup }}</span>
             </div>
             
             <a href="{{ route('superadmin.pengemudi') }}" class="w-full py-3 px-4 bg-borma-purple dark:bg-borma-yellow hover:bg-opacity-90 dark:hover:bg-[#F2C900] text-white dark:text-borma-purple font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-md dark:shadow-[0_4px_14px_0_rgba(254,213,11,0.39)] hover:-translate-y-0.5">
