@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class promo extends Model
+class Promo extends Model
 {
-    protected $table = 'promo';
+    protected $table = 'promos';
     protected $primaryKey = 'id_promo';
     protected $fillable = [
         'id_produk_pemicu', 'id_produk_hadiah', 'nama_voucher', 'kode_voucher', 

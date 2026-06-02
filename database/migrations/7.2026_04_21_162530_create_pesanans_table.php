@@ -24,9 +24,11 @@ return new class extends Migration
             $table->decimal('total_tagihan', 15, 2);
             $table->string('metode_pembayaran');
             $table->text('alamat_pengiriman');
-            $table->enum('status_pesanan', ['Menunggu', 'Disiapkan', 'Sedang Dikirim', 'Diterima']);
+            $table->enum('status_pesanan', ['Menunggu', 'Disiapkan', 'Sedang Dikirim', 'Diterima', 'Batal']);
             $table->dateTime('estimasi_tiba')->nullable();
             $table->string('bukti_pengiriman')->nullable();
+            $table->string('midtrans_order_id')->nullable();
+            $table->string('snap_token')->nullable();
             $table->timestamps();
         });
     }
