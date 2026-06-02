@@ -8,18 +8,16 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * Tracks each status change for a delivery with timestamp.
      */
     public function up(): void
     {
-        if (!Schema::hasTable('pesanan_produks')) {
-            Schema::create('pesanan_produks', function (Blueprint $table) {
-                $table->id('id_pesanan_produk');
+        if (!Schema::hasTable('pengiriman_tracking')) {
+            Schema::create('pengiriman_tracking', function (Blueprint $table) {
+                $table->id();
                 $table->foreignId('id_pesanan')->constrained('pesanans', 'id_pesanan')->onDelete('cascade');
-                $table->foreignId('id_produk')->constrained('produks', 'id_produk');
-                $table->integer('jumlah');
-                $table->decimal('harga_satuan', 15, 2);
-                $table->decimal('subtotal', 15, 2);
-                $table->text('catatan_produk')->nullable();
+                $table->enum('status', ['pending','diterima_driver','ditolak_driver','diambil','dalam_pengiriman','diterima','gagal']);
+                $table->text('keterangan')->nullable();
                 $table->timestamps();
             });
         }
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pesanan_produks');
+        Schema::dropIfExists('pengiriman_tracking');
     }
 };

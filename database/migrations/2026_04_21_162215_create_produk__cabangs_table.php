@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('produk_cabangs', function (Blueprint $table) {
-            $table->id('id_produk_cabang');
-            $table->foreignId('id_produk')->constrained('produks', 'id_produk');
-            $table->foreignId('id_cabang')->constrained('cabangs', 'id_cabang');
-            $table->integer('jumlah_stok');
-            $table->integer('jumlah_terjual')->default(0);
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('produk_cabangs')) {
+            Schema::create('produk_cabangs', function (Blueprint $table) {
+                $table->id('id_produk_cabang');
+                $table->foreignId('id_produk')->constrained('produks', 'id_produk');
+                $table->foreignId('id_cabang')->constrained('cabangs', 'id_cabang');
+                $table->integer('jumlah_stok');
+                $table->integer('jumlah_terjual')->default(0);
+                $table->timestamps();
+            });
+        }
     }
 
     /**
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('produk__cabangs');
+        Schema::dropIfExists('produk_cabangs');
     }
 };

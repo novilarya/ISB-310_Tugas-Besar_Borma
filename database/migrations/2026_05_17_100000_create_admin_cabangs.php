@@ -11,18 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('admin_cabangs', function (Blueprint $table) {
-            $table->id('id_admin_cabang');
-            $table->unsignedBigInteger('id_user');
-            $table->unsignedBigInteger('id_cabang');
-            $table->decimal('gaji', 15, 2)->default(0);
-            $table->date('tanggal_masuk')->nullable();
-            $table->string('status_karyawan')->default('Aktif');
-            $table->timestamps();
+        if (!Schema::hasTable('admin_cabangs')) {
+            Schema::create('admin_cabangs', function (Blueprint $table) {
+                $table->id('id_admin_cabang');
+                $table->unsignedBigInteger('id_user');
+                $table->unsignedBigInteger('id_cabang');
+                $table->decimal('gaji', 15, 2)->default(0);
+                $table->date('tanggal_masuk')->nullable();
+                $table->string('status_karyawan')->default('Aktif');
+                $table->timestamps();
 
-            $table->foreign('id_user')->references('id_user')->on('users')->onDelete('cascade');
-            $table->foreign('id_cabang')->references('id_cabang')->on('cabangs')->onDelete('cascade');
-        });
+                $table->foreign('id_user')->references('id_user')->on('users')->onDelete('cascade');
+                $table->foreign('id_cabang')->references('id_cabang')->on('cabangs')->onDelete('cascade');
+            });
+        }
     }
 
     /**
@@ -30,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('admin_cabangs');
     }
 };

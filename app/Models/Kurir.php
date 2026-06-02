@@ -21,4 +21,8 @@ class kurir extends Model
     public function penugasan() {
         return $this->hasMany(Pesanan::class, 'id_kurir');
     }
+
+    public function penolakanPengiriman() {
+        return $this->hasMany(PenolakanPengiriman::class, 'id_kurir');
+    }
 }

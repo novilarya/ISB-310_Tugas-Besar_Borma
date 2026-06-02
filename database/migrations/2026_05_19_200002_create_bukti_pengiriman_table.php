@@ -8,18 +8,17 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * Stores proof of delivery: photo, receiver name, and driver notes.
      */
     public function up(): void
     {
-        if (!Schema::hasTable('pesanan_produks')) {
-            Schema::create('pesanan_produks', function (Blueprint $table) {
-                $table->id('id_pesanan_produk');
+        if (!Schema::hasTable('bukti_pengiriman')) {
+            Schema::create('bukti_pengiriman', function (Blueprint $table) {
+                $table->id();
                 $table->foreignId('id_pesanan')->constrained('pesanans', 'id_pesanan')->onDelete('cascade');
-                $table->foreignId('id_produk')->constrained('produks', 'id_produk');
-                $table->integer('jumlah');
-                $table->decimal('harga_satuan', 15, 2);
-                $table->decimal('subtotal', 15, 2);
-                $table->text('catatan_produk')->nullable();
+                $table->string('foto_bukti');
+                $table->string('nama_penerima');
+                $table->text('catatan_driver')->nullable();
                 $table->timestamps();
             });
         }
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pesanan_produks');
+        Schema::dropIfExists('bukti_pengiriman');
     }
 };

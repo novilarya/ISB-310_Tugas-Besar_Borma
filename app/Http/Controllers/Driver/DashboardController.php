@@ -23,26 +23,49 @@ class DashboardController extends Controller
                 'tugasAktif' => 0,
                 'selesaiHariIni' => 0,
                 'tugasBerikutnya' => null,
+                'antrianTugas' => collect(),
             ]);
         }
 
-        $kurir = Kurir::where('id_user', $user->id_user)->first();
+        $kurir = Kurir::where('id_user', $user->id_user)->with(['cabang', 'user'])->first();
 
-        $tugasAktif = Pesanan::where('id_kurir', $kurir->id_kurir ?? 0)
-            ->whereIn('status_pesanan', ['menunggu', 'diambil', 'dalam_pengiriman'])
+        if (!$kurir) {
+            return view('driver.dashboard', [
+                'kurir' => (object) ['kode_driver' => 'D00', 'cabang' => (object) ['nama_cabang' => 'Belum Ada']],
+                'tugasAktif' => 0,
+                'selesaiHariIni' => 0,
+                'tugasBerikutnya' => null,
+                'antrianTugas' => collect(),
+            ]);
+        }
+
+        // Tugas yang sudah dikonfirmasi dan sedang aktif
+        $tugasAktif = Pesanan::where('id_kurir', $kurir->id_kurir)
+            ->whereIn('status_pesanan', ['pending', 'diterima_driver', 'diambil', 'dalam_pengiriman'])
             ->count();
 
-        $selesaiHariIni = Pesanan::where('id_kurir', $kurir->id_kurir ?? 0)
+        // Selesai hari ini
+        $selesaiHariIni = Pesanan::where('id_kurir', $kurir->id_kurir)
             ->where('status_pesanan', 'diterima')
             ->whereDate('updated_at', today())
             ->count();
 
-        $tugasBerikutnya = Pesanan::where('id_kurir', $kurir->id_kurir ?? 0)
-            ->whereIn('status_pesanan', ['menunggu', 'diambil', 'dalam_pengiriman'])
+        // Tugas berikutnya: ambil tugas pending ATAU diterima_driver (yang belum mulai perjalanan)
+        // Prioritas: pending dulu (perlu konfirmasi), lalu diterima_driver (siap mulai)
+        $tugasBerikutnya = Pesanan::where('id_kurir', $kurir->id_kurir)
+            ->whereIn('status_pesanan', ['pending', 'diterima_driver'])
             ->with(['cabang', 'pelanggan.user'])
+            ->orderByRaw("FIELD(status_pesanan, 'pending', 'diterima_driver')")
             ->orderBy('created_at', 'asc')
             ->first();
 
-        return view('driver.dashboard', compact('kurir', 'tugasAktif', 'selesaiHariIni', 'tugasBerikutnya'));
+        // Antrian tugas pengiriman: pesanan yang belum diassign ke kurir manapun (multi-driver FCFS)
+        $antrianTugas = Pesanan::whereNull('id_kurir')
+            ->where('status_pesanan', 'pending')
+            ->with(['cabang', 'pelanggan.user'])
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return view('driver.dashboard', compact('kurir', 'tugasAktif', 'selesaiHariIni', 'tugasBerikutnya', 'antrianTugas'));
     }
 }

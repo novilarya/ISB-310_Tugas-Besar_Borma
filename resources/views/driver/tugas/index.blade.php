@@ -89,6 +89,14 @@
         box-shadow: 0 6px 24px rgba(51, 17, 108, 0.12);
     }
 
+    .task-item.status-pending {
+        border-left-color: var(--color-secondary);
+    }
+
+    .task-item.status-dalam-pengiriman {
+        border-left-color: #22c55e;
+    }
+
     .task-item-header {
         display: flex;
         align-items: flex-start;
@@ -127,6 +135,11 @@
     .badge-pending {
         background: var(--color-secondary);
         color: var(--color-neutral);
+    }
+
+    .badge-diterima {
+        background: #dcfce7;
+        color: #166534;
     }
 
     .badge-diambil {
@@ -239,8 +252,10 @@
 <div class="filter-tabs fade-up delay-1">
     <a href="{{ route('driver.tugas.index') }}"
        class="filter-tab {{ !request('status') ? 'active' : '' }}">Semua</a>
-    <a href="{{ route('driver.tugas.index', ['status' => 'menunggu']) }}"
-       class="filter-tab {{ request('status') == 'menunggu' ? 'active' : '' }}">Menunggu</a>
+    <a href="{{ route('driver.tugas.index', ['status' => 'pending']) }}"
+       class="filter-tab {{ request('status') == 'pending' ? 'active' : '' }}">Pending</a>
+    <a href="{{ route('driver.tugas.index', ['status' => 'diterima_driver']) }}"
+       class="filter-tab {{ request('status') == 'diterima_driver' ? 'active' : '' }}">Dikonfirmasi</a>
     <a href="{{ route('driver.tugas.index', ['status' => 'diambil']) }}"
        class="filter-tab {{ request('status') == 'diambil' ? 'active' : '' }}">Diambil</a>
     <a href="{{ route('driver.tugas.index', ['status' => 'dalam_pengiriman']) }}"
@@ -250,7 +265,7 @@
 {{-- ===== TASK LIST ===== --}}
 <div class="task-list fade-up delay-2">
     @forelse($tugas as $index => $pesanan)
-    <div class="task-item" id="task-{{ $pesanan->id_pesanan }}">
+    <div class="task-item {{ $pesanan->status_pesanan == 'pending' ? 'status-pending' : ($pesanan->status_pesanan == 'dalam_pengiriman' ? 'status-dalam-pengiriman' : '') }}" id="task-{{ $pesanan->id_pesanan }}">
         <div class="task-item-header">
             <div>
                 <p class="task-order-id">Order ID</p>
@@ -259,6 +274,7 @@
             <span class="task-status-badge
                 @if($pesanan->status_pesanan == 'dalam_pengiriman') badge-pengiriman
                 @elseif($pesanan->status_pesanan == 'diambil') badge-diambil
+                @elseif($pesanan->status_pesanan == 'diterima_driver') badge-diterima
                 @else badge-pending
                 @endif">
                 {{ strtoupper(str_replace('_', ' ', $pesanan->status_pesanan)) }}

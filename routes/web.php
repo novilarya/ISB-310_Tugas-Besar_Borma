@@ -31,12 +31,26 @@ Route::prefix('driver')->name('driver.')->group(function () {
          ->name('tugas.index');
     Route::get('/tugas/{id}', [TugasController::class, 'show'])
          ->name('tugas.show');
-    Route::patch('/tugas/{id}/status', [TugasController::class, 'updateStatus'])
+    Route::post('/tugas/{id}/confirm', [TugasController::class, 'confirm'])
+         ->name('tugas.confirm');
+    Route::post('/tugas/{id}/reject', [TugasController::class, 'reject'])
+         ->name('tugas.reject');
+    Route::post('/tugas/{id}/update-status', [TugasController::class, 'updateStatus'])
          ->name('tugas.updateStatus');
+    Route::post('/tugas/{id}/upload-proof', [TugasController::class, 'uploadProof'])
+         ->name('tugas.uploadProof');
+         
+    // Antrian Pesanan FCFS
+    Route::post('/pesanan/{id}/ambil', [TugasController::class, 'ambil'])
+         ->name('pesanan.ambil');
+    Route::get('/pesanan/antrian/latest', [TugasController::class, 'getLatestAntrian'])
+         ->name('pesanan.antrian.latest');
 
     // Riwayat Pesanan
     Route::get('/riwayat', [RiwayatController::class, 'index'])
          ->name('riwayat.index');
+    Route::get('/pengiriman/{id}', [RiwayatController::class, 'show'])
+         ->name('pengiriman.detail');
     Route::get('/riwayat/{id}', [RiwayatController::class, 'show'])
          ->name('riwayat.show');
 
@@ -51,6 +65,6 @@ Route::prefix('driver')->name('driver.')->group(function () {
 
 // Placeholder logout route (untuk tombol Keluar di profil)
 Route::post('/logout', function () {
-    Auth::logout();
+    // Auth::logout();
     return redirect('/');
 })->name('logout');

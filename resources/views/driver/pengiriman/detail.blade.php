@@ -1,6 +1,6 @@
 @extends('driver.layouts.app')
 
-@section('title', 'Detail Tugas #BRM-' . $pesanan->id_pesanan)
+@section('title', 'Detail Riwayat #BRM-' . $pesanan->id_pesanan)
 @section('header_back', true)
 
 @push('styles')
@@ -866,54 +866,30 @@
     </div>
 </div>
 
-{{-- ===== BUKTI PENGIRIMAN (READ ONLY) ===== --}}
-@if($pesanan->status_pesanan === 'diterima' && $pesanan->buktiPengiriman)
+{{-- ===== BUKTI PENGIRIMAN ===== --}}
+@if($pesanan->buktiPengiriman)
 <div class="bukti-section fade-up delay-4">
-    <h2 class="bukti-title">Informasi Pengiriman</h2>
+    <h2 class="bukti-title">Bukti Pengiriman</h2>
     <div class="bukti-grid">
-        <div class="bukti-photo-box" style="cursor: default;">
-            @if($pesanan->buktiPengiriman->foto_bukti)
-                <img src="{{ asset('storage/' . $pesanan->buktiPengiriman->foto_bukti) }}" alt="Bukti Pengiriman">
-            @else
-                <i class="bi bi-image"></i>
-                <span>Tidak ada foto</span>
-            @endif
+        <div class="bukti-photo-box" style="cursor: default; border: 1.5px solid var(--color-border); background: var(--color-surface);">
+            <img src="{{ asset('storage/' . $pesanan->buktiPengiriman->foto_bukti) }}" alt="Bukti Pengiriman">
         </div>
-        <div class="bukti-form-fields" style="justify-content: center;">
-            <div class="info-row">
-                <p class="info-label">Penerima</p>
-                <p class="info-value">{{ $pesanan->buktiPengiriman->nama_penerima }}</p>
+
+        <div class="bukti-form-fields">
+            <div class="form-field">
+                <label>Nama Penerima</label>
+                <div class="form-input" style="background: var(--color-bg); font-weight: 600;">{{ $pesanan->buktiPengiriman->nama_penerima }}</div>
             </div>
             @if($pesanan->buktiPengiriman->catatan_driver)
-            <div class="info-row" style="margin-top: 12px;">
-                <p class="info-label">Catatan Driver</p>
-                <p class="info-value" style="font-style: italic;">"{{ $pesanan->buktiPengiriman->catatan_driver }}"</p>
+            <div class="form-field">
+                <label>Catatan Driver</label>
+                <div class="form-textarea" style="background: var(--color-bg); min-height: 80px;">{{ $pesanan->buktiPengiriman->catatan_driver }}</div>
             </div>
             @endif
         </div>
     </div>
 </div>
 @endif
-
-{{-- ===== STATUS BUTTONS ===== --}}
-<div class="status-buttons fade-up delay-5" id="status-buttons">
-    <button type="button" class="status-btn {{ $pesanan->status_pesanan == 'diambil' ? 'active-status' : '' }}"
-            onclick="updateStatus('diambil')" data-status="diambil">
-        Diambil
-    </button>
-    <button type="button" class="status-btn {{ $pesanan->status_pesanan == 'dalam_pengiriman' ? 'active-status' : '' }}"
-            onclick="updateStatus('dalam_pengiriman')" data-status="dalam_pengiriman">
-        Dalam Pengiriman
-    </button>
-    <button type="button" class="status-btn {{ $pesanan->status_pesanan == 'diterima' ? 'active-status' : '' }}"
-            onclick="openBuktiModal()" data-status="diterima">
-        Diterima
-    </button>
-    <button type="button" class="status-btn btn-gagal {{ $pesanan->status_pesanan == 'gagal' ? 'active-status' : '' }}"
-            onclick="updateStatusGagal()" data-status="gagal">
-        Gagal Kirim
-    </button>
-</div>
 
 @endsection
 
@@ -1006,24 +982,32 @@
         setTimeout(() => { map.invalidateSize(); }, 600);
     });
 
-
+    // =============================================
+    // FOTO PREVIEW
+    // =============================================
+    document.getElementById('foto-bukti').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                Swal.fire('Perhatian', 'Ukuran file maksimal 5MB', 'warning');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const box = document.getElementById('bukti-photo-preview');
+                box.innerHTML = '<img src="' + ev.target.result + '" alt="Preview">' +
+                    '<input type="file" id="foto-bukti" name="foto_bukti" accept="image/*" style="display:none;">';
+                // Re-bind change event
+                document.getElementById('foto-bukti').addEventListener('change', arguments.callee);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 
     // =============================================
     // UPDATE STATUS via AJAX
     // =============================================
     function updateStatus(status) {
-        const currentStatus = "{{ $pesanan->status_pesanan }}";
-        
-        // Frontend Sequence Validation
-        if (status === 'diambil' && currentStatus !== 'diterima_driver') {
-            Swal.fire('Tidak Sesuai Urutan!', 'Pesanan harus dikonfirmasi terlebih dahulu sebelum dapat diambil.', 'warning');
-            return;
-        }
-        if (status === 'dalam_pengiriman' && currentStatus !== 'diambil') {
-            Swal.fire('Tidak Sesuai Urutan!', 'Pesanan harus diambil dari gudang terlebih dahulu sebelum dikirim.', 'warning');
-            return;
-        }
-
         const statusLabels = {
             'diambil': 'DIAMBIL',
             'dalam_pengiriman': 'DALAM PENGIRIMAN',
@@ -1142,39 +1126,29 @@
     }
 
     // =============================================
-    // MODAL BUKTI PENGIRIMAN
+    // UPLOAD BUKTI via AJAX
     // =============================================
-    function openBuktiModal() {
-        const currentStatus = "{{ $pesanan->status_pesanan }}";
-        
-        if (currentStatus !== 'dalam_pengiriman') {
-            Swal.fire('Tidak Sesuai Urutan!', 'Pesanan harus berada pada status Dalam Pengiriman sebelum dapat diterima.', 'warning');
+    function uploadBukti() {
+        const form = document.getElementById('buktiForm');
+        const fileInput = document.getElementById('foto-bukti');
+        const namaPenerima = document.getElementById('nama-penerima').value.trim();
+
+        if (!fileInput.files.length) {
+            Swal.fire('Perhatian', 'Silakan pilih foto bukti pengiriman', 'warning');
             return;
         }
-        
+
+        if (!namaPenerima) {
+            Swal.fire('Perhatian', 'Nama penerima harus diisi', 'warning');
+            return;
+        }
+
         Swal.fire({
-            title: 'Bukti Pengiriman',
-            html: `
-                <div style="text-align: left; margin-top: 10px;">
-                    <form id="modalBuktiForm" enctype="multipart/form-data">
-                        <label for="modal-foto-bukti" class="bukti-photo-box" id="modal-bukti-photo-preview" style="margin-bottom: 15px;">
-                            <i class="bi bi-camera"></i>
-                            <span>Unggah Foto Bukti</span>
-                            <input type="file" id="modal-foto-bukti" accept="image/*" style="display:none;" onchange="previewModalFoto(this)">
-                        </label>
-                        <div class="form-field" style="margin-bottom: 12px;">
-                            <label for="modal-nama-penerima" style="display: block; font-size: 10px; font-weight: 600; color: #7a7a9a; margin-bottom: 6px;">NAMA PENERIMA *</label>
-                            <input type="text" id="modal-nama-penerima" placeholder="Contoh: Ibu Rina (Asisten)" class="swal2-input" style="margin: 0; width: 100%; box-sizing: border-box; height: 42px; font-size: 13px;">
-                        </div>
-                        <div class="form-field">
-                            <label for="modal-catatan-driver" style="display: block; font-size: 10px; font-weight: 600; color: #7a7a9a; margin-bottom: 6px;">CATATAN DRIVER</label>
-                            <textarea id="modal-catatan-driver" placeholder="Kondisi barang saat diterima..." class="swal2-textarea" style="margin: 0; width: 100%; box-sizing: border-box; height: 80px; font-size: 13px; resize: none;"></textarea>
-                        </div>
-                    </form>
-                </div>
-            `,
+            title: 'Unggah Bukti',
+            text: 'Kirim bukti pengiriman ini?',
+            icon: 'question',
             showCancelButton: true,
-            confirmButtonText: '<i class="bi bi-upload"></i> Unggah Bukti Pengiriman',
+            confirmButtonText: 'Ya, Unggah',
             cancelButtonText: 'Batal',
             confirmButtonColor: '#33116C',
             cancelButtonColor: '#E4E0EE',
@@ -1182,98 +1156,59 @@
             didOpen: (modal) => {
                 const cancel = modal.querySelector('.swal2-cancel');
                 if (cancel) cancel.style.color = '#2B2B2B';
-            },
-            preConfirm: () => {
-                const fileInput = document.getElementById('modal-foto-bukti');
-                const namaPenerima = document.getElementById('modal-nama-penerima').value.trim();
-                
-                if (!fileInput.files.length) {
-                    Swal.showValidationMessage('Silakan pilih foto bukti pengiriman');
-                    return false;
-                }
-                if (fileInput.files[0].size > 5 * 1024 * 1024) {
-                    Swal.showValidationMessage('Ukuran file maksimal 5MB');
-                    return false;
-                }
-                if (!namaPenerima) {
-                    Swal.showValidationMessage('Nama penerima harus diisi');
-                    return false;
-                }
-                
-                return {
-                    file: fileInput.files[0],
-                    namaPenerima: namaPenerima,
-                    catatanDriver: document.getElementById('modal-catatan-driver').value.trim()
-                };
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                submitBuktiModal(result.value);
-            }
-        });
-    }
-
-    window.previewModalFoto = function(input) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const box = document.getElementById('modal-bukti-photo-preview');
-                box.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">`;
-                box.appendChild(input); // Kembalikan input agar file tidak hilang
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    function submitBuktiModal(data) {
-        Swal.fire({
-            title: 'Mengunggah...',
-            text: 'Mengirim bukti pengiriman',
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            didOpen: () => { Swal.showLoading(); }
-        });
-
-        const formData = new FormData();
-        formData.append('foto_bukti', data.file);
-        formData.append('nama_penerima', data.namaPenerima);
-        formData.append('catatan_driver', data.catatanDriver);
-
-        fetch(`/driver/tugas/${pesananId}/upload-proof`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json'
-            },
-            body: formData
-        }).then(response => response.json())
-        .then(data => {
-            if (data.success) {
                 Swal.fire({
-                    title: 'Berhasil!',
-                    text: data.message,
-                    icon: 'success',
-                    confirmButtonColor: '#33116C',
-                    timer: 1500,
-                    timerProgressBar: true
-                }).then(() => {
-                    location.reload();
+                    title: 'Mengunggah...',
+                    text: 'Mengirim bukti pengiriman',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => { Swal.showLoading(); }
                 });
-            } else {
-                Swal.fire({
-                    title: 'Gagal!',
-                    text: data.message || 'Terjadi kesalahan',
-                    icon: 'error',
-                    confirmButtonColor: '#33116C'
+
+                const formData = new FormData();
+                formData.append('foto_bukti', fileInput.files[0]);
+                formData.append('nama_penerima', namaPenerima);
+                formData.append('catatan_driver', document.getElementById('catatan-driver').value);
+
+                fetch(`/driver/tugas/${pesananId}/upload-proof`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Berhasil!',
+                            text: data.message,
+                            icon: 'success',
+                            confirmButtonColor: '#33116C',
+                            timer: 1500,
+                            timerProgressBar: true
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Gagal!',
+                            text: data.message || 'Terjadi kesalahan',
+                            icon: 'error',
+                            confirmButtonColor: '#33116C'
+                        });
+                    }
+                }).catch(error => {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Terjadi kesalahan komunikasi',
+                        icon: 'error',
+                        confirmButtonColor: '#33116C'
+                    });
                 });
             }
-        }).catch(error => {
-            Swal.fire({
-                title: 'Error!',
-                text: 'Terjadi kesalahan komunikasi',
-                icon: 'error',
-                confirmButtonColor: '#33116C'
-            });
         });
     }
 </script>

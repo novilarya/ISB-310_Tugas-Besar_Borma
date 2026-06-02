@@ -50,6 +50,11 @@ class ProfilController extends Controller
         return view('driver.profil.index', compact('user', 'kurir', 'cabang', 'totalKirim', 'berhasil', 'rating'));
     }
 
+    public function formUbahPassword()
+    {
+        return view('driver.profil.ubah-password');
+    }
+
     public function ubahPassword(Request $request)
     {
         $request->validate([
@@ -57,15 +62,15 @@ class ProfilController extends Controller
             'password_baru' => 'required|min:8|confirmed',
         ]);
 
-        $user = Auth::user();
+        $user = Auth::check() ? Auth::user() : \App\Models\User::where('role', 'kurir')->first();
 
-        if (!Hash::check($request->password_lama, $user->password)) {
+        if (!$user || !Hash::check($request->password_lama, $user->password)) {
             return back()->withErrors(['password_lama' => 'Password lama tidak sesuai.']);
         }
 
         $user->password = Hash::make($request->password_baru);
         $user->save();
 
-        return back()->with('success', 'Password berhasil diubah.');
+        return redirect()->route('driver.profil.index')->with('success', 'Password berhasil diubah.');
     }
 }

@@ -31,7 +31,7 @@ class RiwayatController extends Controller
         }
 
         $query = Pesanan::where('id_kurir', $kurir->id_kurir)
-            ->whereIn('status_pesanan', ['diterima', 'gagal_kirim'])
+            ->whereIn('status_pesanan', ['diterima', 'gagal', 'ditolak_driver', 'gagal_kirim'])
             ->with(['pelanggan.user', 'cabang']);
 
         if ($request->has('status') && $request->status) {
@@ -45,9 +45,15 @@ class RiwayatController extends Controller
 
     public function show($id)
     {
-        $pesanan = Pesanan::with(['pelanggan.user', 'cabang', 'details.produk'])
-            ->findOrFail($id);
+        $pesanan = Pesanan::with([
+            'pelanggan.user', 
+            'cabang', 
+            'details.produk',
+            'pengirimanTracking',
+            'buktiPengiriman',
+            'penolakanPengiriman'
+        ])->findOrFail($id);
 
-        return view('driver.riwayat.show', compact('pesanan'));
+        return view('driver.pengiriman.detail', compact('pesanan'));
     }
 }

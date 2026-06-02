@@ -228,6 +228,38 @@
         flex-shrink: 0;
     }
 
+    /* Status Badge di Card */
+    .task-status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 100px;
+        font-family: var(--font-body);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+    }
+
+    .task-status-indicator.status-pending {
+        background: rgba(254, 213, 11, 0.2);
+        color: var(--color-secondary);
+    }
+
+    .task-status-indicator.status-confirmed {
+        background: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+    }
+
+    .task-status-indicator .status-dot-sm {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
     .btn-start-journey {
         display: block;
         width: 100%;
@@ -255,6 +287,59 @@
     }
 
     .btn-start-journey:active { transform: translateY(0); }
+
+    /* Action Buttons Group */
+    .task-action-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .btn-action {
+        padding: 14px;
+        background: var(--color-secondary);
+        color: var(--color-neutral);
+        border: none;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-headline);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        text-align: center;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .btn-action:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(254, 213, 11, 0.4);
+    }
+
+    .btn-action:active { transform: translateY(0); }
+
+    .btn-confirm {
+        background: var(--color-secondary);
+        color: var(--color-neutral);
+    }
+
+    .btn-confirm:hover {
+        background: #e6c200;
+    }
+
+    .btn-reject {
+        background: var(--color-tertiary);
+        color: white;
+    }
+
+    .btn-reject:hover {
+        background: #dc2626;
+    }
 
     /* No Task State */
     .no-task-card {
@@ -404,6 +489,17 @@
     .delay-3 { animation-delay: 0.20s; }
     .delay-4 { animation-delay: 0.28s; }
     .delay-5 { animation-delay: 0.36s; }
+
+    /* ================================================
+       SWAL CUSTOM
+    ================================================ */
+    .swal2-popup {
+        font-family: var(--font-body) !important;
+        border-radius: var(--radius-md) !important;
+    }
+    .swal2-title {
+        font-family: var(--font-headline) !important;
+    }
 </style>
 @endpush
 
@@ -438,16 +534,21 @@
 {{-- ===== TUGAS BERIKUTNYA ===== --}}
 <p class="section-label fade-up delay-2">Tugas Berikutnya</p>
 
-@if($tugasBerikutnya)
-<div class="next-task-card fade-up delay-2">
+@if($tugasBerikutnya && in_array($tugasBerikutnya->status_pesanan, ['diterima_driver', 'diambil', 'dalam_pengiriman']))
+<div class="next-task-card fade-up delay-2" id="next-task-card">
     <div class="task-header">
         <div>
             <p class="task-id">ID TUGAS: {{ $tugasBerikutnya->id_pesanan }}</p>
-            <p class="task-name">{{ $tugasBerikutnya->catatan ?? 'Pengiriman Pesanan' }}</p>
+            <p class="task-name">Pengiriman Pesanan</p>
         </div>
         <div class="task-truck-icon">
             <i class="bi bi-truck"></i>
         </div>
+    </div>
+
+    <div class="task-status-indicator status-confirmed">
+        <span class="status-dot-sm"></span>
+        Dikonfirmasi
     </div>
 
     <div class="task-meta">
@@ -459,17 +560,19 @@
             <i class="bi bi-clock-fill"></i>
             <span>Estimasi: {{ $tugasBerikutnya->estimasi_tiba ? \Carbon\Carbon::parse($tugasBerikutnya->estimasi_tiba)->format('H:i') . ' WIB' : 'Menunggu' }}</span>
         </div>
+        <div class="task-meta-item">
+            <i class="bi bi-person-fill"></i>
+            <span>{{ $tugasBerikutnya->pelanggan->user->nama ?? 'Pelanggan' }}</span>
+        </div>
     </div>
 
-    <a href="{{ route('driver.tugas.show', $tugasBerikutnya->id_pesanan) }}" class="btn-start-journey">
-        <i class="bi bi-play-fill me-1"></i> Mulai Perjalanan
+    <a href="{{ route('driver.tugas.show', $tugasBerikutnya->id_pesanan) }}" class="btn-start-journey" id="btn-mulai-perjalanan">
+        <i class="bi bi-play-fill me-1"></i> Lanjutkan Perjalanan
     </a>
 </div>
 @else
-<div class="no-task-card fade-up delay-2">
-    <i class="bi bi-check-circle"></i>
-    <p>Tidak ada tugas baru saat ini.</p>
-</div>
+{{-- ===== STACKED CARDS UNTUK ANTREAN ===== --}}
+@include('driver.components.stacked-cards')
 @endif
 
 {{-- ===== MENU PINTAS ===== --}}
@@ -507,5 +610,176 @@
     </div>
     <span class="status-version">v2.4.0-Stable</span>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+    function confirmPesanan(pesananId) {
+        Swal.fire({
+            title: 'Konfirmasi Pesanan',
+            text: 'Apakah Anda yakin ingin mengkonfirmasi dan menerima pesanan ini?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: '✓ Ya, Konfirmasi',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#33116C',
+            cancelButtonColor: '#E4E0EE',
+            reverseButtons: true,
+            customClass: {
+                confirmButton: 'swal-btn-confirm',
+                cancelButton: 'swal-btn-cancel'
+            },
+            didOpen: (modal) => {
+                const cancel = modal.querySelector('.swal2-cancel');
+                if (cancel) cancel.style.color = '#2B2B2B';
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Show loading
+                Swal.fire({
+                    title: 'Memproses...',
+                    text: 'Mengirim konfirmasi pesanan',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+
+                fetch(`/driver/tugas/${pesananId}/confirm`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Berhasil!',
+                            text: 'Pesanan berhasil dikonfirmasi. Silakan mulai perjalanan.',
+                            icon: 'success',
+                            confirmButtonColor: '#33116C',
+                            timer: 2000,
+                            timerProgressBar: true
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Gagal!',
+                            text: data.message || 'Terjadi kesalahan',
+                            icon: 'error',
+                            confirmButtonColor: '#33116C'
+                        });
+                    }
+                }).catch(error => {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Terjadi kesalahan komunikasi dengan server',
+                        icon: 'error',
+                        confirmButtonColor: '#33116C'
+                    });
+                });
+            }
+        });
+    }
+
+    function openRejectModal(pesananId) {
+        Swal.fire({
+            title: 'Tolak Pengiriman',
+            html: `
+                <p style="font-size: 13px; color: #7a7a9a; margin-bottom: 16px;">
+                    Silakan tuliskan alasan penolakan pesanan ini. Minimal 10 karakter.
+                </p>
+                <textarea id="swal-alasan" class="swal2-textarea" 
+                    placeholder="Contoh: Kendaraan sedang dalam perbaikan, tidak bisa mengirim hari ini..."
+                    style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; min-height: 100px; border-radius: 8px; border: 1.5px solid #E4E0EE; resize: none;"
+                ></textarea>
+            `,
+            icon: 'warning',
+            iconColor: '#EB3B02',
+            showCancelButton: true,
+            confirmButtonText: '✕ Tolak Pesanan',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#EB3B02',
+            cancelButtonColor: '#E4E0EE',
+            reverseButtons: true,
+            customClass: {
+                confirmButton: 'swal-btn-reject',
+                cancelButton: 'swal-btn-cancel'
+            },
+            didOpen: (modal) => {
+                const cancel = modal.querySelector('.swal2-cancel');
+                if (cancel) cancel.style.color = '#2B2B2B';
+            },
+            preConfirm: () => {
+                const alasan = document.getElementById('swal-alasan').value.trim();
+                if (!alasan) {
+                    Swal.showValidationMessage('Alasan penolakan harus diisi');
+                    return false;
+                }
+                if (alasan.length < 10) {
+                    Swal.showValidationMessage('Alasan minimal 10 karakter');
+                    return false;
+                }
+                return alasan;
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const alasan = result.value;
+
+                Swal.fire({
+                    title: 'Memproses...',
+                    text: 'Mengirim penolakan pesanan',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+
+                fetch(`/driver/tugas/${pesananId}/reject`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ alasan: alasan })
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Pesanan Ditolak',
+                            text: 'Pesanan telah dikembalikan ke admin/dispatcher.',
+                            icon: 'success',
+                            confirmButtonColor: '#33116C',
+                            timer: 2000,
+                            timerProgressBar: true
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Gagal!',
+                            text: data.message || 'Terjadi kesalahan',
+                            icon: 'error',
+                            confirmButtonColor: '#33116C'
+                        });
+                    }
+                }).catch(error => {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Terjadi kesalahan komunikasi dengan server',
+                        icon: 'error',
+                        confirmButtonColor: '#33116C'
+                    });
+                });
+            }
+        });
+    }
+</script>
+@endpush
 
 @endsection

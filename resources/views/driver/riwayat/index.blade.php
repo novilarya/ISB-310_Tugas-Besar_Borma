@@ -301,20 +301,22 @@
        class="filter-tab {{ !request('status') ? 'active' : '' }}">Semua</a>
     <a href="{{ route('driver.riwayat.index', ['status' => 'diterima']) }}"
        class="filter-tab {{ request('status') == 'diterima' ? 'active' : '' }}">Diterima</a>
-    <a href="{{ route('driver.riwayat.index', ['status' => 'gagal_kirim']) }}"
-       class="filter-tab {{ request('status') == 'gagal_kirim' ? 'active' : '' }}">Gagal Kirim</a>
+    <a href="{{ route('driver.riwayat.index', ['status' => 'gagal']) }}"
+       class="filter-tab {{ request('status') == 'gagal' ? 'active' : '' }}">Gagal Kirim</a>
+    <a href="{{ route('driver.riwayat.index', ['status' => 'ditolak_driver']) }}"
+       class="filter-tab {{ request('status') == 'ditolak_driver' ? 'active' : '' }}">Ditolak</a>
 </div>
 
 {{-- ===== RIWAYAT LIST ===== --}}
 <div class="riwayat-list fade-up delay-3">
     @forelse($riwayat as $pesanan)
-    <div class="riwayat-item {{ $pesanan->status_pesanan == 'gagal_kirim' ? 'gagal' : '' }}" id="riwayat-{{ $pesanan->id_pesanan }}">
+    <div class="riwayat-item {{ in_array($pesanan->status_pesanan, ['gagal', 'ditolak_driver']) ? 'gagal' : '' }}" id="riwayat-{{ $pesanan->id_pesanan }}">
         <div class="riwayat-item-header">
             <div>
                 <p class="riwayat-order-id">Order ID</p>
                 <p class="riwayat-order-name">#BM-{{ $pesanan->id_pesanan }}</p>
             </div>
-            <span class="riwayat-badge {{ $pesanan->status_pesanan == 'gagal_kirim' ? 'badge-gagal' : 'badge-diterima' }}">
+            <span class="riwayat-badge {{ in_array($pesanan->status_pesanan, ['gagal', 'ditolak_driver']) ? 'badge-gagal' : 'badge-diterima' }}">
                 {{ strtoupper(str_replace('_', ' ', $pesanan->status_pesanan)) }}
             </span>
         </div>
@@ -330,13 +332,17 @@
             </div>
         </div>
 
-        @if($pesanan->status_pesanan == 'gagal_kirim' && $pesanan->alasan_gagal)
+        @if(in_array($pesanan->status_pesanan, ['gagal', 'ditolak_driver']))
         <div class="riwayat-reason">
+            @if($pesanan->status_pesanan == 'gagal' && $pesanan->alasan_gagal)
             <p>Alasan: {{ $pesanan->alasan_gagal }}</p>
+            @elseif($pesanan->status_pesanan == 'ditolak_driver' && $pesanan->penolakanPengiriman)
+            <p>Alasan: {{ $pesanan->penolakanPengiriman->alasan }}</p>
+            @endif
         </div>
         @endif
 
-        <a href="{{ route('driver.riwayat.show', $pesanan->id_pesanan) }}" class="btn-detail">
+        <a href="{{ route('driver.pengiriman.detail', $pesanan->id_pesanan) }}" class="btn-detail">
             Lihat Detail
         </a>
     </div>

@@ -13,7 +13,12 @@ class Pesanan extends Model
         'total_belanja', 'biaya_pengiriman', 'diskon_voucher', 'total_tagihan',
         'metode_pembayaran', 'alamat_pengiriman', 'status_pesanan', 'estimasi_tiba', 
         'bukti_pengiriman', 'latitude', 'longitude', 'alasan_gagal', 'potongan_driver',
-        'review_rating', 'review_text'
+        'review_rating', 'review_text', 'accepted_at', 'rejected_at'
+    ];
+
+    protected $casts = [
+        'accepted_at' => 'datetime',
+        'rejected_at' => 'datetime',
     ];
 
     public function pelanggan() { 
@@ -34,5 +39,17 @@ class Pesanan extends Model
 
     public function details() {
         return $this->hasMany(PesananProduk::class, 'id_pesanan');
+    }
+
+    public function buktiPengiriman() {
+        return $this->hasOne(BuktiPengiriman::class, 'id_pesanan');
+    }
+
+    public function penolakanPengiriman() {
+        return $this->hasOne(PenolakanPengiriman::class, 'id_pesanan');
+    }
+
+    public function pengirimanTracking() {
+        return $this->hasMany(PengirimanTracking::class, 'id_pesanan');
     }
 }
