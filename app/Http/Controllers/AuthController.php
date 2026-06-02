@@ -26,13 +26,16 @@ class AuthController extends Controller
             
             switch ($user->role) {
                 case 'Super Admin':
-                case 'Admin Super': 
+                case 'Admin Super':
+                case 'Staf Operasional':
                     return redirect()->intended('superadmin/dashboard');
                 case 'Admin Cabang':
-                    return redirect()->intended('admincabang/dashboard');
+                case 'Admin':
+                    return redirect()->intended('admin-cabang/dashboard');
                 case 'Kurir':
-                case 'Driver': 
+                case 'Driver':
                     return redirect()->intended('kurir/dashboard');
+                case 'Pelanggan':
                 default:
                     Auth::logout();
                     return back()->withErrors([

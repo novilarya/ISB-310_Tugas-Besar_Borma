@@ -32,4 +32,20 @@ class MenuPermission extends Model
             'superadmin_promo'      => 'Voucher & Promo',
         ];
     }
+
+    /**
+     * Daftar semua menu yang bisa dikontrol untuk Admin Cabang.
+     */
+    public static function adminCabangMenus(): array
+    {
+        return [
+            'admincabang_dashboard'  => 'Dashboard',
+            'admincabang_produk'     => 'Manajemen Produk',
+            'admincabang_pesanan'    => 'Daftar Pesanan',
+            'admincabang_member'     => 'Manajemen Member',
+            'admincabang_promo'      => 'Promo & Voucher',
+            'admincabang_laporan'    => 'Laporan Cabang',
+            'admincabang_pengaturan' => 'Pengaturan',
+        ];
+    }
 }

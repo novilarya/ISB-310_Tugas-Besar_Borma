@@ -11,10 +11,14 @@ class User extends Authenticatable
 
     protected $primaryKey = 'id_user';
 
-    protected $fillable = ['nama', 'email', 'password', 'no_telepon', 'role'];
+    protected $fillable = ['nama', 'email', 'password', 'no_telepon', 'role', 'settings'];
 
     protected $hidden = [
         'password',
+    ];
+
+    protected $casts = [
+        'settings' => 'array',
     ];
 
     public function pelanggan() {

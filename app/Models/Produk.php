@@ -11,7 +11,11 @@ class Produk extends Model
     protected $fillable = ['nama_produk', 'kategori', 'deskripsi', 'harga_reguler', 'harga_member', 'gambar_produk'];
 
     public function inventarisCabang() {
-        return $this->hasMany(ProdukCabang::class, 'id_produk');
+        return $this->hasMany(ProdukCabang::class, 'id_produk', 'id_produk');
+    }
+
+    public function historyHarga() {
+        return $this->hasMany(HistoryProduk::class, 'id_produk', 'id_produk');
     }
 
     public function details() {

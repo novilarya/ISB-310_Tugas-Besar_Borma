@@ -49,7 +49,10 @@
                         </td>
                         <td class="py-4 px-6">
                             <div class="flex flex-wrap gap-2">
-                                @foreach($menus as $key => $label)
+                                @php
+                                    $userMenus = $user->role === 'Admin Cabang' ? $adminCabangMenus : $superAdminMenus;
+                                @endphp
+                                @foreach($userMenus as $key => $label)
                                     @if($user->canAccessMenu($key))
                                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300 text-xs font-medium">
                                         <i class="fa-solid fa-check text-[10px]"></i> {{ $label }}
@@ -92,13 +95,8 @@
                 <div class="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
                     <p class="text-sm text-slate-500 dark:text-white/60 mb-4">Pilih menu apa saja yang dapat diakses oleh pengguna ini pada sidebar.</p>
                     
-                    <div class="space-y-3">
-                        @foreach($menus as $key => $label)
-                        <label class="flex items-center p-3 rounded-xl border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer transition-colors group">
-                            <input type="checkbox" name="permissions[{{ $key }}]" id="perm_{{ $key }}" value="1" class="w-5 h-5 rounded border-slate-300 text-borma-purple focus:ring-borma-purple dark:border-white/20 dark:bg-slate-800 dark:checked:bg-borma-yellow">
-                            <span class="ml-3 font-medium text-slate-700 dark:text-white/90 group-hover:text-borma-purple dark:group-hover:text-borma-yellow transition-colors">{{ $label }}</span>
-                        </label>
-                        @endforeach
+                    <div class="space-y-3" id="rbacCheckboxesContainer">
+                        <!-- JavaScript akan mengisi checkbox di sini berdasarkan role -->
                     </div>
                 </div>
 
@@ -116,13 +114,21 @@
 </div>
 
 <script>
-    // Menyimpan data permissions user dari PHP ke Javascript untuk modal
+    const superAdminMenus = @json($superAdminMenus);
+    const adminCabangMenus = @json($adminCabangMenus);
+
     const userPermissions = {
         @foreach($users as $user)
         '{{ $user->id_user }}': {
-            @foreach($menus as $key => $label)
-            '{{ $key }}': {{ $user->canAccessMenu($key) ? 'true' : 'false' }},
-            @endforeach
+            role: '{{ $user->role }}',
+            permissions: {
+                @php
+                    $uMenus = $user->role === 'Admin Cabang' ? $adminCabangMenus : $superAdminMenus;
+                @endphp
+                @foreach($uMenus as $key => $label)
+                '{{ $key }}': {{ $user->canAccessMenu($key) ? 'true' : 'false' }},
+                @endforeach
+            }
         },
         @endforeach
     };
@@ -131,17 +137,26 @@
         document.getElementById('rbacModal').classList.remove('hidden');
         document.getElementById('rbacModalUserName').innerText = userName;
         
-        // Set form action dynamically
         const form = document.getElementById('rbacForm');
         form.action = `/superadmin/hak-akses/${userId}`;
         
-        // Check corresponding boxes
-        const perms = userPermissions[userId];
-        for (const [key, isEnabled] of Object.entries(perms)) {
-            const checkbox = document.getElementById(`perm_${key}`);
-            if (checkbox) {
-                checkbox.checked = isEnabled;
-            }
+        const userData = userPermissions[userId];
+        const menus = userData.role === 'Admin Cabang' ? adminCabangMenus : superAdminMenus;
+        
+        const container = document.getElementById('rbacCheckboxesContainer');
+        container.innerHTML = '';
+        
+        for (const [key, label] of Object.entries(menus)) {
+            const isEnabled = userData.permissions[key] === true;
+            const checkedAttr = isEnabled ? 'checked' : '';
+            
+            const html = `
+                <label class="flex items-center p-3 rounded-xl border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer transition-colors group">
+                    <input type="checkbox" name="permissions[${key}]" id="perm_${key}" value="1" ${checkedAttr} class="w-5 h-5 rounded border-slate-300 text-borma-purple focus:ring-borma-purple dark:border-white/20 dark:bg-slate-800 dark:checked:bg-borma-yellow">
+                    <span class="ml-3 font-medium text-slate-700 dark:text-white/90 group-hover:text-borma-purple dark:group-hover:text-borma-yellow transition-colors">${label}</span>
+                </label>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
         }
         
         setTimeout(() => {

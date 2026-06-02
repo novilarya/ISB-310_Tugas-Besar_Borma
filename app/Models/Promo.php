@@ -10,9 +10,9 @@ class Promo extends Model
     protected $table = 'promos';
     protected $primaryKey = 'id_promo';
     protected $fillable = [
-        'id_cabang', 'id_produk_pemicu', 'id_produk_hadiah', 'nama_voucher', 'kode_voucher', 
-        'kuantitas_pemicu', 'kuantitas_hadiah', 'potongan_harga', 
-        'min_transaksi', 'tanggal_mulai', 'tanggal_berakhir', 'kuota_promo', 'max_promo'
+        'id_cabang', 'id_produk_pemicu', 'id_produk_hadiah', 'nama_voucher', 'kode_voucher',
+        'kuantitas_pemicu', 'kuantitas_hadiah', 'potongan_harga',
+        'min_transaksi', 'max_promo', 'kuota_promo', 'tanggal_mulai', 'tanggal_berakhir',
     ];
 
     protected $casts = [
@@ -20,34 +20,33 @@ class Promo extends Model
         'tanggal_berakhir' => 'date',
     ];
 
-    public function produkPemicu() { 
-        return $this->belongsTo(Produk::class, 'id_produk_pemicu'); 
-    }
-    
-    public function produkHadiah() { 
-        return $this->belongsTo(Produk::class, 'id_produk_hadiah'); 
-    }
-
-    public function cabang() {
-        return $this->belongsTo(Cabang::class, 'id_cabang');
-    }
-
-    public function statusPromo()
+    public function cabang()
     {
-        $today = now()->toDateString();
-        if ($this->tanggal_berakhir < $today) {
-            return 'berakhir';
-        } elseif ($this->tanggal_mulai > $today) {
-            return 'terjadwal';
-        } else {
-            return 'aktif';
-        }
+        return $this->belongsTo(Cabang::class, 'id_cabang', 'id_cabang');
     }
 
-    public function sisaHari()
+    public function produkPemicu()
     {
-        $today = now()->startOfDay();
-        $end = \Carbon\Carbon::parse($this->tanggal_berakhir)->startOfDay();
-        return (int) $today->diffInDays($end, false);
+        return $this->belongsTo(Produk::class, 'id_produk_pemicu', 'id_produk');
+    }
+
+    public function produkHadiah()
+    {
+        return $this->belongsTo(Produk::class, 'id_produk_hadiah', 'id_produk');
+    }
+
+    /** Hitung sisa hari, -1 = sudah berakhir, 0 = hari ini */
+    public function sisaHari(): int
+    {
+        return now()->startOfDay()->diffInDays($this->tanggal_berakhir->startOfDay(), false);
+    }
+
+    /** Status: aktif | terjadwal | berakhir */
+    public function statusPromo(): string
+    {
+        $now = now()->startOfDay();
+        if ($now->gt($this->tanggal_berakhir)) return 'berakhir';
+        if ($now->lt($this->tanggal_mulai))    return 'terjadwal';
+        return 'aktif';
     }
 }

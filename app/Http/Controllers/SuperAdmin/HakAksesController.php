@@ -12,16 +12,20 @@ class HakAksesController extends Controller
         $users = \App\Models\User::whereIn('role', ['Admin Super', 'Admin Cabang'])
             ->with('menuPermissions')
             ->get();
-        $menus = \App\Models\MenuPermission::superAdminMenus();
         
-        return view('super-admin.hak-akses', compact('users', 'menus'));
+        $superAdminMenus = \App\Models\MenuPermission::superAdminMenus();
+        $adminCabangMenus = \App\Models\MenuPermission::adminCabangMenus();
+        
+        return view('super-admin.hak-akses', compact('users', 'superAdminMenus', 'adminCabangMenus'));
     }
 
     public function updateHakAkses(Request $request, $userId)
     {
         $user = \App\Models\User::findOrFail($userId);
         
-        $menus = \App\Models\MenuPermission::superAdminMenus();
+        $menus = $user->role === 'Admin Cabang' 
+            ? \App\Models\MenuPermission::adminCabangMenus() 
+            : \App\Models\MenuPermission::superAdminMenus();
         
         foreach ($menus as $key => $label) {
             $isEnabled = $request->has("permissions.{$key}");
