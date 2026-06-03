@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('id_cabang')->constrained('cabangs', 'id_cabang');
             $table->foreignId('id_produk_pemicu')->constrained('produks', 'id_produk');
             $table->foreignId('id_produk_hadiah')->nullable()->constrained('produks', 'id_produk');
-            $table->foreignId('id_cabang')->nullable()->constrained('cabangs', 'id_cabang')->nullOnDelete();
             $table->string('nama_voucher');
             $table->string('kode_voucher')->nullable();
             $table->integer('kuantitas_pemicu')->default(1);

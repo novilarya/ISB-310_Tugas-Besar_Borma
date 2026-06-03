@@ -1,87 +1,110 @@
-<header id="topbar">
-    <div class="cabang-info">
-        <span class="badge">Cabang Aktif</span>
-        {{ auth()->user()?->adminCabang?->cabang?->nama_cabang ?? 'Antapani' }}
+<header class="h-20 flex items-center justify-between px-8 bg-white/80 dark:bg-borma-dark/80 backdrop-blur-xl border-b border-slate-200 dark:border-white/10 sticky top-0 z-10 transition-colors duration-300">
+    <div class="flex items-center gap-4">
+        <h2 class="text-xl font-bold text-slate-800 dark:text-white">@yield('page_title', 'Dashboard')</h2>
+        
+        <!-- Active Branch Pill -->
+        <div class="hidden md:flex items-center gap-2 bg-slate-100 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none">
+            <span class="text-[10px] font-bold text-borma-purple dark:text-borma-yellow bg-borma-purple/10 dark:bg-borma-yellow/10 px-2 py-0.5 rounded-lg uppercase tracking-wider">Cabang Aktif</span>
+            <span class="text-xs font-bold text-slate-700 dark:text-white/90">{{ auth()->user()?->adminCabang?->cabang?->nama_cabang ?? 'Borma Gempol' }}</span>
+        </div>
     </div>
     
-    <div class="topbar-actions">
+    <div class="flex items-center gap-4">
+        <!-- Theme Toggle Button -->
+        <button id="theme-toggle" type="button" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:text-borma-purple dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-all flex items-center justify-center focus:outline-none">
+            <i id="theme-toggle-dark-icon" class="fa-solid fa-moon hidden text-slate-700"></i>
+            <i id="theme-toggle-light-icon" class="fa-solid fa-sun hidden text-borma-yellow"></i>
+        </button>
+
         <!-- Notifications Dropdown -->
-        <div class="dropdown topbar-dropdown">
-            <a href="#" class="icon-btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-bell-fill"></i>
-                <span class="badge-notif"></span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-end p-0" style="width: 320px;">
-                <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 font-weight-bold" style="font-family: var(--font-heading); color: var(--borma-primary);">Notifikasi</h6>
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="badge bg-danger rounded-pill badge-count-text" style="font-size: 0.7rem;">3 Baru</span>
-                        <a href="#" onclick="markAllAsReadFromTopbar(event)" class="text-muted hover-primary" style="font-size: 0.72rem; font-weight: 700; text-decoration: none; transition: color 0.2s;" title="Tandai semua dibaca">
-                            <i class="bi bi-check2-all" style="font-size: 1.1rem; vertical-align: middle;"></i>
+        <div class="relative dropdown">
+            <button class="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:text-borma-purple dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-all flex items-center justify-center relative dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-bell"></i>
+                <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 dark:bg-borma-yellow rounded-full badge-notif"></span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end p-0 border border-slate-200 dark:border-white/10 bg-white dark:bg-borma-dark shadow-xl rounded-2xl overflow-hidden" style="width: 320px; margin-top: 12px;">
+                <div class="p-4 border-b border-slate-200 dark:border-white/10 flex justify-between items-center bg-slate-50 dark:bg-black/20">
+                    <h6 class="m-0 font-bold text-slate-800 dark:text-white text-sm">Notifikasi</h6>
+                    <div class="flex items-center gap-2">
+                        <span class="badge bg-red-500 text-white rounded-full badge-count-text text-[10px] px-2 py-0.5">3 Baru</span>
+                        <a href="#" onclick="markAllAsReadFromTopbar(event)" class="text-slate-400 hover:text-borma-purple dark:hover:text-borma-yellow transition-colors" title="Tandai semua dibaca">
+                            <i class="fa-solid fa-check-double text-xs"></i>
                         </a>
                     </div>
                 </div>
-                <div style="max-height: 300px; overflow-y: auto;">
-                    <a href="{{ route('admin-cabang.pesanan') }}" class="notif-item">
-                        <div class="notif-icon bg-warning" style="background: rgba(254, 213, 11, 0.2) !important;"><i class="bi bi-cart-fill text-warning" style="color: #D97706 !important;"></i></div>
-                        <div>
-                            <div class="text-dark" style="font-weight: 700; font-size: 0.85rem;">Pesanan Baru #BRM-9021</div>
-                            <div class="text-muted" style="font-size: 0.75rem;">Budi Santoso - 3 Item</div>
-                            <div class="text-muted mt-1" style="font-size: 0.7rem;"><i class="bi bi-clock"></i> 2 menit lalu</div>
+                <div class="max-h-[300px] overflow-y-auto divide-y divide-slate-100 dark:divide-white/5">
+                    <a href="{{ route('admin-cabang.pesanan') }}" class="flex items-start gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors notif-item">
+                        <div class="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0 text-xs">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-bold text-slate-800 dark:text-white truncate">Pesanan Baru #BRM-9021</p>
+                            <p class="text-[11px] text-slate-500 dark:text-white/60 truncate">Budi Santoso - 3 Item</p>
+                            <p class="text-[10px] text-slate-400 dark:text-white/40 mt-1 flex items-center gap-1"><i class="fa-regular fa-clock"></i> 2 menit lalu</p>
                         </div>
                     </a>
-                    <a href="{{ route('admin-cabang.pesanan') }}" class="notif-item">
-                        <div class="notif-icon bg-success" style="background: #ECFDF5 !important;"><i class="bi bi-truck text-success"></i></div>
-                        <div>
-                            <div class="text-dark" style="font-weight: 700; font-size: 0.85rem;">Pesanan #BRM-9018 Selesai</div>
-                            <div class="text-muted" style="font-size: 0.75rem;">Kurir: Asep telah mengonfirmasi.</div>
-                            <div class="text-muted mt-1" style="font-size: 0.7rem;"><i class="bi bi-clock"></i> 1 jam lalu</div>
+                    <a href="{{ route('admin-cabang.pesanan') }}" class="flex items-start gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors notif-item">
+                        <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 flex items-center justify-center flex-shrink-0 text-xs">
+                            <i class="fa-solid fa-truck"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-bold text-slate-800 dark:text-white truncate">Pesanan #BRM-9018 Selesai</p>
+                            <p class="text-[11px] text-slate-500 dark:text-white/60 truncate">Kurir: Asep telah mengonfirmasi.</p>
+                            <p class="text-[10px] text-slate-400 dark:text-white/40 mt-1 flex items-center gap-1"><i class="fa-regular fa-clock"></i> 1 jam lalu</p>
                         </div>
                     </a>
-                    <a href="{{ route('admin-cabang.produk') }}" class="notif-item">
-                        <div class="notif-icon bg-danger" style="background: #FEF2F2 !important;"><i class="bi bi-exclamation-triangle-fill text-danger"></i></div>
-                        <div>
-                            <div class="text-dark" style="font-weight: 700; font-size: 0.85rem;">Stok Menipis</div>
-                            <div class="text-muted" style="font-size: 0.75rem;">Minyak Goreng 2L tersisa 5 unit.</div>
-                            <div class="text-muted mt-1" style="font-size: 0.7rem;"><i class="bi bi-clock"></i> 2 jam lalu</div>
+                    <a href="{{ route('admin-cabang.produk') }}" class="flex items-start gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors notif-item">
+                        <div class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 flex items-center justify-center flex-shrink-0 text-xs">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-bold text-slate-800 dark:text-white truncate">Stok Menipis</p>
+                            <p class="text-[11px] text-slate-500 dark:text-white/60 truncate">Minyak Goreng 2L tersisa 5 unit.</p>
+                            <p class="text-[10px] text-slate-400 dark:text-white/40 mt-1 flex items-center gap-1"><i class="fa-regular fa-clock"></i> 2 jam lalu</p>
                         </div>
                     </a>
                 </div>
-                <div class="p-2 border-top text-center">
-                    <a href="{{ route('admin-cabang.notifikasi') }}" class="text-primary-custom" style="font-size: 0.8rem; font-weight: 700; text-decoration: none;">Lihat Semua</a>
+                <div class="p-3 border-t border-slate-200 dark:border-white/10 text-center bg-slate-50 dark:bg-black/20">
+                    <a href="{{ route('admin-cabang.notifikasi') }}" class="text-xs font-bold text-borma-purple dark:text-borma-yellow hover:underline transition-all">Lihat Semua</a>
                 </div>
             </div>
         </div>
         
-        <!-- Settings -->
-        <a href="{{ route('admin-cabang.pengaturan') }}" class="icon-btn">
-            <i class="bi bi-gear-fill"></i>
+        <!-- Settings Button -->
+        <a href="{{ route('admin-cabang.pengaturan') }}" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:text-borma-purple dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-all flex items-center justify-center">
+            <i class="fa-solid fa-gear"></i>
         </a>
 
-        <div style="width: 1px; height: 32px; background: #E5E7EB; margin: 0 8px;"></div>
+        <div class="w-[1px] h-8 bg-slate-200 dark:bg-white/10 mx-1"></div>
         
         <!-- User Profile Dropdown -->
-        <div class="dropdown topbar-dropdown">
-            <div class="user-dropdown dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
-                <div class="avatar">{{ strtoupper(substr(auth()->user()->nama ?? 'A', 0, 2)) }}</div>
-                <div class="info">
-                    <h6>{{ auth()->user()->nama ?? 'Admin' }}</h6>
-                    <small>{{ auth()->user()->settings['jabatan'] ?? auth()->user()->role ?? 'Admin Cabang' }}</small>
+        <div class="relative dropdown">
+            <div class="flex items-center gap-3 bg-slate-100 dark:bg-white/5 p-1.5 pr-4 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none cursor-pointer dropdown-toggle hover:bg-slate-200 dark:hover:bg-white/10 transition-all" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="w-8 h-8 rounded-lg bg-borma-purple dark:bg-borma-yellow flex items-center justify-center font-bold text-white dark:text-borma-purple text-xs shadow-md">
+                    {{ strtoupper(substr(auth()->user()->nama ?? 'A', 0, 1)) }}
                 </div>
-                <i class="bi bi-chevron-down ms-2 text-muted" style="font-size: 0.8rem;"></i>
+                <div class="hidden sm:block text-left">
+                    <p class="text-xs font-bold text-slate-800 dark:text-white leading-tight">{{ auth()->user()->nama ?? 'Admin' }}</p>
+                    <p class="text-[10px] text-slate-500 dark:text-white/60 leading-none">{{ auth()->user()->settings['jabatan'] ?? auth()->user()->role ?? 'Admin Cabang' }}</p>
+                </div>
+                <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 dark:text-white/40 ml-1"></i>
             </div>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <div class="px-3 py-2 border-bottom mb-2">
-                    <p class="m-0" style="font-size: 0.75rem; color: #6B7280;">Login sebagai</p>
-                    <p class="m-0 font-weight-bold" style="font-size: 0.85rem; color: var(--borma-neutral);">{{ auth()->user()->email ?? 'admin@borma.co.id' }}</p>
+            <ul class="dropdown-menu dropdown-menu-end p-2 border border-slate-200 dark:border-white/10 bg-white dark:bg-borma-dark shadow-xl rounded-2xl overflow-hidden" style="width: 220px; margin-top: 12px;">
+                <div class="px-3 py-2 border-b border-slate-100 dark:divide-white/5 mb-2">
+                    <p class="text-[9px] text-slate-400 dark:text-white/40 uppercase tracking-wider font-bold">Login Sebagai</p>
+                    <p class="text-xs font-bold text-slate-700 dark:text-white truncate">{{ auth()->user()->email ?? 'admin@borma.co.id' }}</p>
                 </div>
-                <li><a class="dropdown-item" href="{{ route('admin-cabang.pengaturan') }}"><i class="bi bi-person-circle" style="font-size: 1.1rem;"></i> Profil Saya</a></li>
-                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-700 dark:text-white/80 hover:bg-slate-50 dark:hover:bg-white/5" href="{{ route('admin-cabang.pengaturan') }}">
+                        <i class="fa-solid fa-user-gear text-slate-400"></i> Profil Saya
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider border-slate-100 dark:border-white/5 my-1"></li>
                 <li>
                     <form action="{{ route('internal.logout') }}" method="POST" class="m-0 p-0">
                         @csrf
-                        <button type="submit" class="dropdown-item text-danger border-0 bg-transparent" style="cursor:pointer;">
-                            <i class="bi bi-box-arrow-right" style="font-size: 1.1rem;"></i> Log Out
+                        <button type="submit" class="dropdown-item flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-xs font-bold text-red-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50/50 dark:hover:bg-red-500/10 border-0 bg-transparent text-left">
+                            <i class="fa-solid fa-right-from-bracket"></i> Log Out
                         </button>
                     </form>
                 </li>
@@ -92,7 +115,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. Check if all notifications are marked as read in localStorage
     if (localStorage.getItem('all_notifs_read') === 'true') {
         const badge = document.querySelector('.badge-notif');
         if (badge) badge.style.display = 'none';
@@ -100,7 +122,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const countText = document.querySelector('.badge-count-text');
         if (countText) countText.innerText = '0 Baru';
 
-        // Also, on the notifications page itself if open:
         const unreadItems = document.querySelectorAll('.notif-unread');
         unreadItems.forEach(item => {
             item.classList.remove('notif-unread');
@@ -118,7 +139,6 @@ function markAllAsReadFromTopbar(e) {
     const countText = document.querySelector('.badge-count-text');
     if (countText) countText.innerText = '0 Baru';
 
-    // If we are currently on the notifikasi list page, also clear them there
     const unreadItems = document.querySelectorAll('.notif-unread');
     unreadItems.forEach(item => {
         item.classList.remove('notif-unread');

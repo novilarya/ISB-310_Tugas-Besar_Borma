@@ -19,7 +19,7 @@ Route::post('/internal/login', [AuthController::class, 'authenticateInternal'])-
 Route::post('/internal/logout', [AuthController::class, 'logout'])->name('internal.logout');
 
 // Super Admin Routes
-Route::prefix('superadmin')->name('superadmin.')->group(function () {
+Route::prefix('superadmin')->middleware(['auth', 'superadmin'])->name('superadmin.')->group(function () {
     
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -64,7 +64,7 @@ Route::get('/kurir/dashboard', function () {
     return 'Kurir Dashboard';
 })->name('kurir.dashboard');
 
-Route::prefix('admin-cabang')->middleware('auth')->group(function () {
+Route::prefix('admin-cabang')->middleware(['auth', 'admin_cabang'])->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\AdminCabang\DashboardController::class, 'index'])
         ->name('admin-cabang.dashboard');
     Route::get('/notifikasi', [\App\Http\Controllers\AdminCabang\DashboardController::class, 'notifikasi'])

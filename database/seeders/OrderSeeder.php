@@ -30,11 +30,11 @@ class OrderSeeder extends Seeder
 
         // ── 2. Pelanggans ────────────────────────────────────────────────
         $pelangganData = [
-            ['status_member' => false, 'poin_member' => 0,   'alamat' => 'Jl. Antapani No. 1, Bandung'],
-            ['status_member' => true,  'poin_member' => 350, 'alamat' => 'Jl. Dago No. 2, Bandung'],
-            ['status_member' => false, 'poin_member' => 0,   'alamat' => 'Jl. Kiaracondong No. 3, Bandung'],
-            ['status_member' => true,  'poin_member' => 120, 'alamat' => 'Jl. Cicadas No. 5, Bandung'],
-            ['status_member' => true,  'poin_member' => 80,  'alamat' => 'Jl. Margahayu No. 8, Bandung'],
+            ['status_member' => false, 'poin_member' => 0,   'alamat' => 'Jl. Antapani No. 1, Bandung', 'provinsi' => 'Jawa Barat', 'kota_kabupaten' => 'Bandung', 'kecamatan' => 'Antapani'],
+            ['status_member' => true,  'poin_member' => 350, 'alamat' => 'Jl. Dago No. 2, Bandung', 'provinsi' => 'Jawa Barat', 'kota_kabupaten' => 'Bandung', 'kecamatan' => 'Coblong'],
+            ['status_member' => false, 'poin_member' => 0,   'alamat' => 'Jl. Kiaracondong No. 3, Bandung', 'provinsi' => 'Jawa Barat', 'kota_kabupaten' => 'Bandung', 'kecamatan' => 'Kiaracondong'],
+            ['status_member' => true,  'poin_member' => 120, 'alamat' => 'Jl. Cicadas No. 5, Bandung', 'provinsi' => 'Jawa Barat', 'kota_kabupaten' => 'Bandung', 'kecamatan' => 'Rancasari'],
+            ['status_member' => true,  'poin_member' => 80,  'alamat' => 'Jl. Margahayu No. 8, Bandung', 'provinsi' => 'Jawa Barat', 'kota_kabupaten' => 'Bandung', 'kecamatan' => 'Mandalajati'],
         ];
         $pelangganIds = [];
         foreach ($pelangganData as $i => $p) {

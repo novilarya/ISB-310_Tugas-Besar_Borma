@@ -38,7 +38,7 @@ class AdminCabangSeeder extends Seeder
             'email' => 'admin.antapani@borma.co.id',
             'password' => Hash::make('password'),
             'no_telepon' => '081234567890',
-            'role' => 'Admin',
+            'role' => 'Admin Cabang',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -48,7 +48,7 @@ class AdminCabangSeeder extends Seeder
             'email' => 'admin.dago@borma.co.id',
             'password' => Hash::make('password'),
             'no_telepon' => '081298765432',
-            'role' => 'Admin',
+            'role' => 'Admin Cabang',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

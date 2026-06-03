@@ -1,40 +1,70 @@
-<aside id="sidebar">
-    <a href="{{ route('admin-cabang.dashboard') }}" class="sidebar-brand">
-        <i class="bi bi-shop"></i>
-        <div>
-            BORMA
-            <span>Admin Cabang</span>
-        </div>
-    </a>
-    <ul class="sidebar-nav">
+<aside class="w-64 fixed inset-y-0 left-0 bg-white dark:bg-borma-purple/90 dark:backdrop-blur-xl border-r border-slate-200 dark:border-white/10 flex flex-col z-20 transition-colors duration-300 shadow-sm dark:shadow-none">
+    <div class="p-6 text-center border-b border-slate-200 dark:border-white/10">
+        <h1 class="text-2xl font-bold text-borma-purple dark:text-borma-yellow flex items-center justify-center gap-2">
+            <i class="fa-solid fa-cart-shopping"></i> BORMA
+        </h1>
+        <p class="text-slate-500 dark:text-white/50 text-xs mt-1 uppercase tracking-wider font-semibold">Admin Cabang Portal</p>
+    </div>
+    
+    <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
         @if(auth()->user()->canAccessMenu('admincabang_dashboard'))
-        <li><a href="{{ route('admin-cabang.dashboard') }}" class="{{ request()->routeIs('admin-cabang.dashboard') ? 'active' : '' }}"><i class="bi bi-grid-fill"></i> Dashboard</a></li>
+        <a href="{{ route('admin-cabang.dashboard') }}" class="{{ request()->routeIs('admin-cabang.dashboard') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
+            <i class="fa-solid fa-chart-line w-5"></i> Dashboard
+        </a>
         @endif
+        
         @if(auth()->user()->canAccessMenu('admincabang_produk'))
-        <li><a href="{{ route('admin-cabang.produk') }}" class="{{ request()->routeIs('admin-cabang.produk*') ? 'active' : '' }}"><i class="bi bi-box-seam"></i> Manajemen Produk</a></li>
+        <a href="{{ route('admin-cabang.produk') }}" class="{{ request()->routeIs('admin-cabang.produk*') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
+            <i class="fa-solid fa-box w-5"></i> Manajemen Produk
+        </a>
         @endif
+        
         @if(auth()->user()->canAccessMenu('admincabang_pesanan'))
-        <li><a href="{{ route('admin-cabang.pesanan') }}" class="{{ request()->routeIs('admin-cabang.pesanan*') ? 'active' : '' }}"><i class="bi bi-cart3"></i> Daftar Pesanan</a></li>
+        <a href="{{ route('admin-cabang.pesanan') }}" class="{{ request()->routeIs('admin-cabang.pesanan*') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
+            <i class="fa-solid fa-cart-shopping w-5"></i> Daftar Pesanan
+        </a>
         @endif
+
         @if(auth()->user()->canAccessMenu('admincabang_member'))
-        <li><a href="{{ route('admin-cabang.member') }}" class="{{ request()->routeIs('admin-cabang.member*') ? 'active' : '' }}"><i class="bi bi-people"></i> Manajemen Member</a></li>
+        <a href="{{ route('admin-cabang.member') }}" class="{{ request()->routeIs('admin-cabang.member*') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
+            <i class="fa-solid fa-users w-5"></i> Manajemen Member
+        </a>
         @endif
+        
         @if(auth()->user()->canAccessMenu('admincabang_promo'))
-        <li><a href="{{ route('admin-cabang.promo') }}" class="{{ request()->routeIs('admin-cabang.promo*') ? 'active' : '' }}"><i class="bi bi-ticket-perforated"></i> Promo & Voucher</a></li>
+        <a href="{{ route('admin-cabang.promo') }}" class="{{ request()->routeIs('admin-cabang.promo*') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
+            <i class="fa-solid fa-ticket w-5"></i> Promo & Voucher
+        </a>
         @endif
+        
         @if(auth()->user()->canAccessMenu('admincabang_laporan'))
-        <li><a href="{{ route('admin-cabang.laporan') }}" class="{{ request()->routeIs('admin-cabang.laporan*') ? 'active' : '' }}"><i class="bi bi-bar-chart-fill"></i> Laporan Cabang</a></li>
+        <a href="{{ route('admin-cabang.laporan') }}" class="{{ request()->routeIs('admin-cabang.laporan*') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
+            <i class="fa-solid fa-chart-bar w-5"></i> Laporan Cabang
+        </a>
         @endif
+
         @if(auth()->user()->canAccessMenu('admincabang_pengaturan'))
-        <li><a href="{{ route('admin-cabang.pengaturan') }}" class="{{ request()->routeIs('admin-cabang.pengaturan*') ? 'active' : '' }}"><i class="bi bi-gear"></i> Pengaturan</a></li>
+        <a href="{{ route('admin-cabang.pengaturan') }}" class="{{ request()->routeIs('admin-cabang.pengaturan*') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
+            <i class="fa-solid fa-gear w-5"></i> Pengaturan
+        </a>
         @endif
-    </ul>
-    <div style="padding: 24px; border-top: 1px solid #E5E7EB;" class="sidebar-footer">
-        <form action="{{ route('internal.logout') }}" method="POST" class="d-inline w-100">
-            @csrf
-            <button type="submit" style="background:none; border:none; color: #EF4444; text-decoration: none; font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; gap: 12px; transition: all 0.2s; padding:0; width:100%; text-align:left;" onmouseover="this.style.color='#DC2626'" onmouseout="this.style.color='#EF4444'">
-                <i class="bi bi-box-arrow-left" style="font-size: 1.2rem;"></i> Log Out
-            </button>
-        </form>
+    </nav>
+
+    <div class="p-4 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/20">
+        <div class="flex items-center gap-3 bg-white dark:bg-white/5 p-3 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none">
+            <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-borma-yellow/20 flex items-center justify-center font-bold text-borma-purple dark:text-borma-yellow text-sm">
+                {{ strtoupper(substr(auth()->user()->nama ?? 'AC', 0, 2)) }}
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-bold text-slate-800 dark:text-white truncate">{{ auth()->user()->nama ?? 'Admin Cabang' }}</p>
+                <p class="text-xs text-slate-500 dark:text-white/60 truncate">{{ auth()->user()->settings['jabatan'] ?? auth()->user()->role ?? 'Admin Cabang' }}</p>
+            </div>
+            <form action="{{ route('internal.logout') }}" method="POST" class="m-0 p-0 flex items-center">
+                @csrf
+                <button type="submit" class="text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 transition-colors p-2" title="Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </form>
+        </div>
     </div>
 </aside>
