@@ -59,9 +59,9 @@ class ProductController extends Controller
         // Sorting
         $allowedSort = ['id_produk_cabang', 'jumlah_stok', 'jumlah_terjual', 'nama_produk', 'kategori'];
         if (in_array($sort, ['nama_produk', 'kategori'])) {
-            $query->join('produks', 'produk_cabangs.id_produk', '=', 'produks.id_produk')
-                  ->orderBy("produks.{$sort}", $direction)
-                  ->select('produk_cabangs.*');
+            $query->join('produk', 'produk_cabang.id_produk', '=', 'produk.id_produk')
+                  ->orderBy("produk.{$sort}", $direction)
+                  ->select('produk_cabang.*');
         } elseif (in_array($sort, ['id_produk_cabang', 'jumlah_stok', 'jumlah_terjual'])) {
             $query->orderBy($sort, $direction);
         }
@@ -97,23 +97,23 @@ class ProductController extends Controller
 
         // ── Analisis Terlaris & Kurang Laku (dengan Filter Periode) ──────
         $period = $request->query('period', 'semua');
-        $querySales = \Illuminate\Support\Facades\DB::table('pesanan_produks')
-            ->join('pesanans', 'pesanan_produks.id_pesanan', '=', 'pesanans.id_pesanan')
-            ->where('pesanans.id_cabang', $idCabang);
+        $querySales = \Illuminate\Support\Facades\DB::table('pesanan_produk')
+            ->join('pesanan', 'pesanan_produk.id_pesanan', '=', 'pesanan.id_pesanan')
+            ->where('pesanan.id_cabang', $idCabang);
 
         if ($period === 'bulanan') {
-            $querySales->where('pesanans.tanggal_pemesanan', '>=', now()->subMonth());
+            $querySales->where('pesanan.tanggal_pemesanan', '>=', now()->subMonth());
         } elseif ($period === 'mingguan') {
-            $querySales->where('pesanans.tanggal_pemesanan', '>=', now()->subWeek());
+            $querySales->where('pesanan.tanggal_pemesanan', '>=', now()->subWeek());
         } elseif ($period === 'harian') {
-            $querySales->where('pesanans.tanggal_pemesanan', '>=', now()->startOfDay());
+            $querySales->where('pesanan.tanggal_pemesanan', '>=', now()->startOfDay());
         } else {
             $period = 'semua';
         }
 
         $salesPerProduct = $querySales
-            ->select('pesanan_produks.id_produk', \Illuminate\Support\Facades\DB::raw('SUM(pesanan_produks.jumlah) as total_qty'))
-            ->groupBy('pesanan_produks.id_produk')
+            ->select('pesanan_produk.id_produk', \Illuminate\Support\Facades\DB::raw('SUM(pesanan_produk.jumlah) as total_qty'))
+            ->groupBy('pesanan_produk.id_produk')
             ->pluck('total_qty', 'id_produk');
 
         $produkCabangs->each(function ($pc) use ($salesPerProduct) {
@@ -170,7 +170,7 @@ class ProductController extends Controller
     }
 
     /**
-     * CREATE — Simpan produk baru ke produks + produk_cabangs.
+     * CREATE — Simpan produk baru ke produks + produk_cabang.
      */
     public function store(Request $request)
     {

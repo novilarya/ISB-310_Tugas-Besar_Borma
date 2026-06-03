@@ -17,7 +17,7 @@ class MemberController extends Controller
         $pelanggan = null;
 
         if ($user) {
-            $pelanggan = Pelanggan::where('id_user', $user->id_user)->first();
+            $pelanggan = Pelanggan::where('id_pengguna', $user->id_pengguna)->first();
         }
 
         return view('pelanggan.member', compact('user', 'pelanggan'));
@@ -51,7 +51,7 @@ class MemberController extends Controller
         ]);
 
         // Check if pelanggan record exists
-        $pelanggan = Pelanggan::where('id_user', $user->id_user)->first();
+        $pelanggan = Pelanggan::where('id_pengguna', $user->id_pengguna)->first();
 
         if ($pelanggan) {
             // Update existing record
@@ -65,7 +65,7 @@ class MemberController extends Controller
         } else {
             // Create new pelanggan record
             Pelanggan::create([
-                'id_user' => $user->id_user,
+                'id_pengguna' => $user->id_pengguna,
                 'status_member' => 1,
                 'poin_member' => 0,
                 'provinsi' => $request->provinsi,

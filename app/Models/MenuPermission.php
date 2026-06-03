@@ -6,15 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class MenuPermission extends Model
 {
-    protected $table = 'menu_permissions';
+    protected $table = 'hak_akses_menu';
 
-    protected $fillable = ['id_user', 'menu_key', 'is_enabled'];
+    protected $fillable = ['id_pengguna', 'menu_key', 'akses'];
 
-    protected $casts = ['is_enabled' => 'boolean'];
+    protected $casts = ['akses' => 'boolean'];
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_user', 'id_user');
+        return $this->belongsTo(User::class, 'id_pengguna', 'id_pengguna');
     }
 
     /**

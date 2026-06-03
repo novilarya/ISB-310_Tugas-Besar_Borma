@@ -56,26 +56,26 @@ class ReportController extends Controller
 
         // ── Produk Terlaris Bulan Ini ────────────────────────────────────
         $produkTerlaris = PesananProduk::query()
-            ->join('pesanans', 'pesanan_produks.id_pesanan', '=', 'pesanans.id_pesanan')
-            ->join('produks', 'pesanan_produks.id_produk', '=', 'produks.id_produk')
-            ->where('pesanans.id_cabang', $idCabang)
-            ->whereBetween('pesanans.tanggal_pemesanan', [$mulai, $akhir])
-            ->where('pesanans.status_pesanan', 'Diterima')
-            ->selectRaw('produks.id_produk, produks.nama_produk, produks.kategori, SUM(pesanan_produks.jumlah) as total_terjual, SUM(pesanan_produks.subtotal) as total_revenue')
-            ->groupBy('produks.id_produk', 'produks.nama_produk', 'produks.kategori')
+            ->join('pesanan', 'pesanan_produk.id_pesanan', '=', 'pesanan.id_pesanan')
+            ->join('produk', 'pesanan_produk.id_produk', '=', 'produk.id_produk')
+            ->where('pesanan.id_cabang', $idCabang)
+            ->whereBetween('pesanan.tanggal_pemesanan', [$mulai, $akhir])
+            ->where('pesanan.status_pesanan', 'Diterima')
+            ->selectRaw('produk.id_produk, produk.nama_produk, produk.kategori, SUM(pesanan_produk.jumlah) as total_terjual, SUM(pesanan_produk.subtotal) as total_revenue')
+            ->groupBy('produk.id_produk', 'produk.nama_produk', 'produk.kategori')
             ->orderByDesc('total_terjual')
             ->limit(10)
             ->get();
 
         // ── Penjualan per Kategori ────────────────────────────────────────
         $penjualanKategori = PesananProduk::query()
-            ->join('pesanans', 'pesanan_produks.id_pesanan', '=', 'pesanans.id_pesanan')
-            ->join('produks', 'pesanan_produks.id_produk', '=', 'produks.id_produk')
-            ->where('pesanans.id_cabang', $idCabang)
-            ->whereBetween('pesanans.tanggal_pemesanan', [$mulai, $akhir])
-            ->where('pesanans.status_pesanan', 'Diterima')
-            ->selectRaw('produks.kategori, SUM(pesanan_produks.subtotal) as total_revenue, SUM(pesanan_produks.jumlah) as total_item')
-            ->groupBy('produks.kategori')
+            ->join('pesanan', 'pesanan_produk.id_pesanan', '=', 'pesanan.id_pesanan')
+            ->join('produk', 'pesanan_produk.id_produk', '=', 'produk.id_produk')
+            ->where('pesanan.id_cabang', $idCabang)
+            ->whereBetween('pesanan.tanggal_pemesanan', [$mulai, $akhir])
+            ->where('pesanan.status_pesanan', 'Diterima')
+            ->selectRaw('produk.kategori, SUM(pesanan_produk.subtotal) as total_revenue, SUM(pesanan_produk.jumlah) as total_item')
+            ->groupBy('produk.kategori')
             ->orderByDesc('total_revenue')
             ->get();
 

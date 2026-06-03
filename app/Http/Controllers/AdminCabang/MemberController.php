@@ -43,13 +43,13 @@ class MemberController extends Controller
         if (in_array($sort, $allowedDirectLocalSort)) {
             $query->orderBy($sort, $direction);
         } elseif ($sort === 'nama') {
-            $query->join('users', 'pelanggans.id_user', '=', 'users.id_user')
-                  ->orderBy('users.nama', $direction)
-                  ->select('pelanggans.*');
+            $query->join('pengguna', 'pelanggan.id_pengguna', '=', 'pengguna.id_pengguna')
+                  ->orderBy('pengguna.nama', $direction)
+                  ->select('pelanggan.*');
         } elseif ($sort === 'email') {
-            $query->join('users', 'pelanggans.id_user', '=', 'users.id_user')
-                  ->orderBy('users.email', $direction)
-                  ->select('pelanggans.*');
+            $query->join('pengguna', 'pelanggan.id_pengguna', '=', 'pengguna.id_pengguna')
+                  ->orderBy('pengguna.email', $direction)
+                  ->select('pelanggan.*');
         }
 
         // KPI summary — dihitung sebelum paginasi
@@ -71,7 +71,7 @@ class MemberController extends Controller
     {
         $request->validate([
             'nama'        => 'required|string|max:255',
-            'email'       => 'required|email|unique:users,email',
+            'email'       => 'required|email|unique:pengguna,email',
             'no_telepon'  => 'required|string|max:20',
             'alamat'      => 'required|string',
             'poin_member' => 'nullable|integer|min:0',
@@ -90,7 +90,7 @@ class MemberController extends Controller
         ]);
 
         Pelanggan::create([
-            'id_user'       => $user->id_user,
+            'id_pengguna'       => $user->id_pengguna,
             'status_member' => $request->boolean('status_member'),
             'poin_member'   => $request->poin_member ?? 0,
             'alamat'        => $request->alamat,

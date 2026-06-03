@@ -9,11 +9,11 @@ class AdminCabang extends Model
 {
     use HasFactory;
 
-    protected $table = 'admin_cabangs';
+    protected $table = 'admin_cabang';
     protected $primaryKey = 'id_admin_cabang';
 
     protected $fillable = [
-        'id_user',
+        'id_pengguna',
         'id_cabang',
         'tanggal_masuk',
         'status_karyawan',
@@ -21,7 +21,7 @@ class AdminCabang extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_user', 'id_user');
+        return $this->belongsTo(User::class, 'id_pengguna', 'id_pengguna');
     }
 
     public function cabang()

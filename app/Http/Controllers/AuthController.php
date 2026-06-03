@@ -96,7 +96,7 @@ class AuthController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:255',
-            'email' => ['required', 'email', 'unique:users,email', 'regex:/^[a-zA-Z0-9._%+\-]+@gmail\.com$/'],
+            'email' => ['required', 'email', 'unique:pengguna,email', 'regex:/^[a-zA-Z0-9._%+\-]+@gmail\.com$/'],
             'no_telepon' => ['required', 'regex:/^[0-9]{10,15}$/'],
             'provinsi' => 'required|string|max:255',
             'kota_kabupaten' => 'required|string|max:255',
@@ -140,7 +140,7 @@ class AuthController extends Controller
             ]);
 
             Pelanggan::create([
-                'id_user' => $user->id_user,
+                'id_pengguna' => $user->id_pengguna,
                 'status_member' => false,
                 'poin_member' => 0,
                 'provinsi' => $request->provinsi,

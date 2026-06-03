@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pelanggans', function (Blueprint $table) {
+        Schema::create('pelanggan', function (Blueprint $table) {
             $table->id('id_pelanggan');
-            $table->foreignId('id_user')->constrained('users', 'id_user')->onDelete('cascade');
+            $table->foreignId('id_pengguna')->constrained('pengguna', 'id_pengguna')->onDelete('cascade');
             $table->boolean('status_member')->default(false);
             $table->integer('poin_member')->default(0);
             $table->string('provinsi');
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pelanggans');
+        Schema::dropIfExists('pelanggan');
     }
 };

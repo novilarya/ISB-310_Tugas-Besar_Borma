@@ -31,7 +31,7 @@ class PengemudiController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|unique:pengguna,email',
             'password' => [
                 'required',
                 'string',
@@ -43,7 +43,7 @@ class PengemudiController extends Controller
             'kendaraan' => 'required|string|max:255',
             'warna_kendaraan' => 'required|string|max:255',
             'plat_nomor' => 'required|string|max:20',
-            'id_cabang' => 'required|exists:cabangs,id_cabang',
+            'id_cabang' => 'required|exists:cabang,id_cabang',
         ]);
 
         $user = \App\Models\User::create([
@@ -55,13 +55,12 @@ class PengemudiController extends Controller
         ]);
 
         \App\Models\Kurir::create([
-            'id_user' => $user->id_user,
+            'id_pengguna' => $user->id_pengguna,
             'id_cabang' => $request->id_cabang,
             'kendaraan' => $request->kendaraan,
             'warna_kendaraan' => $request->warna_kendaraan,
             'plat_nomor' => $request->plat_nomor,
-            'penghasilan_kotor' => 0,
-            'penghasilan_bersih' => 0,
+            'pendapatan_pengiriman' => 0,
             'status_mengirim' => 'Tidak Mengirim',
             'status_aktif' => 'Aktif',
         ]);
@@ -76,7 +75,7 @@ class PengemudiController extends Controller
 
         $request->validate([
             'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,'.$user->id_user.',id_user',
+            'email' => 'required|email|unique:pengguna,email,'.$user->id_pengguna.',id_pengguna',
             'password' => [
                 'nullable',
                 'string',

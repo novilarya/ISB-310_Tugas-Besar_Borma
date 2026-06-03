@@ -26,7 +26,7 @@ class ProfilController extends Controller
             ]);
         }
 
-        $kurir = Kurir::where('id_user', $user->id_user)->first();
+        $kurir = Kurir::where('id_pengguna', $user->id_pengguna)->first();
 
         // Hitung statistik
         $totalKirim = Pesanan::where('id_kurir', $kurir->id_kurir ?? 0)

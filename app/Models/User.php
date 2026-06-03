@@ -9,8 +9,8 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    protected $table = 'users';
-    protected $primaryKey = 'id_user';
+    protected $table = 'pengguna';
+    protected $primaryKey = 'id_pengguna';
     protected $keyType = 'int';
     public $incrementing = true;
 
@@ -37,22 +37,22 @@ class User extends Authenticatable
 
     public function pelanggan()
     {
-        return $this->hasOne(Pelanggan::class, 'id_user', 'id_user');
+        return $this->hasOne(Pelanggan::class, 'id_pengguna', 'id_pengguna');
     }
 
     public function kurir()
     {
-        return $this->hasOne(Kurir::class, 'id_user', 'id_user');
+        return $this->hasOne(Kurir::class, 'id_pengguna', 'id_pengguna');
     }
 
     public function adminCabang()
     {
-        return $this->hasOne(AdminCabang::class, 'id_user', 'id_user');
+        return $this->hasOne(AdminCabang::class, 'id_pengguna', 'id_pengguna');
     }
 
     public function menuPermissions()
     {
-        return $this->hasMany(MenuPermission::class, 'id_user', 'id_user');
+        return $this->hasMany(MenuPermission::class, 'id_pengguna', 'id_pengguna');
     }
 
     // ─── Helper ───────────────────────────────────────────────
@@ -65,7 +65,7 @@ class User extends Authenticatable
     {
         $permission = $this->menuPermissions->firstWhere('menu_key', $key);
         if ($permission === null) return true; // default aktif
-        return (bool) $permission->is_enabled;
+        return (bool) $permission->akses;
     }
 
     /**

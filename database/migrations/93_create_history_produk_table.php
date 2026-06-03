@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('history_produks', function (Blueprint $table) {
+        Schema::create('history_produk', function (Blueprint $table) {
             $table->id('id_history');
             $table->unsignedBigInteger('id_produk');
             $table->decimal('harga_reguler_lama', 10, 2)->nullable();
             $table->decimal('harga_reguler_baru', 10, 2);
             $table->decimal('harga_member_lama', 10, 2)->nullable();
             $table->decimal('harga_member_baru', 10, 2);
-            $table->foreignId('id_admin_cabang')->constrained('admin_cabangs', 'id_admin_cabang')->onDelete('cascade');
+            $table->foreignId('id_admin_cabang')->constrained('admin_cabang', 'id_admin_cabang')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('history_produks');
+        Schema::dropIfExists('history_produk');
     }
 };

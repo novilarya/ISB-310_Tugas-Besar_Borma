@@ -7,7 +7,7 @@ use Carbon\Carbon;
 
 class Promo extends Model
 {
-    protected $table = 'promos';
+    protected $table = 'promo';
     protected $primaryKey = 'id_promo';
     protected $fillable = [
         'id_cabang', 'id_produk_pemicu', 'id_produk_hadiah', 'nama_voucher', 'kode_voucher',

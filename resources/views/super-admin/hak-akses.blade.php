@@ -62,7 +62,7 @@
                             </div>
                         </td>
                         <td class="py-4 px-6 text-right">
-                            <button onclick="openRbacModal('{{ $user->id_user }}', '{{ $user->nama }}')" class="px-4 py-2 bg-borma-purple hover:bg-purple-700 dark:bg-borma-yellow dark:hover:bg-yellow-500 dark:text-slate-900 text-white text-sm font-semibold rounded-xl transition-all shadow-sm">
+                            <button onclick="openRbacModal('{{ $user->id_pengguna }}', '{{ $user->nama }}')" class="px-4 py-2 bg-borma-purple hover:bg-purple-700 dark:bg-borma-yellow dark:hover:bg-yellow-500 dark:text-slate-900 text-white text-sm font-semibold rounded-xl transition-all shadow-sm">
                                 <i class="fa-solid fa-sliders"></i> Atur
                             </button>
                         </td>
@@ -119,7 +119,7 @@
 
     const userPermissions = {
         @foreach($users as $user)
-        '{{ $user->id_user }}': {
+        '{{ $user->id_pengguna }}': {
             role: '{{ $user->role }}',
             permissions: {
                 @php

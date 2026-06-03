@@ -867,13 +867,13 @@
 </div>
 
 {{-- ===== BUKTI PENGIRIMAN (READ ONLY) ===== --}}
-@if($pesanan->status_pesanan === 'diterima' && $pesanan->buktiPengiriman)
+@if($pesanan->status_pesanan === 'diterima' && $pesanan->bukti_pengiriman)
 <div class="bukti-section fade-up delay-4">
     <h2 class="bukti-title">Informasi Pengiriman</h2>
     <div class="bukti-grid">
         <div class="bukti-photo-box" style="cursor: default;">
-            @if($pesanan->buktiPengiriman->foto_bukti)
-                <img src="{{ asset('storage/' . $pesanan->buktiPengiriman->foto_bukti) }}" alt="Bukti Pengiriman">
+            @if($pesanan->bukti_pengiriman)
+                <img src="{{ asset('storage/' . $pesanan->bukti_pengiriman) }}" alt="Bukti Pengiriman">
             @else
                 <i class="bi bi-image"></i>
                 <span>Tidak ada foto</span>
@@ -882,12 +882,12 @@
         <div class="bukti-form-fields" style="justify-content: center;">
             <div class="info-row">
                 <p class="info-label">Penerima</p>
-                <p class="info-value">{{ $pesanan->buktiPengiriman->nama_penerima }}</p>
+                <p class="info-value">{{ $pesanan->nama_penerima }}</p>
             </div>
-            @if($pesanan->buktiPengiriman->catatan_driver)
+            @if($pesanan->catatan_driver)
             <div class="info-row" style="margin-top: 12px;">
                 <p class="info-label">Catatan Driver</p>
-                <p class="info-value" style="font-style: italic;">"{{ $pesanan->buktiPengiriman->catatan_driver }}"</p>
+                <p class="info-value" style="font-style: italic;">"{{ $pesanan->catatan_driver }}"</p>
             </div>
             @endif
         </div>

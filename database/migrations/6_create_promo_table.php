@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('promos', function (Blueprint $table) {
+        Schema::create('promo', function (Blueprint $table) {
             $table->id('id_promo');
-            $table->foreignId('id_cabang')->constrained('cabangs', 'id_cabang');
-            $table->foreignId('id_produk_pemicu')->constrained('produks', 'id_produk');
-            $table->foreignId('id_produk_hadiah')->nullable()->constrained('produks', 'id_produk');
+            $table->foreignId('id_cabang')->constrained('cabang', 'id_cabang');
+            $table->foreignId('id_produk_pemicu')->constrained('produk', 'id_produk');
+            $table->foreignId('id_produk_hadiah')->nullable()->constrained('produk', 'id_produk');
             $table->string('nama_voucher');
             $table->string('kode_voucher')->nullable();
             $table->integer('kuantitas_pemicu')->default(1);
@@ -35,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('promos');
+        Schema::dropIfExists('promo');
     }
 };

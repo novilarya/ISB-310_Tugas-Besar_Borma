@@ -89,12 +89,12 @@ class DashboardController extends Controller
         }
 
         // ── Top 5 Kategori Terjual (Pie Chart) ──────────────────────────
-        $topKategori = DB::table('pesanan_produks')
-            ->join('produks', 'pesanan_produks.id_produk', '=', 'produks.id_produk')
-            ->join('pesanans', 'pesanan_produks.id_pesanan', '=', 'pesanans.id_pesanan')
-            ->where('pesanans.id_cabang', $idCabang)
-            ->select('produks.kategori', DB::raw('SUM(pesanan_produks.subtotal) as total'))
-            ->groupBy('produks.kategori')
+        $topKategori = DB::table('pesanan_produk')
+            ->join('produk', 'pesanan_produk.id_produk', '=', 'produk.id_produk')
+            ->join('pesanan', 'pesanan_produk.id_pesanan', '=', 'pesanan.id_pesanan')
+            ->where('pesanan.id_cabang', $idCabang)
+            ->select('produk.kategori', DB::raw('SUM(pesanan_produk.subtotal) as total'))
+            ->groupBy('produk.kategori')
             ->orderByDesc('total')
             ->limit(5)
             ->get();
@@ -110,13 +110,13 @@ class DashboardController extends Controller
             ->get();
 
         // ── Member Insights (Top Spenders di Cabang ini) ──────────────
-        $topMembers = DB::table('pesanans')
-            ->join('pelanggans', 'pesanans.id_pelanggan', '=', 'pelanggans.id_pelanggan')
-            ->join('users', 'pelanggans.id_user', '=', 'users.id_user')
-            ->where('pesanans.id_cabang', $idCabang)
-            ->where('pelanggans.status_member', true)
-            ->select('users.nama', DB::raw('COUNT(pesanans.id_pesanan) as total_transaksi'), DB::raw('SUM(pesanans.total_tagihan) as total_spent'))
-            ->groupBy('users.id_user', 'users.nama')
+        $topMembers = DB::table('pesanan')
+            ->join('pelanggan', 'pesanan.id_pelanggan', '=', 'pelanggan.id_pelanggan')
+            ->join('pengguna', 'pelanggan.id_pengguna', '=', 'pengguna.id_pengguna')
+            ->where('pesanan.id_cabang', $idCabang)
+            ->where('pelanggan.status_member', true)
+            ->select('pengguna.nama', DB::raw('COUNT(pesanan.id_pesanan) as total_transaksi'), DB::raw('SUM(pesanan.total_tagihan) as total_spent'))
+            ->groupBy('pengguna.id_pengguna', 'pengguna.nama')
             ->orderByDesc('total_spent')
             ->limit(2)
             ->get();

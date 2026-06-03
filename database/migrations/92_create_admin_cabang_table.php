@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('admin_cabangs', function (Blueprint $table) {
+        Schema::create('admin_cabang', function (Blueprint $table) {
             $table->id('id_admin_cabang');
-            $table->unsignedBigInteger('id_user');
+            $table->unsignedBigInteger('id_pengguna');
             $table->unsignedBigInteger('id_cabang');
             $table->date('tanggal_masuk')->nullable();
             $table->string('status_karyawan')->default('Aktif');
             $table->timestamps();
 
-            $table->foreign('id_user')->references('id_user')->on('users')->onDelete('cascade');
-            $table->foreign('id_cabang')->references('id_cabang')->on('cabangs')->onDelete('cascade');
+            $table->foreign('id_pengguna')->references('id_pengguna')->on('pengguna')->onDelete('cascade');
+            $table->foreign('id_cabang')->references('id_cabang')->on('cabang')->onDelete('cascade');
         });
     }
 
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('admin_cabangs');
+        Schema::dropIfExists('admin_cabang');
     }
 };

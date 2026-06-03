@@ -35,7 +35,7 @@ class MemberController extends Controller
 
         $request->validate([
             'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,'.$user->id_user.',id_user',
+            'email' => 'required|email|unique:pengguna,email,'.$user->id_pengguna.',id_pengguna',
             'password' => [
                 'nullable',
                 'string',

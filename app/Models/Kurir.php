@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Kurir extends Model
 {
-    protected $table = 'kurirs';
+    protected $table = 'kurir';
     protected $primaryKey = 'id_kurir';
     protected $fillable   = [
-        'id_user', 'kendaraan', 'warna_kendaraan', 'plat_nomor',
+        'id_pengguna', 'kendaraan', 'warna_kendaraan', 'plat_nomor',
         'id_cabang', 'pendapatan_pengiriman',
         'status_mengirim', 'status_aktif',
     ];
@@ -20,7 +20,7 @@ class Kurir extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_user', 'id_user');
+        return $this->belongsTo(User::class, 'id_pengguna', 'id_pengguna');
     }
 
     /** Pesanan aktif (sedang diantarkan) */

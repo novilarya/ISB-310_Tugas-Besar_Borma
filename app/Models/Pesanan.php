@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pesanan extends Model
 {
-    protected $table = 'pesanans';
+    protected $table = 'pesanan';
     protected $primaryKey = 'id_pesanan';
     protected $fillable = [
         'id_pelanggan', 'id_cabang', 'id_kurir', 'id_promo', 'tanggal_pemesanan',
         'total_belanja', 'biaya_pengiriman', 'diskon_voucher', 'total_tagihan',
         'midtrans_order_id', 'snap_token',
         'metode_pembayaran', 'alamat_pengiriman', 'status_pesanan', 'estimasi_tiba', 
-        'bukti_pengiriman', 'latitude', 'longitude', 'alasan_gagal', 'potongan_driver',
+        'bukti_pengiriman', 'latitude', 'longitude', 'nama_penerima', 'catatan_driver', 'catatan_pengiriman',
         'review_rating', 'review_text', 'accepted_at', 'rejected_at'
     ];
 
@@ -44,9 +44,6 @@ class Pesanan extends Model
         return $this->hasMany(PesananProduk::class, 'id_pesanan', 'id_pesanan');
     }
 
-    public function buktiPengiriman() {
-        return $this->hasOne(BuktiPengiriman::class, 'id_pesanan');
-    }
 
     public function penolakanPengiriman() {
         return $this->hasOne(PenolakanPengiriman::class, 'id_pesanan');

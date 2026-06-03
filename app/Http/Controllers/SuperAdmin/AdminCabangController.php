@@ -18,7 +18,7 @@ class AdminCabangController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|unique:pengguna,email',
             'password' => [
                 'required',
                 'string',
@@ -27,7 +27,7 @@ class AdminCabangController extends Controller
                 'regex:/[0-9@$!%*#?&_\-]/',
             ],
             'no_telepon' => 'required|string|max:15',
-            'id_cabang' => 'required|exists:cabangs,id_cabang',
+            'id_cabang' => 'required|exists:cabang,id_cabang',
             'tanggal_masuk' => 'required|date',
             'status_karyawan' => 'required|string',
         ]);
@@ -41,7 +41,7 @@ class AdminCabangController extends Controller
         ]);
 
         \App\Models\AdminCabang::create([
-            'id_user' => $user->id_user,
+            'id_pengguna' => $user->id_pengguna,
             'id_cabang' => $request->id_cabang,
             'tanggal_masuk' => $request->tanggal_masuk,
             'status_karyawan' => $request->status_karyawan,
@@ -61,7 +61,7 @@ class AdminCabangController extends Controller
 
         $request->validate([
             'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,'.$user->id_user.',id_user',
+            'email' => 'required|email|unique:pengguna,email,'.$user->id_pengguna.',id_pengguna',
             'password' => [
                 'nullable',
                 'string',
@@ -70,7 +70,7 @@ class AdminCabangController extends Controller
                 'regex:/[0-9@$!%*#?&_\-]/',
             ],
             'no_telepon' => 'required|string|max:15',
-            'id_cabang' => 'required|exists:cabangs,id_cabang',
+            'id_cabang' => 'required|exists:cabang,id_cabang',
             'tanggal_masuk' => 'required|date',
             'status_karyawan' => 'required|string',
         ]);

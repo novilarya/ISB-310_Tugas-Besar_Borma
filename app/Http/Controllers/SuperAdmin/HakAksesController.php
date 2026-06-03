@@ -9,14 +9,14 @@ class HakAksesController extends Controller
 {
     public function hakAkses()
     {
-        $users = \App\Models\User::whereIn('role', ['Admin Super', 'Admin Cabang'])
+        $pengguna = \App\Models\User::whereIn('role', ['Admin Super', 'Admin Cabang'])
             ->with('menuPermissions')
             ->get();
         
         $superAdminMenus = \App\Models\MenuPermission::superAdminMenus();
         $adminCabangMenus = \App\Models\MenuPermission::adminCabangMenus();
         
-        return view('super-admin.hak-akses', compact('users', 'superAdminMenus', 'adminCabangMenus'));
+        return view('super-admin.hak-akses', compact('pengguna', 'superAdminMenus', 'adminCabangMenus'));
     }
 
     public function updateHakAkses(Request $request, $userId)
@@ -31,8 +31,8 @@ class HakAksesController extends Controller
             $isEnabled = $request->has("permissions.{$key}");
             
             \App\Models\MenuPermission::updateOrCreate(
-                ['id_user' => $user->id_user, 'menu_key' => $key],
-                ['is_enabled' => $isEnabled]
+                ['id_pengguna' => $user->id_pengguna, 'menu_key' => $key],
+                ['akses' => $isEnabled]
             );
         }
         

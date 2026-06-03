@@ -77,9 +77,9 @@ class PromoController extends Controller
     {
         $request->validate([
             'nama_voucher'      => 'required|string|max:255',
-            'kode_voucher'      => 'nullable|string|max:50|unique:promos,kode_voucher',
-            'id_produk_pemicu'  => 'required|exists:produks,id_produk',
-            'id_produk_hadiah'  => 'nullable|exists:produks,id_produk',
+            'kode_voucher'      => 'nullable|string|max:50|unique:promo,kode_voucher',
+            'id_produk_pemicu'  => 'required|exists:produk,id_produk',
+            'id_produk_hadiah'  => 'nullable|exists:produk,id_produk',
             'kuantitas_pemicu'  => 'required|integer|min:1',
             'kuantitas_hadiah'  => 'nullable|integer|min:0',
             'potongan_harga'    => 'nullable|numeric|min:0',
@@ -122,9 +122,9 @@ class PromoController extends Controller
 
         $request->validate([
             'nama_voucher'      => 'required|string|max:255',
-            'kode_voucher'      => 'nullable|string|max:50|unique:promos,kode_voucher,' . $id . ',id_promo',
-            'id_produk_pemicu'  => 'required|exists:produks,id_produk',
-            'id_produk_hadiah'  => 'nullable|exists:produks,id_produk',
+            'kode_voucher'      => 'nullable|string|max:50|unique:promo,kode_voucher,' . $id . ',id_promo',
+            'id_produk_pemicu'  => 'required|exists:produk,id_produk',
+            'id_produk_hadiah'  => 'nullable|exists:produk,id_produk',
             'kuantitas_pemicu'  => 'required|integer|min:1',
             'kuantitas_hadiah'  => 'nullable|integer|min:0',
             'potongan_harga'    => 'nullable|numeric|min:0',

@@ -10,7 +10,7 @@ class PesananController extends Controller
     {
         $pesanan = \App\Models\Pesanan::with(['pelanggan.user', 'cabang'])->orderBy('tanggal_pemesanan', 'desc')->get();
 
-        return view('super-admin.pesanan', compact('pesanan'));
+        return view('super-admin.pesanan', compact('pesanans'));
     }
 
     public function pesananDetail($id)

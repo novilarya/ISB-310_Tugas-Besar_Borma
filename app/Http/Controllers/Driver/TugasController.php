@@ -17,7 +17,7 @@ class TugasController extends Controller
     public function index(Request $request)
     {
         $user = Auth::check() ? Auth::user() : \App\Models\User::where('role', 'kurir')->first();
-        $kurir = $user ? Kurir::where('id_user', $user->id_user)->first() : null;
+        $kurir = $user ? Kurir::where('id_pengguna', $user->id_pengguna)->first() : null;
 
         $query = Pesanan::where('id_kurir', $kurir->id_kurir ?? 0)
             ->whereIn('status_pesanan', ['pending', 'diterima_driver', 'diambil', 'dalam_pengiriman'])
@@ -34,7 +34,7 @@ class TugasController extends Controller
 
     public function show($id)
     {
-        $pesanan = Pesanan::with(['pelanggan.user', 'cabang', 'details.produk', 'pengirimanTracking', 'buktiPengiriman'])
+        $pesanan = Pesanan::with(['pelanggan.user', 'cabang', 'details.produk', 'pengirimanTracking'])
             ->findOrFail($id);
 
         return view('driver.tugas.show', compact('pesanan'));
@@ -91,7 +91,7 @@ class TugasController extends Controller
 
             $pesanan = Pesanan::findOrFail($id);
             $user = Auth::check() ? Auth::user() : \App\Models\User::where('role', 'kurir')->first();
-            $kurir = Kurir::where('id_user', $user->id_user)->first();
+            $kurir = Kurir::where('id_pengguna', $user->id_pengguna)->first();
 
             // Cek status harus pending
             if ($pesanan->status_pesanan !== 'pending') {
@@ -294,7 +294,7 @@ class TugasController extends Controller
     {
         try {
             $user = Auth::check() ? Auth::user() : \App\Models\User::where('role', 'kurir')->first();
-            $kurir = Kurir::where('id_user', $user->id_user)->first();
+            $kurir = Kurir::where('id_pengguna', $user->id_pengguna)->first();
 
             if (!$kurir) {
                 return response()->json([

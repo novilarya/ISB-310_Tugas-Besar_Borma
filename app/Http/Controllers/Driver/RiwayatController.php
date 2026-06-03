@@ -21,7 +21,7 @@ class RiwayatController extends Controller
             ]);
         }
 
-        $kurir = Kurir::where('id_user', $user->id_user)->with(['cabang', 'user'])->first();
+        $kurir = Kurir::where('id_pengguna', $user->id_pengguna)->with(['cabang', 'user'])->first();
 
         if (!$kurir) {
             return view('driver.riwayat.index', [
@@ -50,7 +50,6 @@ class RiwayatController extends Controller
             'cabang', 
             'details.produk',
             'pengirimanTracking',
-            'buktiPengiriman',
             'penolakanPengiriman'
         ])->findOrFail($id);
 

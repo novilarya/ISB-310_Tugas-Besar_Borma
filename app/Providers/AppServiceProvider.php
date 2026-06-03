@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
                 $resolved = [];
                 foreach ($allMenuKeys as $key) {
                     $resolved[$key] = isset($permissions[$key])
-                        ? (bool) $permissions[$key]->is_enabled
+                        ? (bool) $permissions[$key]->akses
                         : true; // default aktif
                 }
 

@@ -867,23 +867,23 @@
 </div>
 
 {{-- ===== BUKTI PENGIRIMAN ===== --}}
-@if($pesanan->buktiPengiriman)
+@if($pesanan->bukti_pengiriman)
 <div class="bukti-section fade-up delay-4">
     <h2 class="bukti-title">Bukti Pengiriman</h2>
     <div class="bukti-grid">
         <div class="bukti-photo-box" style="cursor: default; border: 1.5px solid var(--color-border); background: var(--color-surface);">
-            <img src="{{ asset('storage/' . $pesanan->buktiPengiriman->foto_bukti) }}" alt="Bukti Pengiriman">
+            <img src="{{ asset('storage/' . $pesanan->bukti_pengiriman) }}" alt="Bukti Pengiriman">
         </div>
 
         <div class="bukti-form-fields">
             <div class="form-field">
                 <label>Nama Penerima</label>
-                <div class="form-input" style="background: var(--color-bg); font-weight: 600;">{{ $pesanan->buktiPengiriman->nama_penerima }}</div>
+                <div class="form-input" style="background: var(--color-bg); font-weight: 600;">{{ $pesanan->nama_penerima }}</div>
             </div>
-            @if($pesanan->buktiPengiriman->catatan_driver)
+            @if($pesanan->catatan_driver)
             <div class="form-field">
                 <label>Catatan Driver</label>
-                <div class="form-textarea" style="background: var(--color-bg); min-height: 80px;">{{ $pesanan->buktiPengiriman->catatan_driver }}</div>
+                <div class="form-textarea" style="background: var(--color-bg); min-height: 80px;">{{ $pesanan->catatan_driver }}</div>
             </div>
             @endif
         </div>

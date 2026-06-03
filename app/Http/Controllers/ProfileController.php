@@ -23,7 +23,7 @@ class ProfileController extends Controller
         }
 
         // Generate unique 12-digit member ID: XXXX XXXX XXXX
-        $rawId = str_pad($user->id_user * 7919 + 100000000000, 12, '0', STR_PAD_LEFT);
+        $rawId = str_pad($user->id_pengguna * 7919 + 100000000000, 12, '0', STR_PAD_LEFT);
         $memberId = substr($rawId, 0, 4) . ' ' . substr($rawId, 4, 4) . ' ' . substr($rawId, 8, 4);
 
         // Fetch recent orders (up to 5)

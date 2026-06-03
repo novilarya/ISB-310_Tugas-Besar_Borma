@@ -25,13 +25,13 @@ class CabangController extends Controller
 
         $cabang = $cabangs->map(function($c) use ($startDate, $endDate) {
             // Get produk terlaris for this branch within date range
-            $terlaris = DB::table('pesanan_produks')
-                ->join('pesanans', 'pesanans.id_pesanan', '=', 'pesanan_produks.id_pesanan')
-                ->join('produks', 'produks.id_produk', '=', 'pesanan_produks.id_produk')
-                ->where('pesanans.id_cabang', $c->id_cabang)
-                ->whereBetween('pesanans.tanggal_pemesanan', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
-                ->select('produks.nama_produk', DB::raw('SUM(pesanan_produks.jumlah) as total_terjual'))
-                ->groupBy('produks.id_produk', 'produks.nama_produk')
+            $terlaris = DB::table('pesanan_produk')
+                ->join('pesanan', 'pesanan.id_pesanan', '=', 'pesanan_produk.id_pesanan')
+                ->join('produk', 'produk.id_produk', '=', 'pesanan_produk.id_produk')
+                ->where('pesanan.id_cabang', $c->id_cabang)
+                ->whereBetween('pesanan.tanggal_pemesanan', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+                ->select('produk.nama_produk', DB::raw('SUM(pesanan_produk.jumlah) as total_terjual'))
+                ->groupBy('produk.id_produk', 'produk.nama_produk')
                 ->orderByDesc('total_terjual')
                 ->first();
 
@@ -75,7 +75,7 @@ class CabangController extends Controller
                 break;
         }
 
-        return view('super-admin.cabang', compact('cabang'));
+        return view('super-admin.cabang', compact('cabangs'));
     }
 
     public function cabangDetail($id)
