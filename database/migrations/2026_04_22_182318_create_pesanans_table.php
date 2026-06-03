@@ -27,6 +27,8 @@ return new class extends Migration
             $table->enum('status_pesanan', ['Menunggu', 'Disiapkan','Mencari Kurir', 'Sedang Dikirim', 'Diterima']);
             $table->dateTime('estimasi_tiba')->nullable();
             $table->string('bukti_pengiriman')->nullable();
+            $table->string('midtrans_order_id')->nullable();
+            $table->string('snap_token')->nullable();
             $table->timestamps();
         });
     }

@@ -21,6 +21,13 @@ class User extends Authenticatable
         'settings' => 'array',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'password' => 'hashed',
+        ];
+    }
+
     public function pelanggan() {
         return $this->hasOne(Pelanggan::class, 'id_user', 'id_user');
     }

@@ -11,7 +11,8 @@ class Pesanan extends Model
     protected $fillable = [
         'id_pelanggan', 'id_cabang', 'id_kurir', 'id_promo', 'tanggal_pemesanan',
         'total_belanja', 'biaya_pengiriman', 'diskon_voucher', 'total_tagihan',
-        'metode_pembayaran', 'alamat_pengiriman', 'status_pesanan', 'estimasi_tiba', 'bukti_pengiriman'
+        'metode_pembayaran', 'alamat_pengiriman', 'status_pesanan', 'estimasi_tiba', 'bukti_pengiriman',
+        'midtrans_order_id', 'snap_token'
     ];
 
     protected $casts = [
