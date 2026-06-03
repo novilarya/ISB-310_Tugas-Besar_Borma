@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('alamat_cabang');
             $table->string('koordinat_gps');
             $table->string('status');
+            $table->json('settings')->nullable();
             $table->timestamps();
         });
     }

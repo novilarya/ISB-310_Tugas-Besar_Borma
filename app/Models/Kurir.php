@@ -10,29 +10,17 @@ class Kurir extends Model
     protected $primaryKey = 'id_kurir';
     protected $fillable   = [
         'id_user', 'kendaraan', 'warna_kendaraan', 'plat_nomor',
-        'id_cabang', 'penghasilan_kotor', 'penghasilan_bersih',
+        'id_cabang', 'pendapatan_pengiriman',
         'status_mengirim', 'status_aktif',
     ];
 
     protected $casts = [
-        'penghasilan_kotor'  => 'decimal:2',
-        'penghasilan_bersih' => 'decimal:2',
+        'pendapatan_pengiriman' => 'decimal:2',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user', 'id_user');
-    }
-
-    public function cabang()
-    {
-        return $this->belongsTo(Cabang::class, 'id_cabang', 'id_cabang');
-    }
-
-    /** Semua pesanan yang pernah ditugaskan ke kurir ini */
-    public function penugasan()
-    {
-        return $this->hasMany(Pesanan::class, 'id_kurir', 'id_kurir');
     }
 
     /** Pesanan aktif (sedang diantarkan) */
@@ -48,5 +36,17 @@ class Kurir extends Model
         return $this->status_aktif === 'Aktif' 
             && $this->status_mengirim === 'Tidak Mengirim'
             && $this->pesananAktif()->doesntExist();
+    }
+
+    public function cabang() {
+        return $this->belongsTo(Cabang::class, 'id_cabang');
+    }
+
+    public function penugasan() {
+        return $this->hasMany(Pesanan::class, 'id_kurir');
+    }
+
+    public function penolakanPengiriman() {
+        return $this->hasMany(PenolakanPengiriman::class, 'id_kurir');
     }
 }

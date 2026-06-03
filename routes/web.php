@@ -2,6 +2,10 @@
 
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Driver\DashboardController as DriverDashboardController;
+use App\Http\Controllers\Driver\TugasController;
+use App\Http\Controllers\Driver\RiwayatController;
+use App\Http\Controllers\Driver\ProfilController as DriverProfilController;
 
 // Super Admin Controllers
 use App\Http\Controllers\SuperAdmin\DashboardController;
@@ -61,12 +65,6 @@ Route::prefix('superadmin')->middleware(['auth', 'superadmin'])->name('superadmi
     Route::get('/hak-akses', [HakAksesController::class, 'hakAkses'])->name('hak_akses');
     Route::post('/hak-akses/{userId}', [HakAksesController::class, 'updateHakAkses'])->name('hak_akses.update');
 });
-
-
-// Kurir Routes
-Route::get('/kurir/dashboard', function () {
-    return 'Kurir Dashboard';
-})->name('kurir.dashboard');
 
 Route::prefix('admin-cabang')->middleware(['auth', 'admin_cabang'])->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\AdminCabang\DashboardController::class, 'index'])
@@ -131,6 +129,12 @@ Route::get('/preview-invoice', function () {
 Route::get('/invoice/nota/{id}', [\App\Http\Controllers\AdminCabang\OrderController::class, 'publicNota'])->name('public.pesanan.nota');
 
 Route::get('/', function () {
+    $user = auth()->user();
+    if (!$user) return redirect()->route('login');
+    $role = strtolower($user->role);
+    if (in_array($role, ['super admin', 'admin super', 'staf operasional'])) return redirect()->route('superadmin.dashboard');
+    if (in_array($role, ['admin cabang', 'admin'])) return redirect()->route('admin-cabang.dashboard');
+    if (in_array($role, ['kurir', 'driver'])) return redirect()->route('driver.dashboard');
     return redirect()->route('pelanggan.dashboard');
 });
 
@@ -192,3 +196,52 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::post('/payment/create', [PaymentController::class, 'createTransaction'])->name('payment.create');
 Route::post('/payment/notification', [PaymentController::class, 'handleNotification'])->name('payment.notification');
 Route::get('/payment/finish', [PaymentController::class, 'paymentFinish'])->name('payment.finish');
+/*
+|--------------------------------------------------------------------------
+| Web Routes — Driver (Kurir) Module
+|--------------------------------------------------------------------------
+*/
+
+// Route Group: Driver (Kurir) — dilindungi middleware auth & kurir
+Route::prefix('driver')->middleware(['auth', 'kurir'])->name('driver.')->group(function () {
+
+    // Dashboard
+    Route::get('/dashboard', [DriverDashboardController::class, 'index'])
+         ->name('dashboard');
+
+    // Tugas (Pengiriman Aktif)
+    Route::get('/tugas', [TugasController::class, 'index'])
+         ->name('tugas.index');
+    Route::get('/tugas/{id}', [TugasController::class, 'show'])
+         ->name('tugas.show');
+    Route::post('/tugas/{id}/confirm', [TugasController::class, 'confirm'])
+         ->name('tugas.confirm');
+    Route::post('/tugas/{id}/reject', [TugasController::class, 'reject'])
+         ->name('tugas.reject');
+    Route::post('/tugas/{id}/update-status', [TugasController::class, 'updateStatus'])
+         ->name('tugas.updateStatus');
+    Route::post('/tugas/{id}/upload-proof', [TugasController::class, 'uploadProof'])
+         ->name('tugas.uploadProof');
+
+    // Antrian Pesanan FCFS
+    Route::post('/pesanan/{id}/ambil', [TugasController::class, 'ambil'])
+         ->name('pesanan.ambil');
+    Route::get('/pesanan/antrian/latest', [TugasController::class, 'getLatestAntrian'])
+         ->name('pesanan.antrian.latest');
+
+    // Riwayat Pesanan
+    Route::get('/riwayat', [RiwayatController::class, 'index'])
+         ->name('riwayat.index');
+    Route::get('/pengiriman/{id}', [RiwayatController::class, 'show'])
+         ->name('pengiriman.detail');
+    Route::get('/riwayat/{id}', [RiwayatController::class, 'show'])
+         ->name('riwayat.show');
+
+    // Profil
+    Route::get('/profil', [DriverProfilController::class, 'index'])
+         ->name('profil.index');
+    Route::get('/profil/ubah-password', [DriverProfilController::class, 'formUbahPassword'])
+         ->name('profil.ubah-password');
+    Route::post('/profil/ubah-password', [DriverProfilController::class, 'ubahPassword'])
+         ->name('profil.ubah-password.post');
+});

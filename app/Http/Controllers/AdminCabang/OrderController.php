@@ -20,10 +20,10 @@ class OrderController extends Controller
     }
 
     private const TRANSITIONS = [
-        'Menunggu'       => 'Disiapkan',
-        'Disiapkan'      => 'Mencari Kurir',
-        'Mencari Kurir'  => 'Sedang Dikirim',
-        'Sedang Dikirim' => 'Diterima',
+        'Menunggu Konfirmasi' => 'Disiapkan',
+        'Disiapkan'           => 'Mencari Kurir',
+        'Mencari Kurir'       => 'Sedang Dikirim',
+        'Sedang Dikirim'      => 'Diterima',
     ];
 
     private function pesananMilikCabang(int|string $id): ?Pesanan
@@ -54,7 +54,7 @@ class OrderController extends Controller
             });
         }
 
-        $validStatus = ['Menunggu', 'Disiapkan', 'Mencari Kurir', 'Sedang Dikirim', 'Diterima'];
+        $validStatus = ['Menunggu Konfirmasi', 'Disiapkan', 'Mencari Kurir', 'Sedang Dikirim', 'Diterima', 'Gagal Kirim'];
         if ($status && in_array($status, $validStatus)) {
             $query->where('status_pesanan', $status);
         }
@@ -130,7 +130,7 @@ class OrderController extends Controller
     {
         $pesanan = $this->pesananMilikCabang($id);
         if (!$pesanan) return back()->with('error', 'Pesanan tidak ditemukan.');
-        if ($pesanan->status_pesanan !== 'Menunggu') return back()->with('error', 'Pesanan tidak dalam status Menunggu.');
+        if ($pesanan->status_pesanan !== 'Menunggu Konfirmasi') return back()->with('error', 'Pesanan tidak dalam status Menunggu Konfirmasi.');
 
         $pesanan->update(['status_pesanan' => 'Disiapkan']);
 

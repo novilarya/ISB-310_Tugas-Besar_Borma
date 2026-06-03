@@ -27,19 +27,16 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             $user = Auth::user();
-            
-            switch ($user->role) {
-                case 'Super Admin':
-                case 'Admin Super':
-                case 'Staf Operasional':
+            $role = strtolower($user->role);
+
+            switch (true) {
+                case in_array($role, ['super admin', 'admin super', 'staf operasional']):
                     return redirect()->intended('superadmin/dashboard');
-                case 'Admin Cabang':
-                case 'Admin':
+                case in_array($role, ['admin cabang', 'admin']):
                     return redirect()->intended('admin-cabang/dashboard');
-                case 'Kurir':
-                case 'Driver':
-                    return redirect()->intended('kurir/dashboard');
-                case 'Pelanggan':
+                case in_array($role, ['kurir', 'driver']):
+                    return redirect()->intended('driver/dashboard');
+                case $role === 'pelanggan':
                 default:
                     Auth::logout();
                     return back()->withErrors([

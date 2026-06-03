@@ -19,18 +19,18 @@ class AdminCabangMiddleware
             return redirect()->route('internal.login');
         }
 
-        $role = auth()->user()->role;
+        $role = strtolower(auth()->user()->role);
 
-        if (in_array($role, ['Admin Cabang', 'Admin'])) {
+        if (in_array($role, ['admin cabang', 'admin'])) {
             return $next($request);
         }
 
-        if (in_array($role, ['Super Admin', 'Admin Super', 'Staf Operasional'])) {
+        if (in_array($role, ['super admin', 'admin super', 'staf operasional'])) {
             return redirect()->route('superadmin.dashboard')->with('error', 'Anda tidak memiliki hak akses ke halaman Admin Cabang.');
         }
 
-        if (in_array($role, ['Kurir', 'Driver'])) {
-            return redirect()->route('kurir.dashboard')->with('error', 'Anda tidak memiliki hak akses ke halaman Admin Cabang.');
+        if (in_array($role, ['kurir', 'driver'])) {
+            return redirect()->route('driver.dashboard')->with('error', 'Anda tidak memiliki hak akses ke halaman Admin Cabang.');
         }
 
         abort(403, 'Akses Ditolak. Anda tidak memiliki wewenang untuk mengakses halaman ini.');

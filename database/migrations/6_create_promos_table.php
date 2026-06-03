@@ -26,7 +26,6 @@ return new class extends Migration
             $table->integer('kuota_promo')->default(0);
             $table->date('tanggal_mulai');
             $table->date('tanggal_berakhir');
-            $table->foreignId('id_cabang')->constrained('cabangs', 'id_cabang');
             $table->timestamps();
         });
     }

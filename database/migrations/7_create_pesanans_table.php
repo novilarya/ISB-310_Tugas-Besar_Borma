@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('pesanans', function (Blueprint $table) {
@@ -24,11 +21,19 @@ return new class extends Migration
             $table->decimal('total_tagihan', 15, 2);
             $table->string('metode_pembayaran');
             $table->text('alamat_pengiriman');
-            $table->enum('status_pesanan', ['Menunggu', 'Disiapkan','Mencari Kurir', 'Sedang Dikirim', 'Diterima']);
+            $table->decimal('latitude', 10, 8)->nullable();
+            $table->decimal('longitude', 11, 8)->nullable();
+            $table->enum('status_pesanan', ['Menunggu Konfirmasi', 'Disiapkan', 'Mencari Kurir', 'Sedang Dikirim', 'Diterima', 'Gagal Kirim']);
             $table->dateTime('estimasi_tiba')->nullable();
             $table->string('bukti_pengiriman')->nullable();
+            $table->text('alasan_gagal')->nullable();
+            $table->decimal('potongan_driver', 15, 2)->default(0);
+            $table->integer('review_rating')->nullable();
+            $table->text('review_text')->nullable();
             $table->string('midtrans_order_id')->nullable();
             $table->string('snap_token')->nullable();
+            $table->timestamp('accepted_at')->nullable();
+            $table->timestamp('rejected_at')->nullable();
             $table->timestamps();
         });
     }

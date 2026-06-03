@@ -63,8 +63,8 @@ class OrderSeeder extends Seeder
                 'warna_kendaraan' => $k['warna'],
                 'plat_nomor' => $k['plat'],
                 'id_cabang' => $k['id_cabang'],
-                'penghasilan_kotor' => 0.00,
-                'penghasilan_bersih' => 0.00,
+                'pendapatan_pengiriman' => 0,
+                
                 'status_mengirim' => 'Tidak Mengirim',
                 'status_aktif' => 'Aktif',
                 'created_at' => now(),
@@ -76,7 +76,7 @@ class OrderSeeder extends Seeder
         // [hari_lalu, pelanggan_idx, status, total_belanja, biaya_kirim, metode]
         $pesananData = [
             // Hari ini
-            [0, 0, 'Menunggu',      110000, 15000, 'Transfer Bank'],
+            [0, 0, 'Menunggu Konfirmasi', 110000, 15000, 'Transfer Bank'],
             [0, 1, 'Disiapkan',     320500, 20000, 'E-Wallet'],
             [0, 2, 'Sedang Dikirim', 74500, 15000, 'COD'],
             // Kemarin
@@ -117,7 +117,7 @@ class OrderSeeder extends Seeder
                 'metode_pembayaran'=> $metode,
                 'alamat_pengiriman'=> $pelangganData[$pelIdx]['alamat'],
                 'status_pesanan'   => $status,
-                'estimasi_tiba'    => $status !== 'Menunggu' ? $ts->copy()->addHours(2) : null,
+                'estimasi_tiba'    => $status !== 'Menunggu Konfirmasi' ? $ts->copy()->addHours(2) : null,
                 'bukti_pengiriman' => $status === 'Diterima' ? 'bukti_kirim.jpg' : null,
                 'created_at'       => $ts,
                 'updated_at'       => $ts,
