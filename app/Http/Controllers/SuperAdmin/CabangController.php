@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SuperAdmin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Cabang;
+use Illuminate\Support\Facades\DB;
 
 class CabangController extends Controller
 {
@@ -19,17 +20,17 @@ class CabangController extends Controller
             }])
             ->withSum(['pesanan as pendapatan' => function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('tanggal_pemesanan', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
-            }], 'total_tagihan')
+            }], DB::raw('total_belanja - diskon_voucher'))
             ->get();
 
         $cabang = $cabangs->map(function($c) use ($startDate, $endDate) {
             // Get produk terlaris for this branch within date range
-            $terlaris = \Illuminate\Support\Facades\DB::table('pesanan_produks')
+            $terlaris = DB::table('pesanan_produks')
                 ->join('pesanans', 'pesanans.id_pesanan', '=', 'pesanan_produks.id_pesanan')
                 ->join('produks', 'produks.id_produk', '=', 'pesanan_produks.id_produk')
                 ->where('pesanans.id_cabang', $c->id_cabang)
                 ->whereBetween('pesanans.tanggal_pemesanan', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
-                ->select('produks.nama_produk', \Illuminate\Support\Facades\DB::raw('SUM(pesanan_produks.jumlah) as total_terjual'))
+                ->select('produks.nama_produk', DB::raw('SUM(pesanan_produks.jumlah) as total_terjual'))
                 ->groupBy('produks.id_produk', 'produks.nama_produk')
                 ->orderByDesc('total_terjual')
                 ->first();
