@@ -9,7 +9,8 @@ class AuthController extends Controller
 {
     public function showInternalLoginForm()
     {
-        return view('internal-login');
+        $superAdmins = User::whereIn('role', ['Super Admin', 'Admin Super'])->get();
+        return view('internal-login', compact('superAdmins'));
     }
 
     public function authenticateInternal(Request $request)
@@ -42,6 +43,49 @@ class AuthController extends Controller
                         'email' => 'Role Anda tidak memiliki akses ke sistem internal.',
                     ]);
             }
+        }
+
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
+        ])->onlyInput('email');
+    }
+
+    /**
+     * Show login form
+     */
+    public function showLogin()
+    {
+        return view('auth.login');
+    }
+
+    /**
+     * Show register form
+     */
+    public function showRegister()
+    {
+        return view('auth.register');
+    }
+
+    /**
+     * Handle login
+     */
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:8',
+        ], [
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 8 karakter.',
+        ]);
+
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect()->intended(route('pelanggan.dashboard'));
         }
 
         return back()->withErrors([
