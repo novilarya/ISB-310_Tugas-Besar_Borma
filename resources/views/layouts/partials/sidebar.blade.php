@@ -29,9 +29,9 @@
             </a>
             @endif
 
-            @if(auth()->user()->canAccessMenu('superadmin_admin_cabang'))
-            <a href="{{ route('superadmin.admin_cabang') }}" class="{{ request()->routeIs('superadmin.admin_cabang') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
-                <i class="fa-solid fa-user-tie w-5"></i> Manajemen Admin Cabang
+            @if(auth()->user()->canAccessMenu('superadmin_super_admin'))
+            <a href="{{ route('superadmin.super_admin') }}" class="{{ request()->routeIs('superadmin.super_admin') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
+                <i class="fa-solid fa-user-shield w-5"></i> Manajemen Super Admin
             </a>
             @endif
 
@@ -57,7 +57,7 @@
             <div class="pt-4 mt-4 border-t border-slate-200 dark:border-white/10">
                 <p class="px-4 text-xs font-semibold text-slate-400 dark:text-white/40 uppercase tracking-wider mb-2">Pengaturan</p>
                 <a href="{{ route('superadmin.hak_akses') }}" class="{{ request()->routeIs('superadmin.hak_akses') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
-                    <i class="fa-solid fa-shield-halved w-5"></i> Hak Akses (RBAC)
+                    <i class="fa-solid fa-gear w-5"></i> Hak Akses (RBAC)
                 </a>
             </div>
             @endif

@@ -7,12 +7,7 @@ use Illuminate\Http\Request;
 
 class AdminCabangController extends Controller
 {
-    public function adminCabang()
-    {
-        $adminCabangs = \App\Models\AdminCabang::with(['user', 'cabang'])->get();
-        $cabangs = \App\Models\Cabang::all();
-        return view('super-admin.admin-cabang', compact('adminCabangs', 'cabangs'));
-    }
+    // adminCabang method removed as view is replaced by super-admin
 
     public function storeAdminCabang(Request $request)
     {
@@ -51,7 +46,7 @@ class AdminCabangController extends Controller
         if ($fromCabangId) {
             return redirect()->route('superadmin.cabang.detail', $fromCabangId)->with('success', 'Admin Cabang berhasil ditambahkan.');
         }
-        return redirect()->route('superadmin.admin_cabang')->with('success', 'Admin Cabang berhasil ditambahkan.');
+        return redirect()->route('superadmin.cabang')->with('success', 'Admin Cabang berhasil ditambahkan.');
     }
 
     public function updateAdminCabang(Request $request, $id)
@@ -95,7 +90,7 @@ class AdminCabangController extends Controller
         if ($fromCabangId) {
             return redirect()->route('superadmin.cabang.detail', $fromCabangId)->with('success', 'Admin Cabang berhasil diperbarui.');
         }
-        return redirect()->route('superadmin.admin_cabang')->with('success', 'Admin Cabang berhasil diperbarui.');
+        return redirect()->route('superadmin.cabang')->with('success', 'Admin Cabang berhasil diperbarui.');
     }
 
     public function destroyAdminCabang(Request $request, $id)
@@ -110,6 +105,6 @@ class AdminCabangController extends Controller
         if ($request->input('from_cabang_detail')) {
             return redirect()->route('superadmin.cabang.detail', $fromCabangId)->with('success', 'Admin Cabang berhasil dihapus.');
         }
-        return redirect()->route('superadmin.admin_cabang')->with('success', 'Admin Cabang berhasil dihapus.');
+        return redirect()->route('superadmin.cabang')->with('success', 'Admin Cabang berhasil dihapus.');
     }
 }

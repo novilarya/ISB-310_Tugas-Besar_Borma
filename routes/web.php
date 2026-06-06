@@ -13,6 +13,7 @@ use App\Http\Controllers\SuperAdmin\PesananController;
 use App\Http\Controllers\SuperAdmin\PengemudiController;
 use App\Http\Controllers\SuperAdmin\CabangController;
 use App\Http\Controllers\SuperAdmin\AdminCabangController;
+use App\Http\Controllers\SuperAdmin\SuperAdminManagementController;
 use App\Http\Controllers\SuperAdmin\MemberController;
 use App\Http\Controllers\SuperAdmin\PromoController;
 use App\Http\Controllers\SuperAdmin\HakAksesController;
@@ -47,10 +48,14 @@ Route::prefix('superadmin')->middleware(['auth', 'superadmin'])->name('superadmi
     Route::delete('/cabang/{id}', [CabangController::class, 'destroyCabang'])->name('cabang.destroy');
     Route::get('/cabang/{id}', [CabangController::class, 'cabangDetail'])->name('cabang.detail');
 
-    Route::get('/admin-cabang', [AdminCabangController::class, 'adminCabang'])->name('admin_cabang');
     Route::post('/admin-cabang', [AdminCabangController::class, 'storeAdminCabang'])->name('admin_cabang.store');
     Route::put('/admin-cabang/{id}', [AdminCabangController::class, 'updateAdminCabang'])->name('admin_cabang.update');
     Route::delete('/admin-cabang/{id}', [AdminCabangController::class, 'destroyAdminCabang'])->name('admin_cabang.destroy');
+
+    Route::get('/super-admin', [SuperAdminManagementController::class, 'index'])->name('super_admin');
+    Route::post('/super-admin', [SuperAdminManagementController::class, 'store'])->name('super_admin.store');
+    Route::put('/super-admin/{id}', [SuperAdminManagementController::class, 'update'])->name('super_admin.update');
+    Route::delete('/super-admin/{id}', [SuperAdminManagementController::class, 'destroy'])->name('super_admin.destroy');
 
     Route::get('/member', [MemberController::class, 'member'])->name('member');
     Route::get('/member/density', [MemberController::class, 'memberDensity'])->name('member.density');

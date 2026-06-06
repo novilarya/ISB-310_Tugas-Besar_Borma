@@ -13,7 +13,8 @@ class AuthController extends Controller
 {
      public function showInternalLoginForm()
     {
-        return view('internal-login');
+        $superAdmins = User::whereIn('role', ['Super Admin', 'Admin Super'])->get();
+        return view('internal-login', compact('superAdmins'));
     }
 
     public function authenticateInternal(Request $request)
@@ -44,6 +45,10 @@ class AuthController extends Controller
                     ]);
             }
         }
+
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
+        ])->onlyInput('email');
     }
 
     /**

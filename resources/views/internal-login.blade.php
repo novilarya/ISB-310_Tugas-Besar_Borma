@@ -94,7 +94,7 @@
                     <div>
                         <div class="flex items-center justify-between mb-2">
                             <label for="password" class="block text-sm font-medium text-white/80">Kata Sandi</label>
-                            <a href="#" class="text-xs font-medium text-[#FED50B] hover:text-white transition-colors">Lupa sandi?</a>
+                            <a href="#" onclick="openModal('forgotPasswordModal'); return false;" class="text-xs font-medium text-[#FED50B] hover:text-white transition-colors">Lupa sandi?</a>
                         </div>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -144,6 +144,81 @@
                 toggleIcon.classList.add('fa-eye-slash');
             }
         });
+
+        // Modal Functions
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const content = document.getElementById(modalId + 'Content');
+            
+            modal.classList.remove('hidden');
+            void modal.offsetWidth; // trigger reflow
+            
+            modal.classList.remove('opacity-0');
+            content.classList.remove('scale-95', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const content = document.getElementById(modalId + 'Content');
+            
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
     </script>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/60 backdrop-blur-sm transition-opacity duration-300 opacity-0 flex items-center justify-center">
+        <div class="relative w-full max-w-md p-6 mx-4 bg-[#1c0d38] rounded-3xl shadow-2xl border border-white/10 text-left transform transition-all scale-95 opacity-0 duration-300" id="forgotPasswordModalContent">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-headset text-[#FED50B]"></i> Hubungi IT Support
+                </h3>
+                <button type="button" onclick="closeModal('forgotPasswordModal')" class="text-white/50 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <p class="text-sm text-white/80 leading-relaxed">
+                    Untuk alasan keamanan sistem internal, reset kata sandi harus dilakukan oleh Super Admin. Silakan hubungi salah satu kontak di bawah ini:
+                </p>
+                
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3">
+                    @if(isset($superAdmins) && $superAdmins->count() > 0)
+                        @foreach($superAdmins as $admin)
+                        <div class="flex items-center justify-between group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-[#33116C] flex items-center justify-center font-bold text-[#FED50B] border border-white/10">
+                                    {{ strtoupper(substr($admin->nama, 0, 2)) }}
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-white">{{ $admin->nama }}</p>
+                                    <p class="text-xs text-white/50">{{ $admin->role }}</p>
+                                </div>
+                            </div>
+                            <a href="https://wa.me/{{ preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $admin->no_telepon)) }}" target="_blank" class="w-10 h-10 rounded-xl bg-white/5 hover:bg-[#FED50B] text-[#FED50B] hover:text-[#33116C] border border-white/10 transition-colors flex items-center justify-center group-hover:scale-105" title="Hubungi via WhatsApp">
+                                <i class="fa-brands fa-whatsapp text-lg"></i>
+                            </a>
+                        </div>
+                        @endforeach
+                    @else
+                        <p class="text-sm text-white/50 italic text-center py-2">Tidak ada data Super Admin yang tersedia saat ini.</p>
+                    @endif
+                </div>
+            </div>
+            
+            <div class="mt-6 flex justify-end">
+                <button type="button" onclick="closeModal('forgotPasswordModal')" class="w-full py-3 text-sm font-bold text-[#33116C] bg-[#FED50B] hover:bg-[#F2C900] rounded-xl transition-colors shadow-md">
+                    Mengerti
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
