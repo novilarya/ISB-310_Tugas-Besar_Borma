@@ -3,50 +3,7 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/admin-cabang.css') }}">
-<style>
-/* ── Print Styles ─────────────────────────── */
-@media print {
-    * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-    }
-    .no-print, #sidebar, #topbar, .filter-bar, nav, header { display: none !important; }
-    body, html { margin: 0; padding: 0; background: white !important; font-family: Arial, sans-serif; font-size: 12px; }
-    #main-content { margin-left: 0 !important; width: 100% !important; padding: 10px !important; }
-    .print-only { display: block !important; text-align: center; margin-bottom: 20px; }
-    .glass-card { box-shadow: none !important; border: 1px solid #E5E7EB !important; padding: 16px !important; break-inside: avoid; }
-    
-    .row { display: flex !important; flex-wrap: nowrap !important; gap: 12px !important; margin-bottom: 12px !important; }
-    .col-lg-3 { flex: 1 !important; width: auto !important; }
-    .col-lg-8 { flex: 2 !important; width: auto !important; }
-    .col-lg-4 { flex: 1 !important; width: auto !important; }
-    .col-lg-7 { flex: 1.5 !important; width: auto !important; }
-    .col-lg-5 { flex: 1 !important; width: auto !important; }
-    
-    .chart-daily-bar, .bar-fill { print-color-adjust: exact !important; -webkit-print-color-adjust: exact !important; }
-    .kpi-title { font-size: 10px !important; margin-bottom: 4px !important; }
-    .kpi-value { font-size: 16px !important; }
-}
-.print-only { display: none; }
-
-.chart-bar-h {
-    display: flex; align-items: center; gap: 16px; margin-bottom: 12px;
-}
-.chart-bar-h .label { font-size: .8rem; font-weight: 700; color: #374151; width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.chart-bar-h .bar-wrap { flex: 1; background: #F3F4F6; border-radius: 20px; height: 12px; }
-.chart-bar-h .bar-fill { height: 12px; border-radius: 20px; background: var(--borma-primary); transition: width .6s ease; }
-.chart-bar-h .value { font-size: .8rem; font-weight: 800; color: var(--borma-neutral); width: 80px; text-align: right; }
-
-.chart-daily { display: flex; align-items: flex-end; gap: 4px; height: 100px; }
-.chart-daily-bar { flex: 1; border-radius: 4px 4px 0 0; background: var(--borma-primary); opacity: .7; min-height: 4px; transition: all .3s; cursor: pointer; position: relative; }
-.chart-daily-bar:hover { opacity: 1; }
-.chart-daily-bar .tooltip-val { display: none; position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%); background: var(--borma-neutral); color: white; font-size: .65rem; font-weight: 700; padding: 3px 7px; border-radius: 6px; white-space: nowrap; z-index: 10; }
-.chart-daily-bar:hover .tooltip-val { display: block; }
-
-/* ── Rekap Badge ──────────────────────────── */
-.rekap-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #F3F4F6; }
-.rekap-row:last-child { border-bottom: none; }
-</style>
+<link rel="stylesheet" href="{{ asset('css/admin-cabang/laporan-cabang.css') }}">
 @endpush
 
 @section('content')
@@ -68,8 +25,8 @@
 ════════════════════════════════════════════════════════════ --}}
 <div class="d-flex justify-content-between align-items-end mb-4 no-print">
     <div class="page-header-text">
-        <h1 class="mb-2 page-title">Laporan Cabang</h1>
-        <p class="m-0 page-subtitle">Pantau kinerja penjualan, produk terlaris, dan kondisi stok cabang.</p>
+        <h1 class="page-title mb-2">Laporan Cabang</h1>
+        <p class="page-subtitle text-muted m-0">Pantau kinerja penjualan, produk terlaris, dan kondisi stok cabang.</p>
     </div>
     <div>
         <button onclick="window.print()" class="btn-primary-custom" style="background:var(--borma-tertiary);">
@@ -182,7 +139,7 @@
                         @php 
                             $h = $harianMap[$d] ?? null; 
                             $height = $h ? round(($h->total/$maxHarian)*100) : 4; 
-                            $bg = $h ? 'var(--borma-primary)' : '#E5E7EB';
+                            $bg = $h ? 'var(--borma-primary)' : 'var(--chart-empty-bar-bg, #E5E7EB)';
                         @endphp
                         <div class="chart-daily-bar" style="height:{{ $height }}px; background: {{ $bg }}; opacity: 1;">
                             <span class="tooltip-val">{{ $d }}: Rp {{ $h ? number_format($h->total,0,',','.') : '0' }}</span>
@@ -201,12 +158,15 @@
         <div class="glass-card h-100" style="padding: 24px;">
             <div class="kpi-title mb-4">REKAP STATUS PESANAN</div>
             <div style="display: flex; flex-direction: column; justify-content: space-between; height: calc(100% - 30px);">
-                @foreach(['Menunggu','Disiapkan','Sedang Dikirim','Diterima'] as $st)
+                @foreach(['Menunggu','Disiapkan','dalam_pengiriman','diterima'] as $st)
                 @php $r = $rekapStatus[$st] ?? null; @endphp
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        @php $badge = ['Menunggu'=>'status-pending','Disiapkan'=>'status-siap','Sedang Dikirim'=>'status-dikirim','Diterima'=>'status-selesai'][$st]; @endphp
-                        <span class="status-badge-modern {{ $badge }}" style="font-size:.7rem; padding: 6px 14px;">{{ mb_strtoupper($st) }}</span>
+                        @php
+                            $badge = ['Menunggu'=>'status-pending','Disiapkan'=>'status-siap','dalam_pengiriman'=>'status-dikirim','diterima'=>'status-selesai'][$st] ?? 'status-pending';
+                            $label = $st === 'Menunggu' ? 'MENUNGGU KONFIRMASI' : ($st === 'diterima' ? 'SELESAI' : ($st === 'dalam_pengiriman' ? 'SEDANG DIKIRIM' : mb_strtoupper($st)));
+                        @endphp
+                        <span class="status-badge-modern {{ $badge }}" style="font-size:.7rem; padding: 6px 14px;">{{ $label }}</span>
                     </div>
                     <div style="text-align:right;">
                         <div style="font-weight:800;font-size:.95rem;color:var(--borma-neutral);">{{ $r ? $r->jumlah : 0 }} pesanan</div>
@@ -311,9 +271,9 @@
         </thead>
         <tbody>
                 @forelse($semuaPesanan as $p)
-                @php
-                    $stCls = ['Menunggu'=>'status-pending','Disiapkan'=>'status-siap','Sedang Dikirim'=>'status-dikirim','Diterima'=>'status-selesai'][$p->status_pesanan] ?? '';
-                @endphp
+                 @php
+                     $stCls = ['Menunggu'=>'status-pending','Disiapkan'=>'status-siap','mencari_driver'=>'status-cari-driver','diterima_driver'=>'status-siap','diambil'=>'status-siap','dalam_pengiriman'=>'status-dikirim','diterima'=>'status-selesai','selesai'=>'status-selesai','gagal'=>'status-pending','ditolak_driver'=>'status-pending'][$p->status_pesanan] ?? 'status-pending';
+                 @endphp
                 <tr>
                 <td><strong style="font-family:monospace;color:var(--borma-primary);">#BRM-9{{ str_pad($p->id_pesanan,3,'0',STR_PAD_LEFT) }}</strong></td>
                 <td style="font-size:.8rem;">{{ \Carbon\Carbon::parse($p->tanggal_pemesanan)->format('d M Y H:i') }}</td>
@@ -331,33 +291,14 @@
             </tr>
             @endforelse
         </tbody>
-        @if(count($semuaPesanan) > 0)
-        <tfoot>
-            <tr style="background:rgba(51,17,108,.05);">
-                <td colspan="4" style="font-weight:800;text-align:right;padding-right:12px;">TOTAL HALAMAN INI:</td>
-                <td style="font-weight:800;">Rp {{ number_format($semuaPesanan->sum('total_belanja'),0,',','.') }}</td>
-                <td style="font-weight:800;color:#059669;">-Rp {{ number_format($semuaPesanan->sum('diskon_voucher'),0,',','.') }}</td>
-                <td style="font-weight:800;color:var(--borma-tertiary);">Rp {{ number_format($semuaPesanan->sum('total_tagihan'),0,',','.') }}</td>
-                <td colspan="2"></td>
-            </tr>
-        </tfoot>
-        @endif
     </table>
     
-    @if($semuaPesanan->hasPages())
     <div class="pagination-custom mt-4 mb-2 px-3">
         <span class="text-muted me-auto pagination-info">Menampilkan {{ $semuaPesanan->firstItem() ?? 0 }} - {{ $semuaPesanan->lastItem() ?? 0 }} dari {{ $semuaPesanan->total() }} pesanan</span>
         <div class="pagination-links-styled">
             {{ $semuaPesanan->links('pagination::bootstrap-5') }}
         </div>
     </div>
-    @endif
-</div>
-
-{{-- Footer print --}}
-<div class="print-only" style="margin-top:32px;border-top:1px solid #ddd;padding-top:16px;font-size:.78rem;color:#555;display:flex;justify-content:space-between;">
-    <span>Laporan ini dicetak dari Sistem Informasi Borma Toserba</span>
-    <span>{{ $cabang->nama_cabang ?? 'Admin Cabang' }} | {{ $daftarBulan[$bulan] }} {{ $tahun }}</span>
 </div>
 
 @endsection

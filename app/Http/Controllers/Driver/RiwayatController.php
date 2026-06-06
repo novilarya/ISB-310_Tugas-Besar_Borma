@@ -31,11 +31,15 @@ class RiwayatController extends Controller
         }
 
         $query = Pesanan::where('id_kurir', $kurir->id_kurir)
-            ->whereIn('status_pesanan', ['diterima', 'gagal', 'ditolak_driver', 'gagal_kirim'])
+            ->whereIn('status_pesanan', ['diterima', 'selesai', 'gagal', 'ditolak_driver'])
             ->with(['pelanggan.user', 'cabang']);
 
         if ($request->has('status') && $request->status) {
-            $query->where('status_pesanan', $request->status);
+            if ($request->status === 'diterima') {
+                $query->whereIn('status_pesanan', ['diterima', 'selesai']);
+            } else {
+                $query->where('status_pesanan', $request->status);
+            }
         }
 
         $riwayat = $query->orderBy('updated_at', 'desc')->get();

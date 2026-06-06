@@ -1,342 +1,200 @@
 @extends('admin-cabang.layouts.admin-cabang')
-@section('title', 'Detail Pesanan #BRM-9' . str_pad($pesanan->id_pesanan, 3, '0', STR_PAD_LEFT) . ' - Borma Toserba')
-
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/admin-cabang.css') }}">
-<link rel="stylesheet" href="{{ asset('css/app.css') }}">
-<style>
-/* ===== DETAIL PESANAN PAGE ===== */
-.detail-header-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.75rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 6px 14px;
-    border-radius: 20px;
-}
-.order-id-display {
-    font-family: var(--font-heading);
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--borma-primary);
-    letter-spacing: -0.5px;
-}
-.info-label {
-    font-size: 0.72rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #9CA3AF;
-    margin-bottom: 4px;
-}
-.info-value {
-    font-size: 0.92rem;
-    font-weight: 700;
-    color: var(--borma-neutral);
-}
-.info-group {
-    padding: 14px 0;
-    border-bottom: 1px solid #F3F4F6;
-}
-.info-group:last-child { border-bottom: none; }
-
-/* Timeline */
-.timeline {
-    position: relative;
-    padding-left: 28px;
-}
-.timeline::before {
-    content: '';
-    position: absolute;
-    left: 9px; top: 12px; bottom: 12px;
-    width: 2px;
-    background: #E5E7EB;
-}
-.timeline-item {
-    position: relative;
-    padding: 0 0 20px 20px;
-}
-.timeline-item:last-child { padding-bottom: 0; }
-.timeline-dot {
-    position: absolute;
-    left: -19px;
-    top: 4px;
-    width: 20px; height: 20px;
-    border-radius: 50%;
-    border: 2px solid #E5E7EB;
-    background: white;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.6rem;
-    z-index: 1;
-}
-.timeline-dot.done {
-    background: var(--borma-primary);
-    border-color: var(--borma-primary);
-    color: white;
-}
-.timeline-dot.active {
-    background: #FED50B;
-    border-color: #FED50B;
-    color: var(--borma-neutral);
-}
-.timeline-title {
-    font-weight: 800;
-    font-size: 0.88rem;
-    color: var(--borma-neutral);
-    margin-bottom: 2px;
-}
-.timeline-sub {
-    font-size: 0.75rem;
-    color: #9CA3AF;
-}
-
-/* Item Table */
-.item-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 14px 0;
-    border-bottom: 1px solid #F9FAFB;
-}
-.item-row:last-child { border-bottom: none; }
-.item-icon {
-    width: 44px; height: 44px;
-    border-radius: 10px;
-    background: #F3F4F6;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.2rem;
-    color: #9CA3AF;
-    flex-shrink: 0;
-}
-.item-name {
-    font-weight: 800;
-    font-size: 0.9rem;
-    color: var(--borma-neutral);
-    margin-bottom: 2px;
-}
-.item-meta {
-    font-size: 0.75rem;
-    color: #9CA3AF;
-}
-.item-price {
-    margin-left: auto;
-    text-align: right;
-    flex-shrink: 0;
-}
-.item-price .subtotal {
-    font-weight: 800;
-    font-size: 0.95rem;
-    color: var(--borma-primary);
-}
-.item-price .unit {
-    font-size: 0.72rem;
-    color: #9CA3AF;
-}
-
-/* Summary Total */
-.summary-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    font-size: 0.88rem;
-    border-bottom: 1px solid #F3F4F6;
-}
-.summary-row:last-child { border-bottom: none; }
-.summary-row.grand-total {
-    font-size: 1rem;
-    font-weight: 800;
-    color: var(--borma-primary);
-    border-top: 2px solid #F3F4F6;
-    padding-top: 16px;
-    margin-top: 4px;
-}
-.summary-row .label { color: #6B7280; font-weight: 600; }
-.summary-row .value { font-weight: 700; color: var(--borma-neutral); }
-</style>
-@endpush
+@section('title', 'Detail Pesanan | Admin Cabang Borma')
+@section('page_title', 'Detail Pesanan')
 
 @section('content')
-
-@php
-    $statusMap = [
-        'Menunggu'      => ['class' => 'status-pending',  'label' => 'Menunggu Konfirmasi', 'icon' => 'bi-clock'],
-        'Disiapkan'     => ['class' => 'status-siap',     'label' => 'Sedang Disiapkan',    'icon' => 'bi-box-seam'],
-        'Sedang Dikirim'=> ['class' => 'status-dikirim',  'label' => 'Sedang Dikirim',       'icon' => 'bi-truck'],
-        'Diterima'      => ['class' => 'status-selesai',  'label' => 'Selesai / Diterima',   'icon' => 'bi-check-circle'],
-    ];
-    $st = $statusMap[$pesanan->status_pesanan] ?? ['class'=>'badge-warning','label'=>$pesanan->status_pesanan,'icon'=>'bi-question'];
-    $orderId = '#BRM-9' . str_pad($pesanan->id_pesanan, 3, '0', STR_PAD_LEFT);
-@endphp
-
-{{-- ── Header ────────────────────────────────────────────────────────── --}}
-<div class="d-flex justify-content-between align-items-start mb-4">
-    <div>
-        <div class="d-flex align-items-center gap-3 mb-2">
-            <a href="{{ route('admin-cabang.pesanan') }}" class="btn-action btn-action-outline btn-action-sm">
-                <i class="bi bi-arrow-left me-1"></i> Kembali
-            </a>
-            <span class="status-badge-modern {{ $st['class'] }}">
-                <i class="bi {{ $st['icon'] }} me-1"></i>{{ $st['label'] }}
-            </span>
+<div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div class="flex items-center gap-4">
+        <a href="{{ route('admin-cabang.pesanan') }}" class="w-10 h-10 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 dark:text-white/50 hover:bg-slate-50 dark:hover:bg-white/10 hover:text-borma-purple dark:hover:text-borma-yellow transition-all">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <div>
+            <div class="flex items-center gap-3">
+                <h1 class="text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">Detail Pesanan</h1>
+                @php
+                    $statusClasses = [
+                        'Diterima' => 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20',
+                        'Sedang Dikirim' => 'bg-yellow-100 dark:bg-borma-yellow/20 text-yellow-700 dark:text-borma-yellow border-yellow-200 dark:border-borma-yellow/20',
+                        'Menunggu' => 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20',
+                        'Disiapkan' => 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
+                        'dalam_pengiriman' => 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',
+                        'selesai' => 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20',
+                    ];
+                    $classes = $statusClasses[$pesanan->status_pesanan] ?? 'bg-slate-100 dark:bg-gray-500/20 text-slate-700 dark:text-gray-400 border-slate-200 dark:border-gray-500/20';
+                @endphp
+                <span class="px-2.5 py-1 rounded-lg text-xs font-bold border {{ $classes }}">
+                    {{ $pesanan->status_pesanan }}
+                </span>
+            </div>
+            <p class="text-sm text-slate-500 dark:text-white/50 mt-1">ORD-{{ str_pad($pesanan->id_pesanan, 4, '0', STR_PAD_LEFT) }} &bull; {{ \Carbon\Carbon::parse($pesanan->tanggal_pemesanan)->format('d M Y, H:i') }} WIB</p>
         </div>
-        <div class="order-id-display">{{ $orderId }}</div>
-        <p class="page-subtitle mt-1">
-            Dipesan pada
-            {{ \Carbon\Carbon::parse($pesanan->tanggal_pemesanan)->translatedFormat('l, d F Y') }}
-            pukul {{ \Carbon\Carbon::parse($pesanan->tanggal_pemesanan)->format('H:i') }} WIB
-        </p>
     </div>
-    <div class="d-flex gap-2">
+    
+    <div class="flex items-center gap-3">
         @if($pesanan->status_pesanan === 'Menunggu')
-        <form action="{{ route('admin-cabang.pesanan.confirm', $pesanan->id_pesanan) }}" method="POST">
+        <form action="{{ route('admin-cabang.pesanan.confirm', $pesanan->id_pesanan) }}" method="POST" class="m-0 p-0">
             @csrf
-            <button type="submit" class="btn-action btn-action-primary">
-                <i class="bi bi-check-lg me-2"></i>Konfirmasi & Siapkan
+            <button type="submit" class="bg-borma-purple hover:bg-purple-800 dark:bg-borma-yellow dark:hover:bg-yellow-500 text-white dark:text-slate-900 px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-md flex items-center gap-2">
+                <i class="fa-solid fa-circle-check"></i> Konfirmasi & Siapkan
             </button>
         </form>
         @elseif($pesanan->status_pesanan === 'Disiapkan')
-        <form action="{{ route('admin-cabang.pesanan.dispatch', $pesanan->id_pesanan) }}" method="POST">
+        <form action="{{ route('admin-cabang.pesanan.dispatch', $pesanan->id_pesanan) }}" method="POST" class="m-0 p-0">
             @csrf
-            <button type="submit" class="btn-action btn-action-primary">
-                <i class="bi bi-truck me-2"></i>Kirim Pesanan
+            <button type="submit" class="bg-borma-purple hover:bg-purple-800 dark:bg-borma-yellow dark:hover:bg-yellow-500 text-white dark:text-slate-900 px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-md flex items-center gap-2">
+                <i class="fa-solid fa-truck-ramp-box"></i> Kirim Pesanan
             </button>
         </form>
-        @elseif($pesanan->status_pesanan === 'Sedang Dikirim')
-        <form action="{{ route('admin-cabang.pesanan.complete', $pesanan->id_pesanan) }}" method="POST"
-              onsubmit="return confirm('Tandai pesanan ini sudah diterima pelanggan?')">
+        @elseif(in_array($pesanan->status_pesanan, ['dalam_pengiriman', 'diterima', 'diterima_driver', 'diambil']))
+        <form action="{{ route('admin-cabang.pesanan.complete', $pesanan->id_pesanan) }}" method="POST" class="m-0 p-0" onsubmit="return confirm('Selesaikan pesanan ini secara manual?');">
             @csrf
-            <button type="submit" class="btn-action btn-action-primary">
-                <i class="bi bi-check-circle me-2"></i>Tandai Diterima
+            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-md flex items-center gap-2">
+                <i class="fa-solid fa-circle-check"></i> Selesaikan Pesanan
             </button>
         </form>
         @endif
-        <a href="{{ route('admin-cabang.laporan') }}" class="btn-action btn-action-outline">
-            <i class="bi bi-printer me-1"></i>Cetak
+        
+        <a href="{{ route('admin-cabang.pesanan.nota', $pesanan->id_pesanan) }}" target="_blank" class="px-4 py-2 border border-slate-200 dark:border-white/10 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 text-slate-600 dark:text-white/70 hover:text-borma-purple dark:hover:text-white font-bold transition-all shadow-sm flex items-center gap-2">
+            <i class="fa-solid fa-print"></i> Cetak Nota
         </a>
     </div>
 </div>
 
-@if(session('success'))
-<div class="alert alert-success d-flex align-items-center gap-2 mb-4" style="border-radius:12px; font-weight:700;">
-    <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
-</div>
-@endif
 
-<div class="row g-4">
 
-    {{-- ── Kolom Kiri ──────────────────────────────────────────────── --}}
-    <div class="col-lg-8">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Kolom Kiri: Detail Produk & Ringkasan -->
+    <div class="lg:col-span-2 space-y-6">
+        <div class="bg-white dark:bg-white/5 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none rounded-3xl p-6">
 
-        {{-- Item Produk --}}
-        <div class="glass-card mb-4">
-            <h6 class="kpi-title mb-4">Produk yang Dipesan</h6>
-            @foreach($pesanan->details as $item)
-            <div class="item-row">
-                <div class="item-icon">
-                    @if($item->produk && $item->produk->gambar_produk && $item->produk->gambar_produk !== 'default.jpg')
-                        <img src="{{ asset('storage/' . $item->produk->gambar_produk) }}"
-                             style="width:100%;height:100%;object-fit:cover;border-radius:10px;" alt="">
-                    @else
-                        <i class="bi bi-box"></i>
+
+            <h4 class="font-bold text-slate-800 dark:text-white mb-4">Daftar Produk</h4>
+            
+            <div class="overflow-x-auto mb-6">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/50 text-xs uppercase tracking-wider">
+                            <th class="pb-3 font-medium px-2">Produk</th>
+                            <th class="pb-3 font-medium px-2 text-right">Harga</th>
+                            <th class="pb-3 font-medium px-2 text-center">Qty</th>
+                            <th class="pb-3 font-medium px-2 text-right">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        @foreach($pesanan->details as $item)
+                        <tr class="border-b border-slate-100 dark:border-white/5">
+                            <td class="py-4 px-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-slate-100 dark:bg-white/10 rounded-xl overflow-hidden flex items-center justify-center">
+                                        @if($item->produk && $item->produk->gambar_produk && $item->produk->gambar_produk !== 'default.jpg')
+                                            <img src="{{ asset('storage/' . $item->produk->gambar_produk) }}" alt="Product" class="w-full h-full object-cover">
+                                        @else
+                                            <i class="fa-solid fa-box text-slate-400 dark:text-white/40"></i>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-800 dark:text-white">{{ $item->produk->nama_produk ?? 'Produk Dihapus' }}</p>
+                                        @if($item->catatan_produk)
+                                            <p class="text-xs text-amber-500 mt-1 italic flex items-center gap-1">
+                                                <i class="fa-solid fa-comment-dots"></i> Catatan: {{ $item->catatan_produk }}
+                                            </p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-4 px-2 text-right text-slate-600 dark:text-white/80">Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</td>
+                            <td class="py-4 px-2 text-center font-bold text-slate-700 dark:text-white/90">{{ $item->jumlah }}</td>
+                            <td class="py-4 px-2 text-right font-bold text-borma-purple dark:text-borma-yellow">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Ringkasan Biaya -->
+            <div class="bg-slate-50 dark:bg-white/5 rounded-2xl p-5 border border-slate-200 dark:border-white/10">
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between text-slate-600 dark:text-white/70">
+                        <span>Subtotal Belanja</span>
+                        <span class="font-bold text-slate-800 dark:text-white">Rp {{ number_format($pesanan->total_belanja, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600 dark:text-white/70">
+                        <span>Biaya Pengiriman</span>
+                        <span class="font-bold text-slate-800 dark:text-white">Rp {{ number_format($pesanan->biaya_pengiriman, 0, ',', '.') }}</span>
+                    </div>
+                    @if($pesanan->diskon_voucher > 0)
+                    <div class="flex justify-between text-green-600 dark:text-green-400">
+                        <span>Diskon Voucher</span>
+                        <span class="font-bold">- Rp {{ number_format($pesanan->diskon_voucher, 0, ',', '.') }}</span>
+                    </div>
                     @endif
-                </div>
-                <div>
-                    <div class="item-name">{{ $item->produk->nama_produk ?? 'Produk tidak diketahui' }}</div>
-                    <div class="item-meta">
-                        {{ $item->produk->kategori ?? '-' }} &bull;
-                        {{ $item->jumlah }} × Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}
-                        @if($item->catatan_produk)
-                        <br><span class="text-warning"><i class="bi bi-chat-left-text-fill me-1"></i>{{ $item->catatan_produk }}</span>
-                        @endif
+                    <div class="pt-3 border-t border-slate-200 dark:border-white/10 flex justify-between">
+                        <span class="font-bold text-slate-800 dark:text-white text-base">Total Tagihan</span>
+                        <span class="font-bold text-borma-purple dark:text-borma-yellow text-lg">Rp {{ number_format($pesanan->total_tagihan, 0, ',', '.') }}</span>
                     </div>
                 </div>
-                <div class="item-price">
-                    <div class="subtotal">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</div>
-                    <div class="unit">{{ $item->jumlah }} pcs</div>
-                </div>
-            </div>
-            @endforeach
-        </div>
-
-        {{-- Ringkasan Pembayaran --}}
-        <div class="glass-card mb-4">
-            <h6 class="kpi-title mb-4">Ringkasan Pembayaran</h6>
-            <div class="summary-row">
-                <span class="label">Subtotal Belanja</span>
-                <span class="value">Rp {{ number_format($pesanan->total_belanja, 0, ',', '.') }}</span>
-            </div>
-            <div class="summary-row">
-                <span class="label">Biaya Pengiriman</span>
-                <span class="value">Rp {{ number_format($pesanan->biaya_pengiriman, 0, ',', '.') }}</span>
-            </div>
-            @if($pesanan->diskon_voucher > 0)
-            <div class="summary-row">
-                <span class="label text-success"><i class="bi bi-ticket-perforated me-1"></i>Diskon Voucher</span>
-                <span class="value text-success">- Rp {{ number_format($pesanan->diskon_voucher, 0, ',', '.') }}</span>
-            </div>
-            @endif
-            <div class="summary-row grand-total">
-                <span>Total Tagihan</span>
-                <span>Rp {{ number_format($pesanan->total_tagihan, 0, ',', '.') }}</span>
-            </div>
-            <div class="mt-3 d-flex align-items-center gap-2">
-                <span class="info-label mb-0">Metode Pembayaran:</span>
-                <span class="badge-modern badge-primary">
-                    <i class="bi bi-credit-card me-1"></i>{{ $pesanan->metode_pembayaran }}
-                </span>
             </div>
         </div>
 
         {{-- Promo / Voucher (jika ada) --}}
         @if($pesanan->promo)
-        <div class="glass-card mb-4">
-            <h6 class="kpi-title mb-3">Promo Diterapkan</h6>
-            <div class="d-flex align-items-center gap-3">
-                <div class="icon-box bg-secondary-light"><i class="bi bi-ticket-perforated"></i></div>
-                <div>
-                    <div style="font-weight:800;font-size:0.9rem;">{{ $pesanan->promo->nama_voucher }}</div>
-                    <div style="font-size:0.78rem;color:#9CA3AF;">Kode: <strong>{{ $pesanan->promo->kode_voucher }}</strong></div>
+        <div class="bg-white dark:bg-white/5 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none rounded-3xl p-6">
+            <h4 class="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-ticket text-green-600 dark:text-green-400"></i> Promo Diterapkan
+            </h4>
+            <div class="flex items-center gap-3 bg-slate-50 dark:bg-white/5 p-4 rounded-2xl border border-slate-200 dark:border-white/10">
+                <div class="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-500/10 text-green-600 dark:text-green-400 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-gift"></i>
                 </div>
-                <span class="ms-auto badge-modern badge-success">Aktif</span>
+                <div>
+                    <div class="font-bold text-slate-800 dark:text-white text-sm">{{ $pesanan->promo->nama_voucher }}</div>
+                    <div class="text-xs text-slate-500 dark:text-white/60">Kode: <strong class="font-bold text-slate-700 dark:text-white">{{ $pesanan->promo->kode_voucher }}</strong></div>
+                </div>
+                <span class="ms-auto inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300">
+                    Aktif
+                </span>
             </div>
         </div>
         @endif
-
     </div>
 
-    {{-- ── Kolom Kanan ─────────────────────────────────────────────── --}}
-    <div class="col-lg-4">
-
-        {{-- Status Timeline --}}
-        <div class="glass-card mb-4">
-            <h6 class="kpi-title mb-4">Status Pesanan</h6>
+    <!-- Kolom Kanan: Status & Info -->
+    <div class="space-y-6">
+        
+        <!-- Status Timeline -->
+        <div class="bg-white dark:bg-white/5 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none rounded-3xl p-6">
+            <h4 class="font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-200 dark:border-white/10 pb-3 flex items-center gap-2">
+                <i class="fa-solid fa-bars-progress text-borma-purple dark:text-borma-yellow"></i> Status Pesanan
+            </h4>
             @php
-                $steps = ['Menunggu','Disiapkan','Sedang Dikirim','Diterima'];
-                $currentIdx = array_search($pesanan->status_pesanan, $steps);
+                $steps = ['Menunggu', 'Disiapkan', 'dalam_pengiriman', 'diterima', 'selesai'];
+                $currentIdx = 0;
+                if ($pesanan->status_pesanan === 'Disiapkan') $currentIdx = 1;
+                elseif (in_array($pesanan->status_pesanan, ['mencari_driver', 'diterima_driver', 'diambil'])) $currentIdx = 1;
+                elseif ($pesanan->status_pesanan === 'dalam_pengiriman') $currentIdx = 2;
+                elseif ($pesanan->status_pesanan === 'diterima') $currentIdx = 3;
+                elseif ($pesanan->status_pesanan === 'selesai') $currentIdx = 4;
             @endphp
-            <div class="timeline">
+            <div class="relative pl-6 border-l border-slate-200 dark:border-white/10 space-y-6 ml-3 py-1">
                 @foreach($steps as $idx => $step)
                 @php
                     $isDone   = $idx < $currentIdx;
                     $isActive = $idx === $currentIdx;
                 @endphp
-                <div class="timeline-item">
-                    <div class="timeline-dot {{ $isDone ? 'done' : ($isActive ? 'active' : '') }}">
-                        @if($isDone) <i class="bi bi-check-lg"></i>
-                        @elseif($isActive) <i class="bi bi-circle-fill" style="font-size:6px;"></i>
+                <div class="relative">
+                    <!-- Dot Indicator -->
+                    <div class="absolute -left-[31px] top-1 w-4 h-4 rounded-full border-2 flex items-center justify-center text-[8px] transition-colors
+                        {{ $isDone ? 'bg-borma-purple border-borma-purple text-white dark:bg-borma-yellow dark:border-borma-yellow dark:text-borma-dark' : ($isActive ? 'bg-amber-400 border-amber-400 text-white animate-pulse' : 'bg-white border-slate-300 dark:bg-borma-dark dark:border-white/15') }}">
+                        @if($isDone) <i class="fa-solid fa-check"></i>
                         @endif
                     </div>
-                    <div class="timeline-title" style="{{ $isActive ? 'color:var(--borma-primary)' : ($isDone ? 'color:#6B7280' : 'color:#D1D5DB') }}">
-                        {{ $step === 'Menunggu' ? 'Menunggu Konfirmasi' : ($step === 'Diterima' ? 'Selesai / Diterima' : $step) }}
+                    <div class="font-bold text-sm {{ $isActive ? 'text-borma-purple dark:text-borma-yellow' : ($isDone ? 'text-slate-600 dark:text-white/70' : 'text-slate-400 dark:text-white/40') }}">
+                        {{ $step === 'Menunggu' ? 'Menunggu Konfirmasi' : ($step === 'diterima' ? 'Pesanan Tiba' : ($step === 'selesai' ? 'Selesai' : ($step === 'dalam_pengiriman' ? 'Sedang Dikirim' : $step))) }}
                     </div>
-                    <div class="timeline-sub">
-                        @if($isDone) <i class="bi bi-check-circle-fill text-success me-1"></i>Selesai
-                        @elseif($isActive) <i class="bi bi-arrow-right-circle-fill text-warning me-1"></i>Status saat ini
-                        @else <span class="text-muted">Menunggu...</span>
+                    <div class="text-xs text-slate-500 dark:text-white/50 mt-0.5">
+                        @if($isDone) <span class="text-green-600 dark:text-green-400"><i class="fa-solid fa-circle-check mr-1"></i>Selesai</span>
+                        @elseif($isActive) <span class="text-amber-500"><i class="fa-solid fa-circle-dot mr-1"></i>Status saat ini</span>
+                        @else <span class="text-slate-400 dark:text-white/30">Menunggu antrean...</span>
                         @endif
                     </div>
                 </div>
@@ -344,72 +202,97 @@
             </div>
         </div>
 
-        {{-- Info Pelanggan --}}
-        <div class="glass-card mb-4">
-            <h6 class="kpi-title mb-3">Informasi Pelanggan</h6>
-            <div class="info-group">
-                <div class="info-label">Nama</div>
-                <div class="info-value">{{ $pesanan->pelanggan->user->nama ?? '-' }}</div>
-            </div>
-            <div class="info-group">
-                <div class="info-label">Telepon</div>
-                <div class="info-value">{{ $pesanan->pelanggan->user->no_telepon ?? '-' }}</div>
-            </div>
-            <div class="info-group">
-                <div class="info-label">Status Member</div>
-                <div class="info-value">
-                    @if($pesanan->pelanggan->status_member)
-                        <span class="badge-modern badge-success"><i class="bi bi-star-fill me-1"></i>Member Aktif</span>
-                    @else
-                        <span class="badge-modern" style="background:#F3F4F6;color:#6B7280;">Non-Member</span>
-                    @endif
+        <!-- Info Pelanggan -->
+        <div class="bg-white dark:bg-white/5 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none rounded-3xl p-6">
+            <h4 class="font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-200 dark:border-white/10 pb-3 flex items-center gap-2">
+                <i class="fa-solid fa-user text-borma-purple dark:text-borma-yellow"></i> Informasi Pelanggan
+            </h4>
+            <div class="space-y-4">
+                <div>
+                    <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Nama Pelanggan</p>
+                    <p class="font-bold text-slate-800 dark:text-white">{{ $pesanan->pelanggan->user->nama ?? '-' }}</p>
                 </div>
-            </div>
-            <div class="info-group">
-                <div class="info-label">Alamat Pengiriman</div>
-                <div class="info-value" style="font-size:0.85rem;line-height:1.5;">{{ $pesanan->alamat_pengiriman }}</div>
+                <div>
+                    <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Nomor Telepon</p>
+                    <p class="font-bold text-slate-800 dark:text-white">{{ $pesanan->pelanggan->user->no_telepon ?? '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Status Member</p>
+                    <div class="mt-1">
+                        @if($pesanan->pelanggan->status_member)
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300">
+                                <i class="fa-solid fa-star text-[10px]"></i> Member Aktif
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-white/60">
+                                Non-Member
+                            </span>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
 
-        {{-- Info Kurir --}}
-        <div class="glass-card">
-            <h6 class="kpi-title mb-3">Informasi Pengiriman</h6>
-            @if($pesanan->kurir)
-            <div class="info-group">
-                <div class="info-label">Nama Kurir</div>
-                <div class="info-value">{{ $pesanan->kurir->user->nama ?? '-' }}</div>
-            </div>
-            <div class="info-group">
-                <div class="info-label">Kendaraan</div>
-                <div class="info-value">
-                    {{ $pesanan->kurir->kendaraan }}
-                    <span class="text-muted" style="font-size:0.8rem;">({{ $pesanan->kurir->warna_kendaraan }})</span>
+        <!-- Info Pengiriman -->
+        <div class="bg-white dark:bg-white/5 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none rounded-3xl p-6">
+            <h4 class="font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-200 dark:border-white/10 pb-3 flex items-center gap-2">
+                <i class="fa-solid fa-truck text-borma-purple dark:text-borma-yellow"></i> Informasi Pengiriman
+            </h4>
+            <div class="space-y-4">
+                <div>
+                    <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Alamat Pengiriman</p>
+                    <p class="font-medium text-slate-800 dark:text-white text-sm leading-relaxed">{{ $pesanan->alamat_pengiriman }}</p>
+                </div>
+                
+                @if($pesanan->kurir)
+                <div>
+                    <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Kurir Pengantar</p>
+                    <div class="flex items-center gap-2 mt-1">
+                        <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-white/50">
+                            <i class="fa-solid fa-motorcycle text-xs"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-800 dark:text-white text-sm">{{ $pesanan->kurir->user->nama ?? '-' }}</p>
+                            <p class="text-xs text-slate-500 dark:text-white/50">{{ $pesanan->kurir->kendaraan }} ({{ $pesanan->kurir->plat_nomor }})</p>
+                        </div>
+                    </div>
+                </div>
+                @endif
+                
+                <div>
+                    <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Metode Pembayaran</p>
+                    <p class="font-bold text-slate-800 dark:text-white">{{ $pesanan->metode_pembayaran }}</p>
                 </div>
             </div>
-            <div class="info-group">
-                <div class="info-label">Plat Nomor</div>
-                <div class="info-value" style="font-family:monospace;font-size:1rem;letter-spacing:1px;">
-                    {{ $pesanan->kurir->plat_nomor }}
-                </div>
+        </div>
+
+        <!-- Bukti Pengiriman -->
+        <div class="bg-white dark:bg-white/5 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none rounded-3xl p-6">
+            <h4 class="font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-200 dark:border-white/10 pb-3 flex items-center gap-2">
+                <i class="fa-solid fa-camera text-borma-purple dark:text-borma-yellow"></i> Bukti Pengiriman
+            </h4>
+            
+            <div class="mt-4">
+                @if($pesanan->bukti_pengiriman)
+                    <div class="w-full h-48 rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/20 group relative cursor-pointer">
+                        <div class="absolute inset-0 flex items-center justify-center text-slate-400 dark:text-white/40 group-hover:bg-black/10 dark:group-hover:bg-black/30 transition-colors">
+                            <div class="text-center">
+                                <i class="fa-solid fa-image text-4xl mb-2"></i>
+                                <p class="text-sm font-medium">{{ $pesanan->bukti_pengiriman }}</p>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <div class="w-full h-32 rounded-2xl border-2 border-dashed border-slate-200 dark:border-white/10 flex items-center justify-center bg-slate-50 dark:bg-white/5">
+                        <div class="text-center text-slate-400 dark:text-white/40">
+                            <i class="fa-solid fa-clock-rotate-left text-2xl mb-2"></i>
+                            <p class="text-sm font-medium">Belum ada foto</p>
+                        </div>
+                    </div>
+                @endif
             </div>
-            @if($pesanan->estimasi_tiba)
-            <div class="info-group">
-                <div class="info-label">Estimasi Tiba</div>
-                <div class="info-value">{{ \Carbon\Carbon::parse($pesanan->estimasi_tiba)->format('d M Y, H:i') }} WIB</div>
-            </div>
-            @endif
-            @else
-            <div class="text-center py-3">
-                <i class="bi bi-truck text-muted" style="font-size:2rem;opacity:0.4;"></i>
-                <p class="text-muted small mt-2 mb-0">Kurir belum ditugaskan.</p>
-            </div>
-            @endif
         </div>
 
     </div>
 </div>
 @endsection
-
-@push('scripts')
-<script src="{{ asset('js/admin-cabang.js') }}"></script>
-@endpush

@@ -12,7 +12,7 @@ class DashboardController extends Controller
     public function index()
     {
         $totalPesanan = \App\Models\Pesanan::count();
-        $pengirimanAktif = \App\Models\Pesanan::whereIn('status_pesanan', ['Disiapkan', 'Sedang Dikirim'])->count();
+        $pengirimanAktif = \App\Models\Pesanan::whereIn('status_pesanan', ['Disiapkan', 'mencari_driver', 'diterima_driver', 'diambil', 'dalam_pengiriman'])->count();
         $totalCabang = Cabang::where('status', 'Aktif')->count();
         $promoAktif = \App\Models\Promo::where('tanggal_mulai', '<=', now())->where('tanggal_berakhir', '>=', now())->count();
         $penggunaanVoucher = \App\Models\Pesanan::where('diskon_voucher', '>', 0)->count();
@@ -65,5 +65,10 @@ class DashboardController extends Controller
             'totalKurir',
             'menungguPickup'
         ));
+    }
+
+    public function notifikasi()
+    {
+        return view('super-admin.notifikasi');
     }
 }

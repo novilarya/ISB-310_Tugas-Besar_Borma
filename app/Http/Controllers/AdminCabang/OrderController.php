@@ -19,12 +19,6 @@ class OrderController extends Controller
         return auth()->user()?->adminCabang?->id_cabang ?? 1;
     }
 
-    private const TRANSITIONS = [
-        'Menunggu Konfirmasi' => 'Disiapkan',
-        'Disiapkan'           => 'Mencari Kurir',
-        'Mencari Kurir'       => 'Sedang Dikirim',
-        'Sedang Dikirim'      => 'Diterima',
-    ];
 
     private function pesananMilikCabang(int|string $id): ?Pesanan
     {
@@ -54,7 +48,7 @@ class OrderController extends Controller
             });
         }
 
-        $validStatus = ['Menunggu Konfirmasi', 'Disiapkan', 'Mencari Kurir', 'Sedang Dikirim', 'Diterima', 'Gagal Kirim'];
+        $validStatus = ['Menunggu', 'Disiapkan', 'mencari_driver', 'diterima_driver', 'diambil', 'dalam_pengiriman', 'diterima', 'selesai', 'gagal', 'ditolak_driver'];
         if ($status && in_array($status, $validStatus)) {
             $query->where('status_pesanan', $status);
         }
@@ -130,7 +124,7 @@ class OrderController extends Controller
     {
         $pesanan = $this->pesananMilikCabang($id);
         if (!$pesanan) return back()->with('error', 'Pesanan tidak ditemukan.');
-        if ($pesanan->status_pesanan !== 'Menunggu Konfirmasi') return back()->with('error', 'Pesanan tidak dalam status Menunggu Konfirmasi.');
+        if ($pesanan->status_pesanan !== 'Menunggu') return back()->with('error', 'Pesanan tidak dalam status Menunggu Konfirmasi.');
 
         $pesanan->update(['status_pesanan' => 'Disiapkan']);
 
@@ -151,32 +145,23 @@ class OrderController extends Controller
 
     public function dispatch(string $id)
     {
-        $idCabang = $this->getIdCabang();
         $pesanan  = $this->pesananMilikCabang($id);
         if (!$pesanan) return back()->with('error', 'Pesanan tidak ditemukan.');
         if ($pesanan->status_pesanan !== 'Disiapkan') return back()->with('error', 'Pesanan harus berstatus Disiapkan.');
 
-        $kurir = Kurir::where('id_cabang', $idCabang)
-            ->where('status_aktif', 'Aktif')
-            ->where('status_mengirim', 'Tidak Mengirim')
-            ->inRandomOrder()->first();
-
-        if (!$kurir) return back()->with('error', 'Tidak ada kurir tersedia saat ini.');
-
         $pesanan->update([
-            'id_kurir'       => $kurir->id_kurir,
-            'status_pesanan' => 'Mencari Kurir',
+            'id_kurir'       => null,
+            'status_pesanan' => 'mencari_driver',
             'estimasi_tiba'  => now()->addHours(2),
         ]);
-        $kurir->update(['status_mengirim' => 'Sedang Mengirim']);
 
-        return back()->with('success', 'Kurir ' . ($kurir->user->nama ?? '') . ' ditugaskan untuk #BRM-9' . str_pad($id, 3, '0', STR_PAD_LEFT));
+        return back()->with('success', 'Mencari kurir untuk pesanan #BRM-9' . str_pad($id, 3, '0', STR_PAD_LEFT));
     }
 
     public function cancelDispatch(string $id)
     {
         $pesanan = $this->pesananMilikCabang($id);
-        if (!$pesanan || $pesanan->status_pesanan !== 'Mencari Kurir') {
+        if (!$pesanan || $pesanan->status_pesanan !== 'mencari_driver') {
             return back()->with('error', 'Tidak dapat membatalkan pengiriman ini.');
         }
         if ($pesanan->kurir) $pesanan->kurir->update(['status_mengirim' => 'Tidak Mengirim']);
@@ -188,23 +173,32 @@ class OrderController extends Controller
     public function driverAccept(string $id)
     {
         $pesanan = Pesanan::with('kurir')->where('id_pesanan', $id)->firstOrFail();
-        if ($pesanan->status_pesanan !== 'Mencari Kurir') {
+        if ($pesanan->status_pesanan !== 'mencari_driver') {
             return response()->json(['message' => 'Status pesanan tidak valid.'], 422);
         }
-        $pesanan->update(['status_pesanan' => 'Sedang Dikirim']);
-        return response()->json(['message' => 'Kurir mengkonfirmasi pengambilan.', 'status' => 'Sedang Dikirim', 'order_id' => $id]);
+        $pesanan->update(['status_pesanan' => 'dalam_pengiriman']);
+        return response()->json(['message' => 'Kurir mengkonfirmasi pengambilan.', 'status' => 'dalam_pengiriman', 'order_id' => $id]);
     }
 
     public function complete(string $id)
     {
         $pesanan = Pesanan::with(['details', 'kurir'])->where('id_pesanan', $id)->firstOrFail();
-        if ($pesanan->status_pesanan !== 'Sedang Dikirim') {
-            if (request()->expectsJson()) return response()->json(['message' => 'Pesanan tidak dalam status Sedang Dikirim.'], 422);
-            return back()->with('error', 'Pesanan harus berstatus Sedang Dikirim.');
+        if (!in_array($pesanan->status_pesanan, ['dalam_pengiriman', 'diterima'])) {
+            if (request()->expectsJson()) return response()->json(['message' => 'Pesanan tidak dalam status Sedang Dikirim atau Tiba.'], 422);
+            return back()->with('error', 'Pesanan harus berstatus Sedang Dikirim atau Tiba.');
         }
 
-        $pesanan->update(['status_pesanan' => 'Diterima', 'bukti_pengiriman' => request('bukti') ?? 'confirmed_by_system']);
-        if ($pesanan->kurir) $pesanan->kurir->update(['status_mengirim' => 'Tidak Mengirim']);
+        // If transitioning from dalam_pengiriman, set default proof if not present
+        if ($pesanan->status_pesanan === 'dalam_pengiriman') {
+            $pesanan->bukti_pengiriman = request('bukti') ?? 'confirmed_by_admin';
+        }
+        
+        $pesanan->status_pesanan = 'selesai';
+        $pesanan->save();
+
+        if ($pesanan->kurir) {
+            $pesanan->kurir->update(['status_mengirim' => 'Tidak Mengirim']);
+        }
 
         foreach ($pesanan->details as $detail) {
             ProdukCabang::where('id_produk', $detail->id_produk)
@@ -212,15 +206,21 @@ class OrderController extends Controller
                 ->increment('jumlah_terjual', $detail->jumlah);
         }
 
-        if (request()->expectsJson()) return response()->json(['message' => 'Pesanan diterima.', 'status' => 'Diterima', 'order_id' => $id]);
-        return back()->with('success', 'Pesanan #BRM-9' . str_pad($id, 3, '0', STR_PAD_LEFT) . ' telah diterima.');
+        \App\Models\PengirimanTracking::create([
+            'id_pesanan' => $id,
+            'status' => 'selesai',
+            'keterangan' => 'Pesanan dikonfirmasi selesai oleh Admin Cabang'
+        ]);
+
+        if (request()->expectsJson()) return response()->json(['message' => 'Pesanan selesai.', 'status' => 'Selesai', 'order_id' => $id]);
+        return back()->with('success', 'Pesanan #BRM-9' . str_pad($id, 3, '0', STR_PAD_LEFT) . ' telah diselesaikan.');
     }
 
     public function driverNotifikasi(string $kurirId)
     {
         $pesanan = Pesanan::with('pelanggan.user')
             ->where('id_kurir', $kurirId)
-            ->whereIn('status_pesanan', ['Mencari Kurir', 'Sedang Dikirim'])
+            ->whereIn('status_pesanan', ['mencari_driver', 'diterima_driver', 'diambil', 'dalam_pengiriman'])
             ->orderByDesc('created_at')->get();
         return response()->json($pesanan);
     }

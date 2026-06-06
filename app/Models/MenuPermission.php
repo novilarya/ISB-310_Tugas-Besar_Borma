@@ -24,12 +24,13 @@ class MenuPermission extends Model
     public static function superAdminMenus(): array
     {
         return [
-            'superadmin_dashboard'  => 'Dashboard',
-            'superadmin_pesanan'    => 'Manajemen Pesanan',
-            'superadmin_cabang'     => 'Manajemen Cabang',
-            'superadmin_member'     => 'Manajemen Member',
-            'superadmin_pengemudi'  => 'Manajemen Pengemudi',
-            'superadmin_promo'      => 'Voucher & Promo',
+            'superadmin_dashboard'    => 'Dashboard',
+            'superadmin_pesanan'      => 'Manajemen Pesanan',
+            'superadmin_cabang'       => 'Manajemen Cabang',
+            'superadmin_admin_cabang' => 'Manajemen Admin Cabang',
+            'superadmin_member'       => 'Manajemen Member',
+            'superadmin_pengemudi'    => 'Manajemen Pengemudi',
+            'superadmin_promo'        => 'Voucher & Promo',
         ];
     }
 

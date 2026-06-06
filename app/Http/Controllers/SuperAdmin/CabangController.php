@@ -75,7 +75,7 @@ class CabangController extends Controller
                 break;
         }
 
-        return view('super-admin.cabang', compact('cabangs'));
+        return view('super-admin.cabang', compact('cabang'));
     }
 
     public function cabangDetail($id)

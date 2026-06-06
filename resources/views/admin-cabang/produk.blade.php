@@ -11,8 +11,8 @@
 <!-- Header -->
 <div class="d-flex justify-content-between align-items-end mb-4">
     <div class="page-header-text">
-        <h1 class="mb-2" class="page-title">Manajemen Produk</h1>
-        <p class="text-muted m-0" class="page-subtitle">Kelola inventaris Borma Toserba secara efisien. Pantau stok, perbarui harga member, dan aktifkan status promosi dari satu dasbor pusat.</p>
+        <h1 class="page-title mb-2">Manajemen Produk</h1>
+        <p class="page-subtitle text-muted m-0">Kelola inventaris Borma Toserba secara efisien. Pantau stok, perbarui harga member, dan aktifkan status promosi dari satu dasbor pusat.</p>
     </div>
     <div class="d-flex gap-2 align-items-center">
         <a href="{{ route('admin-cabang.produk.export-csv', request()->query()) }}" class="btn-action btn-action-outline" style="text-decoration: none; padding: 10px 20px; font-size: 0.9rem; font-weight: 700; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
@@ -22,19 +22,7 @@
     </div>
 </div>
 
-@if(session('success'))
-<div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 12px; border: none; font-weight: 600;">
-  <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
-  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-@endif
 
-@if(session('error'))
-<div class="alert alert-danger alert-dismissible fade show" role="alert" style="border-radius: 12px; border: none; font-weight: 600;">
-  <i class="bi bi-x-circle-fill me-2"></i> {{ session('error') }}
-  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-@endif
 
 <!-- KPI Cards -->
 <div class="row g-4 mb-5">
@@ -378,12 +366,21 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
+    const rootStyle = getComputedStyle(document.documentElement);
+    const bormaPrimary = rootStyle.getPropertyValue('--borma-primary').trim() || '#33116C';
+    const bormaSecondary = rootStyle.getPropertyValue('--borma-secondary').trim() || '#FED50B';
+    const bormaTertiary = rootStyle.getPropertyValue('--borma-tertiary').trim() || '#EB3B02';
+
+    const isDark = document.documentElement.classList.contains('dark');
+    const textColor = isDark ? 'rgba(255, 255, 255, 0.7)' : '#6B7280';
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0,0,0,0.04)';
+
     const kategoriLabels = @json($chartKategoriLabels);
     const kategoriStok   = @json($chartKategoriStok);
     const kategoriSku    = @json($chartKategoriSku);
 
     const colors = [
-        '#33116C', '#FED50B', '#EB3B02', '#6366F1',
+        bormaPrimary, bormaSecondary, bormaTertiary, '#6366F1',
         '#10B981', '#F59E0B', '#3B82F6', '#EC4899'
     ];
 
@@ -423,17 +420,17 @@ document.addEventListener('DOMContentLoaded', function () {
             scales: {
                 y: {
                     beginAtZero: true,
-                    grid: { color: 'rgba(0,0,0,0.04)' },
+                    grid: { color: gridColor },
                     ticks: {
                         font: { size: 11, weight: '700' },
-                        color: '#9CA3AF'
+                        color: textColor
                     }
                 },
                 x: {
                     grid: { display: false },
                     ticks: {
                         font: { size: 11, weight: '700' },
-                        color: '#6B7280'
+                        color: textColor
                     }
                 }
             }

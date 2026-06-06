@@ -9,10 +9,10 @@
 
 @section('content')
 <!-- Header -->
-<div class="d-flex justify-content-between align-items-end mb-5">
-    <div>
-        <h1 class="mb-2" class="page-title">Dashboard Cabang</h1>
-        <p class="text-muted m-0" class="page-subtitle">Ringkasan performa & operasional Borma Toserba hari ini.</p>
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div class="page-header-text">
+        <h1 class="page-title mb-2">Dashboard Cabang</h1>
+        <p class="page-subtitle text-muted m-0">Ringkasan performa & operasional Borma Toserba hari ini.</p>
     </div>
     <div class="d-flex gap-3">
         <!-- Export PDF deleted as requested -->
@@ -160,9 +160,21 @@
                         <td><strong>Rp {{ number_format($order->total_tagihan, 0, ',', '.') }}</strong></td>
                         <td>
                             @php
-                                $bc = ['Menunggu'=>'badge-warning','Disiapkan'=>'badge-primary','Sedang Dikirim'=>'badge-primary','Diterima'=>'badge-success'][$order->status_pesanan] ?? 'badge-warning';
+                                $statusMap = [
+                                    'Menunggu'         => ['class' => 'badge-modern badge-warning', 'label' => 'Menunggu Konfirmasi'],
+                                    'Disiapkan'        => ['class' => 'badge-modern badge-primary', 'label' => 'Disiapkan'],
+                                    'mencari_driver'   => ['class' => 'badge-modern badge-info', 'label' => 'Mencari Kurir'],
+                                    'diterima_driver'  => ['class' => 'badge-modern badge-primary', 'label' => 'Diterima Driver'],
+                                    'diambil'          => ['class' => 'badge-modern badge-primary', 'label' => 'Diambil Driver'],
+                                    'dalam_pengiriman' => ['class' => 'badge-modern badge-info', 'label' => 'Dalam Pengiriman'],
+                                    'diterima'         => ['class' => 'badge-modern badge-warning', 'label' => 'Pesanan Tiba'],
+                                    'selesai'          => ['class' => 'badge-modern badge-success', 'label' => 'Selesai'],
+                                    'gagal'            => ['class' => 'badge-modern badge-danger', 'label' => 'Gagal'],
+                                    'ditolak_driver'   => ['class' => 'badge-modern badge-danger', 'label' => 'Ditolak Driver'],
+                                ];
+                                $st = $statusMap[$order->status_pesanan] ?? ['class' => 'badge-modern badge-secondary', 'label' => $order->status_pesanan];
                             @endphp
-                            <span class="badge-modern {{ $bc }}">{{ $order->status_pesanan }}</span>
+                            <span class="{{ $st['class'] }}">{{ $st['label'] }}</span>
                         </td>
                         <td>
                             <div class="d-flex gap-2">
@@ -312,14 +324,38 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
+    const rootStyle = getComputedStyle(document.documentElement);
+    const bormaPrimary = rootStyle.getPropertyValue('--borma-primary').trim() || '#33116C';
+    const bormaSecondary = rootStyle.getPropertyValue('--borma-secondary').trim() || '#FED50B';
+    const bormaTertiary = rootStyle.getPropertyValue('--borma-tertiary').trim() || '#EB3B02';
+
+    const isDark = document.documentElement.classList.contains('dark');
+    const textColor = isDark ? 'rgba(255, 255, 255, 0.7)' : '#6B7280';
+    const pieLegendColor = isDark ? '#ffffff' : '#374151';
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0,0,0,0.04)';
+
     // ── Trend Penjualan 7 Hari ──────────────────────────────────────
     const salesLabels = @json($chartLabels);
     const salesData   = @json($chartData);
 
     const ctxSales = document.getElementById('salesTrendChart').getContext('2d');
     const salesGrad = ctxSales.createLinearGradient(0, 0, 0, 280);
-    salesGrad.addColorStop(0, 'rgba(51, 17, 108, 0.15)');
-    salesGrad.addColorStop(1, 'rgba(51, 17, 108, 0)');
+    
+    let primaryRgb = '51, 17, 108'; // Default
+    if (bormaPrimary.startsWith('#')) {
+        let hex = bormaPrimary.replace('#', '');
+        if (hex.length === 3) {
+            hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+        }
+        if (hex.length === 6) {
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            primaryRgb = `${r}, ${g}, ${b}`;
+        }
+    }
+    salesGrad.addColorStop(0, `rgba(${primaryRgb}, 0.15)`);
+    salesGrad.addColorStop(1, `rgba(${primaryRgb}, 0)`);
 
     new Chart(ctxSales, {
         type: 'line',
@@ -328,11 +364,11 @@ document.addEventListener('DOMContentLoaded', function () {
             datasets: [{
                 label: 'Penjualan (Rp)',
                 data: salesData,
-                borderColor: '#33116C',
+                borderColor: bormaPrimary,
                 backgroundColor: salesGrad,
                 borderWidth: 2.5,
-                pointBackgroundColor: '#FED50B',
-                pointBorderColor: '#33116C',
+                pointBackgroundColor: bormaSecondary,
+                pointBorderColor: bormaPrimary,
                 pointRadius: 5,
                 pointHoverRadius: 7,
                 tension: 0.4,
@@ -353,16 +389,16 @@ document.addEventListener('DOMContentLoaded', function () {
             scales: {
                 y: {
                     beginAtZero: true,
-                    grid: { color: 'rgba(0,0,0,0.04)' },
+                    grid: { color: gridColor },
                     ticks: {
                         callback: v => 'Rp ' + (v >= 1000000 ? (v/1000000).toFixed(1)+'jt' : (v/1000).toFixed(0)+'rb'),
                         font: { size: 11, weight: '700' },
-                        color: '#9CA3AF'
+                        color: textColor
                     }
                 },
                 x: {
                     grid: { display: false },
-                    ticks: { font: { size: 11, weight: '700' }, color: '#6B7280' }
+                    ticks: { font: { size: 11, weight: '700' }, color: textColor }
                 }
             }
         }
@@ -372,7 +408,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const pieLabels = @json($pieLabels);
     const pieData   = @json($pieData);
 
-    const pieColors = ['#33116C','#FED50B','#EB3B02','#6366F1','#10B981'];
+    const pieColors = [bormaPrimary, bormaSecondary, bormaTertiary, '#6366F1', '#10B981'];
 
     const ctxPie = document.getElementById('categoryPieChart').getContext('2d');
     new Chart(ctxPie, {
@@ -393,7 +429,7 @@ document.addEventListener('DOMContentLoaded', function () {
             plugins: {
                 legend: {
                     position: 'bottom',
-                    labels: { font: { size: 11, weight: '700' }, color: '#374151', padding: 12, boxWidth: 12 }
+                    labels: { font: { size: 11, weight: '700' }, color: pieLegendColor, padding: 12, boxWidth: 12 }
                 },
                 tooltip: {
                     callbacks: {

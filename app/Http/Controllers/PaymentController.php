@@ -293,7 +293,7 @@ class PaymentController extends Controller
                     $pesanan->update(['status_pesanan' => 'Menunggu']);
                     Log::info("Payment pending for order: {$orderId}");
                 } elseif (in_array($transactionStatus, ['deny', 'cancel', 'expire'])) {
-                    $pesanan->update(['status_pesanan' => 'Batal']);
+                    $pesanan->update(['status_pesanan' => 'gagal']);
                     Log::info("Payment failed/cancelled for order: {$orderId}");
                 }
             } else {

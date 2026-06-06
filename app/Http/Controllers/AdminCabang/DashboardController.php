@@ -32,8 +32,8 @@ class DashboardController extends Controller
         $monthlySales = $allOrders->filter(fn($o) => $o->tanggal_pemesanan && $o->tanggal_pemesanan >= $month)->sum('total_tagihan');
 
         $pendingOrders   = $allOrders->where('status_pesanan', 'Menunggu')->count();
-        $processOrders   = $allOrders->whereIn('status_pesanan', ['Disiapkan', 'Sedang Dikirim'])->count();
-        $completedOrders = $allOrders->where('status_pesanan', 'Diterima')->count();
+        $processOrders   = $allOrders->whereIn('status_pesanan', ['Disiapkan', 'mencari_driver', 'diterima_driver', 'diambil', 'dalam_pengiriman', 'diterima'])->count();
+        $completedOrders = $allOrders->where('status_pesanan', 'selesai')->count();
 
         // ── Produk Cabang ───────────────────────────────────────────────
         $produkCabangs = ProdukCabang::with('produk')

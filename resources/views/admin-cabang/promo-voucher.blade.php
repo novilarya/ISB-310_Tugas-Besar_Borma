@@ -8,20 +8,15 @@
 {{-- Header --}}
 <div class="d-flex justify-content-between align-items-end mb-4">
     <div class="page-header-text">
-        <h1 class="mb-2 page-title">Promo & Voucher</h1>
-        <p class="m-0 page-subtitle">Kelola kampanye diskon dan kode voucher untuk cabang Anda.</p>
+        <h1 class="page-title mb-2">Promo & Voucher</h1>
+        <p class="page-subtitle text-muted m-0">Kelola kampanye diskon dan kode voucher untuk cabang Anda.</p>
     </div>
     <button class="btn-primary-custom" data-bs-toggle="modal" data-bs-target="#tambahPromoModal">
         <i class="bi bi-plus-lg me-2"></i> Buat Promo Baru
     </button>
 </div>
 
-@if(session('success'))
-<div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius:12px;border:none;font-weight:600;">
-    <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-</div>
-@endif
+
 @if($errors->any())
 <div class="alert alert-danger alert-dismissible fade show" style="border-radius:12px;border:none;font-weight:600;">
     <i class="bi bi-x-circle-fill me-2"></i> {{ $errors->first() }}

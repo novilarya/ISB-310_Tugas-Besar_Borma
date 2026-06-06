@@ -241,13 +241,26 @@
         <!-- Orders List -->
         <div class="space-y-4 relative z-10">
             @forelse($pesanans as $pesanan)
+            @php
+                $statusMap = [
+                    'mencari_driver' => ['label' => 'Diproses', 'class' => 'bg-neutral-900 text-white'],
+                    'diterima_driver' => ['label' => 'Driver Ditemukan', 'class' => 'bg-primary-100 text-primary-700'],
+                    'diambil' => ['label' => 'Diambil Dari Gudang', 'class' => 'bg-primary-100 text-primary-700'],
+                    'dalam_pengiriman' => ['label' => 'Dalam Pengiriman', 'class' => 'bg-primary-100 text-primary-700'],
+                    'diterima' => ['label' => 'Diterima (Kurir Tiba)', 'class' => 'bg-amber-100 text-amber-800'],
+                    'selesai' => ['label' => 'Selesai', 'class' => 'bg-green-100 text-green-800'],
+                    'gagal' => ['label' => 'Gagal Kirim', 'class' => 'bg-red-100 text-red-700'],
+                    'ditolak_driver' => ['label' => 'Ditolak', 'class' => 'bg-red-100 text-red-700'],
+                ];
+                $statusInfo = $statusMap[$pesanan->status_pesanan] ?? ['label' => $pesanan->status_pesanan, 'class' => 'bg-neutral-900 text-white'];
+            @endphp
             <div onclick='showOrderDetail(@json($pesanan))' class="group bg-neutral-50 rounded-2xl p-4 sm:p-5 border border-neutral-200 hover:border-primary-300 hover:bg-white hover:shadow-md transition-all duration-300 flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center cursor-pointer">
                 
                 <!-- Order Icon -->
                 <div class="w-14 h-14 bg-white rounded-xl shadow-sm flex items-center justify-center shrink-0 border border-neutral-100 group-hover:bg-primary-50 group-hover:border-primary-200 transition-colors text-primary-400 group-hover:text-primary-700">
-                    @if(in_array($pesanan->status_pesanan, ['Selesai', 'Diterima']))
+                    @if($pesanan->status_pesanan === 'selesai')
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                    @elseif(in_array($pesanan->status_pesanan, ['Dikirim', 'Diperjalanan']))
+                    @elseif(in_array($pesanan->status_pesanan, ['diterima', 'dalam_pengiriman', 'diambil', 'diterima_driver']))
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
                     @else
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -269,13 +282,8 @@
                         <h4 class="font-bold text-neutral-800 text-base truncate group-hover:text-primary-700 transition-colors">{{ $displayTitle }}</h4>
                         
                         <!-- Status Badge (Mobile) -->
-                        @php
-                            $isDone = in_array($pesanan->status_pesanan, ['Selesai', 'Diterima']);
-                            $isShipping = in_array($pesanan->status_pesanan, ['Dikirim', 'Diperjalanan']);
-                            $bgClass = $isDone ? 'bg-neutral-200 text-neutral-700' : ($isShipping ? 'bg-primary-100 text-primary-700' : 'bg-neutral-900 text-white');
-                        @endphp
-                        <span class="sm:hidden px-2.5 py-1 rounded-md text-[10px] font-bold uppercase {{ $bgClass }} whitespace-nowrap ml-2 shadow-sm">
-                            {{ $pesanan->status_pesanan }}
+                        <span class="sm:hidden px-2.5 py-1 rounded-md text-[10px] font-bold uppercase {{ $statusInfo['class'] }} whitespace-nowrap ml-2 shadow-sm">
+                            {{ $statusInfo['label'] }}
                         </span>
                     </div>
                     
@@ -291,8 +299,8 @@
                 
                 <!-- Price and Status (Desktop) -->
                 <div class="hidden sm:flex flex-col items-end gap-3 shrink-0">
-                    <span class="px-3 py-1.5 rounded-md text-[11px] font-bold uppercase {{ $bgClass }} shadow-sm">
-                        {{ $pesanan->status_pesanan }}
+                    <span class="px-3 py-1.5 rounded-md text-[11px] font-bold uppercase {{ $statusInfo['class'] }} shadow-sm">
+                        {{ $statusInfo['label'] }}
                     </span>
                     <p class="font-extrabold text-xl text-primary-700">Rp {{ number_format($pesanan->total_tagihan, 0, ',', '.') }}</p>
                 </div>
@@ -371,6 +379,42 @@
                         </div>
                     </div>
 
+                    <!-- Live Tracking Map Section -->
+                    <div id="modalOrderMapSection" class="hidden border border-neutral-200 rounded-2xl p-4 bg-neutral-50/50 space-y-2">
+                        <p class="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">Live Tracking Lokasi Kurir</p>
+                        <div id="modalOrderMap" style="height: 240px; border-radius: 12px; border: 1.5px solid #E4E0EE; overflow: hidden; z-index: 1;"></div>
+                        <div class="flex gap-4 mt-2 px-1 text-[10px] font-bold text-neutral-500 uppercase tracking-wide">
+                            <div class="flex items-center gap-1.5">
+                                <span style="background: #33116C; width: 8px; height: 8px; border-radius: 50%; display: inline-block;"></span>
+                                Gudang/Cabang
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span style="background: #EB3B02; width: 8px; height: 8px; border-radius: 50%; display: inline-block;"></span>
+                                Lokasi Anda
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bukti Pengiriman Section -->
+                    <div id="modalOrderProofSection" class="hidden bg-green-50/50 rounded-2xl p-4 border border-green-100 space-y-4">
+                        <p class="text-[10px] text-green-700 font-bold uppercase tracking-wider">Bukti Pengiriman Selesai</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="w-full h-40 bg-neutral-100 rounded-xl overflow-hidden border border-neutral-200 flex items-center justify-center">
+                                <img id="modalOrderProofImg" src="" alt="Bukti Pengiriman" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex flex-col justify-center space-y-3">
+                                <div>
+                                    <p class="text-[10px] text-neutral-400 font-bold uppercase tracking-wider mb-0.5">Nama Penerima</p>
+                                    <p class="text-sm font-bold text-neutral-800" id="modalOrderProofReceiver">-</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] text-neutral-400 font-bold uppercase tracking-wider mb-0.5">Catatan Driver</p>
+                                    <p class="text-xs italic text-neutral-600 font-medium" id="modalOrderProofNote">-</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <hr class="border-neutral-200">
 
                     <!-- Product Items -->
@@ -402,6 +446,16 @@
                             <span class="text-primary-700" id="modalOrderTotal">Rp -</span>
                         </div>
                     </div>
+
+                    <!-- Customer Confirmation Action Button -->
+                    <div id="modalOrderConfirmActionSection" class="hidden mt-6">
+                        <button type="button" onclick="confirmOrderReceived()" class="w-full bg-gradient-to-r from-emerald-600 to-green-500 hover:from-emerald-700 hover:to-green-600 text-white font-heading font-extrabold py-4 px-6 rounded-2xl shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:shadow-md transition-all duration-200 flex items-center justify-center gap-3 text-sm uppercase tracking-wider border border-emerald-500/20">
+                            <svg class="w-5 h-5 text-emerald-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Konfirmasi Pesanan Selesai</span>
+                        </button>
+                    </div>
                 </div>
         </div>
     </div>
@@ -412,6 +466,9 @@
 @push('scripts')
 <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
 <script>
+let trackingMapInstance = null;
+let currentPesananId = null;
+
 function activateMember(paket, harga) {
     const paketNames = {
         '1_bulan': 'Borma Plus - 1 Bulan',
@@ -471,6 +528,7 @@ function activateMember(paket, harga) {
 }
 
 function showOrderDetail(pesanan) {
+    currentPesananId = pesanan.id_pesanan;
     document.getElementById('modalOrderId').textContent = pesanan.id_pesanan;
     
     const date = new Date(pesanan.tanggal_pemesanan);
@@ -482,21 +540,21 @@ function showOrderDetail(pesanan) {
     
     const status = pesanan.status_pesanan;
     const badge = document.getElementById('modalOrderStatusBadge');
-    badge.textContent = status;
     
-    const isDone = ['Selesai', 'Diterima'].includes(status);
-    const isShipping = ['Dikirim', 'Diperjalanan'].includes(status);
+    const statusMap = {
+        'mencari_driver': { label: 'DIPROSES', class: ['bg-neutral-900', 'text-white'] },
+        'diterima_driver': { label: 'DRIVER DITEMUKAN', class: ['bg-primary-100', 'text-primary-700'] },
+        'diambil': { label: 'DIAMBIL DARI GUDANG', class: ['bg-primary-100', 'text-primary-700'] },
+        'dalam_pengiriman': { label: 'DALAM PENGIRIMAN', class: ['bg-primary-100', 'text-primary-700'] },
+        'diterima': { label: 'DITERIMA (KURIR TIBA)', class: ['bg-amber-100', 'text-amber-800'] },
+        'selesai': { label: 'SELESAI', class: ['bg-green-100', 'text-green-800'] },
+        'gagal': { label: 'GAGAL KIRIM', class: ['bg-red-100', 'text-red-700'] },
+        'ditolak_driver': { label: 'DITOLAK', class: ['bg-red-100', 'text-red-700'] },
+    };
     
-    badge.className = "inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold uppercase shadow-sm";
-    if (isDone) {
-        badge.classList.add('bg-neutral-200', 'text-neutral-700');
-    } else if (isShipping) {
-        badge.classList.add('bg-primary-100', 'text-primary-700');
-    } else if (status === 'Batal') {
-        badge.classList.add('bg-red-100', 'text-red-700');
-    } else {
-        badge.classList.add('bg-neutral-900', 'text-white');
-    }
+    const info = statusMap[status] || { label: status.toUpperCase(), class: ['bg-neutral-900', 'text-white'] };
+    badge.textContent = info.label;
+    badge.className = "inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold uppercase shadow-sm " + info.class.join(' ');
     
     const container = document.getElementById('modalOrderItemsContainer');
     container.innerHTML = '';
@@ -537,6 +595,125 @@ function showOrderDetail(pesanan) {
     document.getElementById('modalOrderDiscount').textContent = 'Rp ' + discount.toLocaleString('id-ID');
     document.getElementById('modalOrderTotal').textContent = 'Rp ' + total.toLocaleString('id-ID');
     
+    // Reset Sections
+    const mapSection = document.getElementById('modalOrderMapSection');
+    const proofSection = document.getElementById('modalOrderProofSection');
+    mapSection.classList.add('hidden');
+    proofSection.classList.add('hidden');
+    
+    if (trackingMapInstance) {
+        trackingMapInstance.remove();
+        trackingMapInstance = null;
+    }
+    
+    // Live Map if status is dalam_pengiriman
+    if (status === 'dalam_pengiriman') {
+        mapSection.classList.remove('hidden');
+        
+        let cabangLat = -6.9147;
+        let cabangLng = 107.6542;
+        let cabangName = 'Gudang Borma';
+        if (pesanan.cabang) {
+            cabangName = pesanan.cabang.nama_cabang || 'Gudang Borma';
+            if (pesanan.cabang.koordinat_gps) {
+                const coords = pesanan.cabang.koordinat_gps.split(',');
+                if (coords.length === 2) {
+                    cabangLat = parseFloat(coords[0].trim());
+                    cabangLng = parseFloat(coords[1].trim());
+                }
+            }
+        }
+        
+        let custLat = pesanan.latitude ? parseFloat(pesanan.latitude) : -6.9215;
+        let custLng = pesanan.longitude ? parseFloat(pesanan.longitude) : 107.6310;
+        
+        const centerLat = (cabangLat + custLat) / 2;
+        const centerLng = (cabangLng + custLng) / 2;
+        
+        // Initialize Map inside modal
+        trackingMapInstance = L.map('modalOrderMap', {
+            zoomControl: true,
+            attributionControl: false
+        }).setView([centerLat, centerLng], 13);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(trackingMapInstance);
+        
+        const gudangIcon = L.divIcon({
+            className: 'custom-marker',
+            html: `<div style="background: #33116C; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(51,17,108,0.4); border: 2.5px solid white;">
+                    <svg width="12" height="12" fill="white" viewBox="0 0 16 16"><path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2l-2.218-.887zm3.564 1.426L5.596 5 8 5.961 14.154 3.5l-2.404-.961zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923l6.5 2.6zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464L7.443.184z"/></svg>
+                   </div>`,
+            iconSize: [28, 28],
+            iconAnchor: [14, 14]
+        });
+
+        const customerIcon = L.divIcon({
+            className: 'custom-marker',
+            html: `<div style="background: #EB3B02; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(235,59,2,0.4); border: 2.5px solid white;">
+                    <svg width="12" height="12" fill="white" viewBox="0 0 16 16"><path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/><path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg>
+                   </div>`,
+            iconSize: [28, 28],
+            iconAnchor: [14, 28]
+        });
+        
+        L.marker([cabangLat, cabangLng], { icon: gudangIcon }).addTo(trackingMapInstance)
+            .bindPopup('<b>Gudang ' + cabangName + '</b>');
+
+        L.marker([custLat, custLng], { icon: customerIcon }).addTo(trackingMapInstance)
+            .bindPopup('<b>Lokasi Anda</b><br>' + pesanan.alamat_pengiriman);
+            
+        L.polyline([
+            [cabangLat, cabangLng],
+            [custLat, custLng]
+        ], {
+            color: '#33116C',
+            weight: 3,
+            opacity: 0.7,
+            dashArray: '6, 6',
+            lineCap: 'round'
+        }).addTo(trackingMapInstance);
+        
+        const bounds = L.latLngBounds([
+            [cabangLat, cabangLng],
+            [custLat, custLng]
+        ]);
+        trackingMapInstance.fitBounds(bounds, { padding: [20, 20] });
+        
+        // Invalidate map size after modal animation completes
+        setTimeout(() => {
+            if (trackingMapInstance) {
+                trackingMapInstance.invalidateSize();
+            }
+        }, 400);
+    }
+    
+    // Hide confirm action section by default
+    const confirmActionSection = document.getElementById('modalOrderConfirmActionSection');
+    if (confirmActionSection) {
+        confirmActionSection.classList.add('hidden');
+    }
+    
+    // Proof of Delivery if status is diterima or selesai
+    if (status === 'diterima' || status === 'selesai') {
+        proofSection.classList.remove('hidden');
+        const img = document.getElementById('modalOrderProofImg');
+        if (pesanan.bukti_pengiriman) {
+            img.src = '/storage/' + pesanan.bukti_pengiriman;
+            img.style.display = 'block';
+        } else {
+            img.src = '/assets/products/default.jpg';
+        }
+        document.getElementById('modalOrderProofReceiver').textContent = pesanan.nama_penerima || 'Penerima tidak dicatat';
+        document.getElementById('modalOrderProofNote').textContent = pesanan.catatan_driver ? '"' + pesanan.catatan_driver + '"' : 'Tidak ada catatan driver';
+    }
+
+    // Customer confirmation action button
+    if (status === 'diterima' && confirmActionSection) {
+        confirmActionSection.classList.remove('hidden');
+    }
+    
     document.getElementById('orderDetailModal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 }
@@ -544,6 +721,39 @@ function showOrderDetail(pesanan) {
 function closeOrderDetailModal() {
     document.getElementById('orderDetailModal').classList.add('hidden');
     document.body.style.overflow = '';
+    if (trackingMapInstance) {
+        trackingMapInstance.remove();
+        trackingMapInstance = null;
+    }
+}
+
+function confirmOrderReceived() {
+    if (!currentPesananId) return;
+    if (!confirm('Apakah Anda yakin ingin mengkonfirmasi bahwa pesanan ini telah selesai diterima?')) return;
+    
+    const url = `/pelanggan/pesanan/${currentPesananId}/confirm-received`;
+    
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            window.location.reload();
+        } else {
+            alert(data.message || 'Gagal mengkonfirmasi pesanan.');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Terjadi kesalahan. Silakan coba lagi.');
+    });
 }
 </script>
 @endpush

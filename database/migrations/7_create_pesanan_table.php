@@ -31,13 +31,17 @@ return new class extends Migration
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
             $table->enum('status_pesanan', [
-                'Menunggu Konfirmasi',
+                'Menunggu',
                 'Disiapkan',
-                'Mencari Kurir',
-                'Sedang Dikirim',
-                'Diterima',
-                'Gagal Kirim',
-            ])->default('Menunggu Konfirmasi');
+                'mencari_driver',
+                'diterima_driver',
+                'diambil',
+                'dalam_pengiriman',
+                'diterima',
+                'selesai',
+                'gagal',
+                'ditolak_driver'
+            ])->default('Menunggu');
             $table->dateTime('estimasi_tiba')->nullable();
             $table->string('bukti_pengiriman')->nullable();
             $table->string('nama_penerima')->nullable();
@@ -57,13 +61,17 @@ return new class extends Migration
             $table->id('id_tracking');
             $table->foreignId('id_pesanan')->constrained('pesanan', 'id_pesanan')->onDelete('cascade');
             $table->enum('status', [
-                'Menunggu Konfirmasi',
+                'Menunggu',
                 'Disiapkan',
-                'Mencari Kurir',
-                'Sedang Dikirim',
-                'Diterima',
-                'Gagal Kirim',
-            ])->default('Menunggu Konfirmasi');
+                'mencari_driver',
+                'diterima_driver',
+                'diambil',
+                'dalam_pengiriman',
+                'diterima',
+                'selesai',
+                'gagal',
+                'ditolak_driver'
+            ])->default('Menunggu');
             $table->timestamp('waktu_update')->nullable();
             $table->text('keterangan')->nullable();
             $table->decimal('latitude', 10, 8)->nullable();

@@ -15,11 +15,7 @@
             </div>
         </div>
 
-        @if(session('success'))
-        <div class="bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/20 p-4 rounded-xl mb-6">
-            {{ session('success') }}
-        </div>
-        @endif
+
         
         @if($errors->any())
         <div class="bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/20 p-4 rounded-xl mb-6">

@@ -12,27 +12,15 @@
 {{-- Page Header --}}
 <div class="d-flex justify-content-between align-items-end mb-4">
     <div class="page-header-text">
-        <h1 class="mb-2 page-title">Manajemen Member</h1>
-        <p class="m-0 page-subtitle">Kelola data pelanggan setia Borma. Tambah, ubah status member, dan pantau poin reward.</p>
+        <h1 class="page-title mb-2">Manajemen Member</h1>
+        <p class="page-subtitle text-muted m-0">Kelola data pelanggan setia Borma. Tambah, ubah status member, dan pantau poin reward.</p>
     </div>
     <button class="btn-primary-custom" data-bs-toggle="modal" data-bs-target="#tambahMemberModal">
         <i class="bi bi-person-plus-fill me-2"></i> Tambah Member
     </button>
 </div>
 
-{{-- Alert --}}
-@if(session('success'))
-<div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 12px; border: none; font-weight: 600;">
-    <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-</div>
-@endif
-@if(session('error'))
-<div class="alert alert-danger alert-dismissible fade show" role="alert" style="border-radius: 12px; border: none; font-weight: 600;">
-    <i class="bi bi-x-circle-fill me-2"></i> {{ session('error') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-</div>
-@endif
+
 
 {{-- KPI Cards --}}
 <div class="row g-4 mb-5">

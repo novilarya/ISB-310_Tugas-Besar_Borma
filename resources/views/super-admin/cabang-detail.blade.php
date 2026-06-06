@@ -10,11 +10,7 @@
     <h4 class="text-lg font-bold text-slate-800 dark:text-white">Detail Cabang: <span class="text-borma-purple dark:text-borma-yellow">{{ $cabang->nama_cabang }}</span></h4>
 </div>
 
-@if(session('success'))
-<div class="bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/20 p-4 rounded-xl mb-6">
-    {{ session('success') }}
-</div>
-@endif
+
 
 @if($errors->any())
 <div class="bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/20 p-4 rounded-xl mb-6">
@@ -138,6 +134,7 @@
                                         onsubmit="return confirm('Hapus admin {{ $admin->user->nama ?? '' }}?');">
                                         @csrf
                                         @method('DELETE')
+                                        <input type="hidden" name="from_cabang_detail" value="1">
                                         <button type="submit" class="text-red-500 font-bold text-xs bg-red-50 dark:bg-red-500/10 px-3 py-1.5 rounded-lg transition-colors hover:bg-red-100">
                                             Hapus
                                         </button>

@@ -1,3 +1,13 @@
+:root {
+    --borma-primary: #33116C;
+    --borma-secondary: #FED50B;
+    --borma-tertiary: #EB3B02;
+    --borma-neutral: #2B2B2B;
+    --borma-bg: #F4F6F8;
+    --font-heading: 'Plus Jakarta Sans', sans-serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+}
+
 /* Hi-Fi Elements */
     .glass-card {
         background: #ffffff;
@@ -135,8 +145,8 @@
     /* Quick Access */
     .quick-access-grid {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 16px;
     }
     .qa-card {
         background: var(--borma-primary);
@@ -721,3 +731,28 @@ Product Page Specific Styles
     box-shadow: none;
     transform: none;
 }
+
+/* Compact layout scaling adjustments */
+@media (max-width: 1400px) {
+    .glass-card {
+        padding: 16px !important;
+        border-radius: 12px !important;
+    }
+    .kpi-value {
+        font-size: 1.6rem !important;
+    }
+    .kpi-value-lg {
+        font-size: 1.75rem !important;
+    }
+    .page-title {
+        font-size: 1.8rem !important;
+    }
+    .qa-card {
+        padding: 16px !important;
+        border-radius: 12px !important;
+    }
+    .qa-card i {
+        font-size: 1.5rem !important;
+    }
+}
+

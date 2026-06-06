@@ -448,7 +448,7 @@ class DatabaseSeeder extends Seeder
                 'total_tagihan' => 325000,
                 'metode_pembayaran' => 'Cash On Delivery',
                 'alamat_pengiriman' => 'Jl. Contoh No. 123',
-                'status_pesanan' => 'Diterima',
+                'status_pesanan' => 'diterima',
                 'estimasi_tiba' => Carbon::now(),
                 'latitude' => -6.9025,
                 'longitude' => 107.6186,
@@ -469,7 +469,7 @@ class DatabaseSeeder extends Seeder
                 'total_tagihan' => 218000,
                 'metode_pembayaran' => 'Transfer',
                 'alamat_pengiriman' => 'Jl. Contoh No. 123',
-                'status_pesanan' => 'Sedang Dikirim',
+                'status_pesanan' => 'dalam_pengiriman',
                 'estimasi_tiba' => Carbon::now(),
                 'latitude' => -6.9175,
                 'longitude' => 107.6090,
@@ -542,7 +542,7 @@ class DatabaseSeeder extends Seeder
         DB::table('pengiriman_tracking')->insert([
             [
                 'id_pesanan' => 1,
-                'status' => 'Menunggu Konfirmasi',
+                'status' => 'Menunggu',
                 'keterangan' => 'Pesanan baru',
                 'created_at' => Carbon::now()->subHours(5),
                 'updated_at' => Carbon::now()->subHours(5)
@@ -556,28 +556,28 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'id_pesanan' => 1,
-                'status' => 'Mencari Kurir',
+                'status' => 'mencari_driver',
                 'keterangan' => 'Menunggu kurir mengambil barang',
                 'created_at' => Carbon::now()->subHours(3),
                 'updated_at' => Carbon::now()->subHours(3)
             ],
             [
                 'id_pesanan' => 1,
-                'status' => 'Sedang Dikirim',
+                'status' => 'dalam_pengiriman',
                 'keterangan' => 'Kurir sedang mengantar pesanan',
                 'created_at' => Carbon::now()->subHours(2),
                 'updated_at' => Carbon::now()->subHours(2)
             ],
             [
                 'id_pesanan' => 1,
-                'status' => 'Diterima',
+                'status' => 'diterima',
                 'keterangan' => 'Pesanan telah diterima pelanggan',
                 'created_at' => Carbon::now()->subHours(1),
                 'updated_at' => Carbon::now()->subHours(1)
             ],
             [
                 'id_pesanan' => 2,
-                'status' => 'Menunggu Konfirmasi',
+                'status' => 'Menunggu',
                 'keterangan' => 'Pesanan baru',
                 'created_at' => Carbon::now()->subHours(2),
                 'updated_at' => Carbon::now()->subHours(2)
@@ -591,7 +591,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'id_pesanan' => 2,
-                'status' => 'Sedang Dikirim',
+                'status' => 'dalam_pengiriman',
                 'keterangan' => 'Kurir sedang dalam perjalanan',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()

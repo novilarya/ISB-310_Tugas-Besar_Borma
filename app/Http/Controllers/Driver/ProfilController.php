@@ -30,11 +30,11 @@ class ProfilController extends Controller
 
         // Hitung statistik
         $totalKirim = Pesanan::where('id_kurir', $kurir->id_kurir ?? 0)
-            ->whereIn('status_pesanan', ['diterima', 'gagal_kirim'])
+            ->whereIn('status_pesanan', ['diterima', 'selesai', 'gagal'])
             ->count();
 
         $berhasil = Pesanan::where('id_kurir', $kurir->id_kurir ?? 0)
-            ->where('status_pesanan', 'diterima')
+            ->whereIn('status_pesanan', ['diterima', 'selesai'])
             ->count();
 
         // Rating placeholder (bisa diganti dengan logika review nanti)

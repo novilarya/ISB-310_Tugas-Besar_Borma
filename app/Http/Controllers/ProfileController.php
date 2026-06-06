@@ -30,7 +30,7 @@ class ProfileController extends Controller
         $pesanans = [];
         if ($pelanggan->id_pelanggan) {
             $pesanans = Pesanan::query()->where('id_pelanggan', $pelanggan->id_pelanggan)
-                ->with(['details.produk'])
+                ->with(['details.produk', 'cabang'])
                 ->withCount('details')
                 ->orderBy('tanggal_pemesanan', 'desc')
                 ->take(5)
@@ -38,5 +38,44 @@ class ProfileController extends Controller
         }
 
         return view('pelanggan.profil', compact('user', 'pelanggan', 'memberId', 'pesanans'));
+    }
+
+    public function confirmReceived($id)
+    {
+        try {
+            $pesanan = Pesanan::with('details')->findOrFail($id);
+            
+            if ($pesanan->status_pesanan !== 'diterima') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pesanan harus dalam status Diterima (oleh Kurir) untuk dikonfirmasi.'
+                ], 400);
+            }
+            
+            $pesanan->status_pesanan = 'selesai';
+            $pesanan->save();
+            
+            foreach ($pesanan->details as $detail) {
+                \App\Models\ProdukCabang::where('id_produk', $detail->id_produk)
+                    ->where('id_cabang', $pesanan->id_cabang)
+                    ->increment('jumlah_terjual', $detail->jumlah);
+            }
+            
+            \App\Models\PengirimanTracking::create([
+                'id_pesanan' => $id,
+                'status' => 'selesai',
+                'keterangan' => 'Pesanan telah diterima dan dikonfirmasi selesai oleh pelanggan'
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Pesanan berhasil dikonfirmasi selesai.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

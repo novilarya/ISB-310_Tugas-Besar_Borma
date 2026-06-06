@@ -20,7 +20,7 @@ class TugasController extends Controller
         $kurir = $user ? Kurir::where('id_pengguna', $user->id_pengguna)->first() : null;
 
         $query = Pesanan::where('id_kurir', $kurir->id_kurir ?? 0)
-            ->whereIn('status_pesanan', ['pending', 'diterima_driver', 'diambil', 'dalam_pengiriman'])
+            ->whereIn('status_pesanan', ['mencari_driver', 'diterima_driver', 'diambil', 'dalam_pengiriman'])
             ->with(['pelanggan.user', 'cabang']);
 
         if ($request->has('status') && $request->status) {
@@ -48,11 +48,11 @@ class TugasController extends Controller
         try {
             $pesanan = Pesanan::findOrFail($id);
 
-            // Cek status harus pending
-            if ($pesanan->status_pesanan !== 'pending') {
+            // Cek status harus mencari_driver
+            if ($pesanan->status_pesanan !== 'mencari_driver') {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Pesanan harus dalam status pending untuk dikonfirmasi'
+                    'message' => 'Pesanan harus dalam status mencari_driver untuk dikonfirmasi'
                 ], 400);
             }
 
@@ -93,11 +93,11 @@ class TugasController extends Controller
             $user = Auth::check() ? Auth::user() : \App\Models\User::where('role', 'kurir')->first();
             $kurir = Kurir::where('id_pengguna', $user->id_pengguna)->first();
 
-            // Cek status harus pending
-            if ($pesanan->status_pesanan !== 'pending') {
+            // Cek status harus mencari_driver
+            if ($pesanan->status_pesanan !== 'mencari_driver') {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Pesanan harus dalam status pending untuk ditolak'
+                    'message' => 'Pesanan harus dalam status mencari_driver untuk ditolak'
                 ], 400);
             }
 
@@ -193,6 +193,13 @@ class TugasController extends Controller
             }
             $pesanan->save();
 
+            // Selesai / gagal: kembalikan status kurir
+            if (in_array($newStatus, ['diterima', 'gagal'])) {
+                if ($pesanan->kurir) {
+                    $pesanan->kurir->update(['status_mengirim' => 'Tidak Mengirim']);
+                }
+            }
+
             // Keterangan tracking
             $keteranganMap = [
                 'diambil' => 'Pesanan diambil dari gudang',
@@ -247,27 +254,22 @@ class TugasController extends Controller
                 $file = $request->file('foto_bukti');
                 $path = $file->store('bukti_pengiriman', 'public');
 
-                // Simpan bukti pengiriman
-                BuktiPengiriman::updateOrCreate(
-                    ['id_pesanan' => $id],
-                    [
-                        'foto_bukti' => $path,
-                        'nama_penerima' => $request->nama_penerima,
-                        'catatan_driver' => $request->catatan_driver
-                    ]
-                );
+                // Simpan bukti pengiriman langsung ke kolom tabel pesanan
+                $pesanan->bukti_pengiriman = $path;
+                $pesanan->nama_penerima = $request->nama_penerima;
+                $pesanan->catatan_driver = $request->catatan_driver;
+                $pesanan->status_pesanan = 'diterima';
+                $pesanan->save();
 
-                // Update status jika belum diterima
-                if (!in_array($pesanan->status_pesanan, ['diterima', 'gagal'])) {
-                    $pesanan->status_pesanan = 'diterima';
-                    $pesanan->save();
-
-                    PengirimanTracking::create([
-                        'id_pesanan' => $id,
-                        'status' => 'diterima',
-                        'keterangan' => 'Pesanan diterima customer dengan bukti foto'
-                    ]);
+                if ($pesanan->kurir) {
+                    $pesanan->kurir->update(['status_mengirim' => 'Tidak Mengirim']);
                 }
+
+                PengirimanTracking::create([
+                    'id_pesanan' => $id,
+                    'status' => 'diterima',
+                    'keterangan' => 'Pesanan diterima customer dengan bukti foto'
+                ]);
 
                 return response()->json([
                     'success' => true,
@@ -324,9 +326,14 @@ class TugasController extends Controller
                     throw new \Exception('Pesanan tidak ditemukan');
                 }
 
-                // Verifikasi apakah masih pending dan belum diambil driver lain
-                if ($pesanan->status_pesanan !== 'pending' || $pesanan->id_kurir !== null) {
+                // Verifikasi apakah masih mencari_driver dan belum diambil driver lain
+                if ($pesanan->status_pesanan !== 'mencari_driver' || $pesanan->id_kurir !== null) {
                     throw new \Exception('Maaf, pesanan ini sudah diambil oleh driver lain');
+                }
+
+                // Verifikasi apakah cabang pesanan cocok dengan cabang kurir
+                if ($pesanan->id_cabang !== $kurir->id_cabang) {
+                    throw new \Exception('Maaf, pesanan ini berasal dari cabang lain');
                 }
 
                 // Update data pesanan
@@ -334,6 +341,9 @@ class TugasController extends Controller
                 $pesanan->status_pesanan = 'diterima_driver';
                 $pesanan->accepted_at = now();
                 $pesanan->save();
+
+                // Update status kurir menjadi sedang mengirim
+                $kurir->update(['status_mengirim' => 'Sedang Mengirim']);
 
                 // Catat tracking
                 PengirimanTracking::create([
@@ -364,8 +374,13 @@ class TugasController extends Controller
      */
     public function getLatestAntrian(Request $request)
     {
+        $user = Auth::check() ? Auth::user() : \App\Models\User::where('role', 'kurir')->first();
+        $kurir = $user ? Kurir::where('id_pengguna', $user->id_pengguna)->first() : null;
+        $idCabang = $kurir ? $kurir->id_cabang : 0;
+
         $antrianTugas = Pesanan::whereNull('id_kurir')
-            ->where('status_pesanan', 'pending')
+            ->where('status_pesanan', 'mencari_driver')
+            ->where('id_cabang', $idCabang)
             ->with(['cabang', 'pelanggan.user'])
             ->orderBy('created_at', 'asc')
             ->get();

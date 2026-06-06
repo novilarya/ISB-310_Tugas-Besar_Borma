@@ -3,68 +3,14 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/admin-cabang.css') }}">
-<style>
-.notif-page-item {
-    padding: 20px;
-    border-bottom: 1px solid #F3F4F6;
-    display: flex;
-    gap: 16px;
-    align-items: start;
-    transition: all 0.2s;
-}
-.notif-page-item:hover {
-    background: #F9FAFB;
-}
-.notif-page-item:last-child {
-    border-bottom: none;
-}
-.notif-page-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 1.2rem;
-}
-.notif-page-content h6 {
-    font-weight: 800;
-    font-size: 1rem;
-    margin-bottom: 4px;
-    color: var(--borma-neutral);
-}
-.notif-page-content p {
-    font-size: 0.85rem;
-    color: #6B7280;
-    margin-bottom: 8px;
-    line-height: 1.5;
-}
-.notif-page-time {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #9CA3AF;
-}
-.notif-unread {
-    background: rgba(51, 17, 108, 0.03);
-}
-.notif-unread::before {
-    content: '';
-    display: block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--borma-primary);
-    margin-top: 20px;
-}
-</style>
+<link rel="stylesheet" href="{{ asset('css/admin-cabang/notifikasi.css') }}">
 @endpush
 
 @section('content')
 <div class="d-flex justify-content-between align-items-end mb-4">
-    <div>
-        <h1 class="page-title mb-1">Semua Notifikasi</h1>
-        <p class="page-subtitle">Pantau semua aktivitas dan peringatan terkait cabang Anda.</p>
+    <div class="page-header-text">
+        <h1 class="page-title mb-2">Semua Notifikasi</h1>
+        <p class="page-subtitle text-muted m-0">Pantau semua aktivitas dan peringatan terkait cabang Anda.</p>
     </div>
     <div>
         <button class="btn-action btn-action-outline" onclick="markAllAsRead()">

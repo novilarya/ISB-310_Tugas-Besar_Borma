@@ -1,7 +1,18 @@
+:root {
+    --borma-primary: #33116C;
+    --borma-secondary: #FED50B;
+    --borma-tertiary: #EB3B02;
+    --borma-neutral: #2B2B2B;
+    --borma-bg: #F4F6F8;
+    --font-heading: 'Plus Jakarta Sans', sans-serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+    --chart-empty-bar-bg: #E5E7EB;
+}
+
 /* Hi-Fi Elements */
     .glass-card {
         background: #ffffff;
-        border-radius: 16px;
+        border-radius: 24px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.02);
         border: 1px solid rgba(0,0,0,0.04);
         padding: 24px;
@@ -108,7 +119,7 @@
         font-size: 0.75rem;
         font-weight: 800;
         padding: 8px 16px;
-        border-radius: 8px;
+        border-radius: 12px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         border: none;
@@ -143,13 +154,13 @@
     /* Quick Access */
     .quick-access-grid {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 16px;
     }
     .qa-card {
         background: var(--borma-primary);
         color: white;
-        border-radius: 16px;
+        border-radius: 24px;
         padding: 24px;
         text-align: center;
         text-decoration: none;
@@ -237,7 +248,7 @@ Product Page Specific Styles
 ----------------------------------- */
 .filter-bar {
     background: #fff;
-    border-radius: 12px;
+    border-radius: 16px;
     padding: 16px;
     margin-bottom: 24px;
     border: 1px solid rgba(0,0,0,0.04);
@@ -263,7 +274,7 @@ Product Page Specific Styles
     width: 100%;
     padding: 10px 16px 10px 44px;
     border: 1px solid #E5E7EB;
-    border-radius: 8px;
+    border-radius: 12px;
     font-size: 0.85rem;
     outline: none;
     transition: all 0.3s ease;
@@ -278,7 +289,7 @@ Product Page Specific Styles
 
 .table-produk {
     background: white;
-    border-radius: 16px;
+    border-radius: 24px;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0,0,0,0.02);
     border: 1px solid rgba(0,0,0,0.04);
@@ -331,7 +342,7 @@ Product Page Specific Styles
 
 .status-badge {
     padding: 6px 12px;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 0.7rem;
     font-weight: 800;
     text-transform: uppercase;
@@ -400,7 +411,7 @@ Product Page Specific Styles
     border: 1px solid #E5E7EB;
     background: white;
     color: var(--borma-neutral);
-    border-radius: 6px;
+    border-radius: 12px;
     font-size: 0.8rem;
     font-weight: 700;
     cursor: pointer;
@@ -420,7 +431,7 @@ Product Page Specific Styles
 
 .analysis-card {
     background: white;
-    border-radius: 16px;
+    border-radius: 24px;
     padding: 24px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.02);
     border: 1px solid rgba(0,0,0,0.04);
@@ -452,7 +463,7 @@ Product Page Specific Styles
 .page-header-text { max-width: 600px; }
 
 .btn-primary-custom {
-    padding: 12px 24px; font-weight: 800; border-radius: 8px; text-transform: uppercase;
+    padding: 12px 24px; font-weight: 800; border-radius: 12px; text-transform: uppercase;
     letter-spacing: 0.5px; background: var(--borma-primary); color: white; transition: all 0.3s ease; border: none;
 }
 .btn-primary-custom:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(51, 17, 108, 0.3); color: white; }
@@ -470,9 +481,9 @@ Product Page Specific Styles
 .icon-box-rounded { border-radius: 50%; }
 .kpi-value-lg { font-size: 2.2rem; }
 
-.filter-select-lg { border-radius: 8px; font-weight: 600; }
-.filter-select-md { border-radius: 8px; font-weight: 600; }
-.filter-btn { border-radius: 8px; }
+.filter-select-lg { border-radius: 12px; font-weight: 600; }
+.filter-select-md { border-radius: 12px; font-weight: 600; }
+.filter-btn { border-radius: 12px; }
 
 .harga-reguler { text-decoration: line-through; font-size: 0.85rem; }
 .harga-member { color: var(--borma-tertiary); font-size: 1.05rem; }
@@ -485,7 +496,7 @@ Product Page Specific Styles
 
 .banner-integration {
     background: linear-gradient(135deg, var(--borma-primary) 0%, #1c093d 100%);
-    padding: 40px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between;
+    padding: 40px; border-radius: 24px; display: flex; align-items: center; justify-content: space-between;
     box-shadow: 0 10px 30px rgba(51, 17, 108, 0.2); color: white; position: relative; overflow: hidden;
 }
 .banner-glow-1 { position: absolute; right: -100px; top: -100px; width: 400px; height: 400px; background: rgba(254, 213, 11, 0.05); border-radius: 50%; filter: blur(40px); }
@@ -493,10 +504,10 @@ Product Page Specific Styles
 .banner-content { max-width: 55%; position: relative; z-index: 2; }
 .banner-title { font-weight: 800; font-family: var(--font-heading); margin-bottom: 16px; letter-spacing: -0.5px; color: var(--borma-secondary); }
 .banner-desc { color: rgba(255,255,255,0.8); font-size: 0.95rem; line-height: 1.6; margin-bottom: 24px; }
-.banner-badge { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 8px; font-weight: 800; color: white; }
+.banner-badge { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 12px; font-weight: 800; color: white; }
 .banner-badge span { font-weight: 600; color: var(--borma-secondary); margin-left: 8px; }
 
-.mini-chart-container { width: 380px; height: 200px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); position: relative; z-index: 2; }
+.mini-chart-container { width: 380px; height: 200px; background: white; border-radius: 16px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); position: relative; z-index: 2; }
 .mini-chart-wrapper { width: 100%; height: 100%; display: flex; flex-direction: column; }
 .mini-chart-title { font-weight: 800; color: var(--borma-neutral); font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; font-family: var(--font-heading); margin-bottom: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; }
 .chart-bar { width: 18%; border-radius: 4px 4px 0 0; transition: height 0.3s ease; }
@@ -509,7 +520,7 @@ Product Page Specific Styles
 .link-see-all { font-size: 0.8rem; font-weight: 800; text-decoration: underline; }
 .list-title-sm { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 
-.reward-card { background: #F9FAFB; border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+.reward-card { background: #F9FAFB; border-radius: 16px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
 .reward-label { font-size: 0.85rem; font-weight: 700; }
 .reward-value-lg { font-family: var(--font-heading); font-size: 1.1rem; }
 .reward-value-sm { font-size: 0.9rem; font-weight: 800; }
@@ -521,7 +532,7 @@ Product Page Specific Styles
 .footer-title { font-weight: 800; font-family: var(--font-heading); color: var(--borma-secondary); }
 .footer-text { font-size: 0.85rem; color: #D1D5DB; line-height: 1.5; }
 .footer-contact-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; }
-.footer-icon-box { width: 32px; height: 32px; background: rgba(254, 213, 11, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px; }
+.footer-icon-box { width: 32px; height: 32px; background: rgba(254, 213, 11, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 12px; }
 
 .product-link {
     text-decoration: none;
@@ -625,7 +636,7 @@ Product Page Specific Styles
     width: 100%;
     padding: 11px 16px;
     border: 1.5px solid #E5E7EB;
-    border-radius: 10px;
+    border-radius: 12px;
     font-size: 0.9rem;
     font-weight: 600;
     outline: none;
@@ -677,7 +688,7 @@ Product Page Specific Styles
 }
 
 .pagination-links-styled .page-link {
-    border-radius: 10px !important;
+    border-radius: 12px !important;
     padding: 10px 18px;
     font-weight: 800;
     font-size: 0.85rem;
@@ -706,7 +717,7 @@ Product Page Specific Styles
 
 .pagination-links-styled .page-item:first-child .page-link,
 .pagination-links-styled .page-item:last-child .page-link {
-    border-radius: 10px !important;
+    border-radius: 12px !important;
 }
 
 .pagination-links-styled .page-item.disabled .page-link {
@@ -716,3 +727,456 @@ Product Page Specific Styles
     box-shadow: none;
     transform: none;
 }
+
+/* Compact layout scaling adjustments */
+@media (max-width: 1400px) {
+    .glass-card {
+        padding: 16px !important;
+        border-radius: 16px !important;
+    }
+    .kpi-value {
+        font-size: 1.6rem !important;
+    }
+    .kpi-value-lg {
+        font-size: 1.75rem !important;
+    }
+    .page-title {
+        font-size: 1.8rem !important;
+    }
+    .qa-card {
+        padding: 16px !important;
+        border-radius: 16px !important;
+    }
+    .qa-card i {
+        font-size: 1.5rem !important;
+    }
+}
+
+/* ==========================================================================
+   Dark Mode Theme Overrides
+   ========================================================================== */
+html.dark {
+    /* Base color overrides */
+    --borma-primary: #a78bfa;
+    --borma-secondary: #FED50B;
+    --borma-tertiary: #FF6B35;
+    --borma-neutral: #F8FAFC;
+    --chart-empty-bar-bg: rgba(255, 255, 255, 0.08);
+}
+
+.dark body {
+    background-color: #110526 !important;
+    color: #F8FAFC !important;
+}
+
+/* Card and Container Backgrounds */
+.dark .glass-card,
+.dark .card,
+.dark .bg-white,
+.dark .filter-bar,
+.dark .table-produk,
+.dark .analysis-card,
+.dark .mini-chart-container,
+.dark .pagination-custom {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(24px) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #F8FAFC !important;
+}
+
+/* Modals & Dropdowns */
+.dark .modal-content,
+.dark .dropdown-menu {
+    background-color: #1c0d38 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+}
+
+/* Form Controls & Inputs */
+.dark .form-control,
+.dark .form-select,
+.dark .input-group-text,
+.dark .modal-input,
+.dark .search-input input {
+    background-color: #251448 !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #F8FAFC !important;
+}
+.dark .form-control:focus,
+.dark .form-select:focus,
+.dark .modal-input:focus,
+.dark .search-input input:focus {
+    border-color: #FED50B !important;
+    box-shadow: 0 0 0 0.25rem rgba(254, 213, 11, 0.25) !important;
+}
+.dark .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Text Colors */
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6,
+.dark .text-dark, .dark .text-slate-800, .dark .modal-title,
+.dark .table-produk th, .dark .table-modern th, .dark .table th {
+    color: #ffffff !important;
+}
+.dark .text-muted, .dark .page-subtitle, .dark .kpi-title, .dark .kpi-sub {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+.dark .kpi-sub strong, .dark strong:not(.text-success):not(.text-danger) {
+    color: #ffffff !important;
+}
+.dark .text-primary-custom, .dark .product-link strong {
+    color: #a78bfa !important;
+}
+
+/* Table cells */
+.dark .table td,
+.dark .table th,
+.dark .table-produk td,
+.dark .table-modern td {
+    background: transparent !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+.dark .table-modern td {
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+.dark .table-produk tr:hover td,
+.dark .table-modern tr:hover td {
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Badges and status pills */
+.dark .badge-success, .dark .status-selesai {
+    background-color: rgba(52, 211, 153, 0.15) !important;
+    color: #34d399 !important;
+    border: 1px solid rgba(52, 211, 153, 0.2) !important;
+}
+.dark .badge-warning, .dark .status-pending {
+    background-color: rgba(251, 191, 36, 0.15) !important;
+    color: #fbbf24 !important;
+    border: 1px solid rgba(251, 191, 36, 0.2) !important;
+}
+.dark .badge-primary, .dark .status-proses {
+    background-color: rgba(167, 139, 250, 0.15) !important;
+    color: #a78bfa !important;
+    border: 1px solid rgba(167, 139, 250, 0.2) !important;
+}
+.dark .status-dikirim {
+    background-color: rgba(96, 165, 250, 0.15) !important;
+    color: #60a5fa !important;
+    border: 1px solid rgba(96, 165, 250, 0.2) !important;
+}
+.dark .status-siap {
+    background-color: rgba(248, 113, 113, 0.15) !important;
+    color: #f87171 !important;
+    border: 1px solid rgba(248, 113, 113, 0.2) !important;
+}
+.dark .status-non-aktif, .dark .status-disabled {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Pagination buttons */
+.dark .page-btn,
+.dark .pagination-links-styled .page-link {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+.dark .page-btn.active,
+.dark .pagination-links-styled .page-item.active .page-link {
+    background-color: var(--borma-primary) !important;
+    border-color: var(--borma-primary) !important;
+    color: #FED50B !important;
+}
+.dark .pagination-links-styled .page-item.disabled .page-link {
+    background-color: rgba(255, 255, 255, 0.02) !important;
+    color: rgba(255, 255, 255, 0.3) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Action buttons and icons */
+.dark .btn-action-outline {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+}
+.dark .btn-action-outline:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-color: #FED50B !important;
+    color: #FED50B !important;
+}
+.dark .btn-confirm {
+    background-color: var(--borma-primary) !important;
+    color: #ffffff !important;
+}
+.dark .btn-confirm:hover {
+    background-color: #8b5cf6 !important;
+}
+.dark .btn-dispatch {
+    background-color: var(--borma-secondary) !important;
+    color: #110526 !important;
+}
+.dark .btn-dispatch:hover {
+    background-color: #eab308 !important;
+}
+.dark .btn-cancel {
+    background-color: rgba(220, 38, 38, 0.1) !important;
+    border-color: rgba(220, 38, 38, 0.2) !important;
+    color: #f87171 !important;
+}
+.dark .btn-cancel:hover {
+    background-color: rgba(220, 38, 38, 0.2) !important;
+}
+.dark .btn-nota {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+.dark .btn-nota:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: #FED50B !important;
+}
+
+/* Icon box highlights */
+.dark .action-icons i.bi-truck {
+    color: #110526 !important;
+}
+.dark .action-icons i.bi-eye {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+}
+.dark .action-icons i.bi-eye:hover {
+    background: var(--borma-primary) !important;
+    color: #FED50B !important;
+}
+
+/* Global inline styles override for colors and borders */
+.dark [style*="color:#6B7280"], .dark [style*="color: #6B7280"] { color: rgba(255, 255, 255, 0.6) !important; }
+.dark [style*="color:#9CA3AF"], .dark [style*="color: #9CA3AF"] { color: rgba(255, 255, 255, 0.7) !important; }
+.dark [style*="color:#374151"], .dark [style*="color: #374151"] { color: #ffffff !important; }
+.dark [style*="color:#555"], .dark [style*="color: #555"] { color: rgba(255, 255, 255, 0.8) !important; }
+.dark [style*="color:#444"], .dark [style*="color: #444"] { color: rgba(255, 255, 255, 0.8) !important; }
+.dark [style*="color:#777"], .dark [style*="color: #777"] { color: rgba(255, 255, 255, 0.6) !important; }
+.dark [style*="color:#059669"], .dark [style*="color: #059669"] { color: #34d399 !important; }
+.dark [style*="border-color:#F3F4F6"], .dark [style*="border-color: #F3F4F6"],
+.dark [style*="border-color:#E5E7EB"], .dark [style*="border-color: #E5E7EB"] {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+.dark [style*="border: 1px solid #E5E7EB"], .dark [style*="border:1px solid #E5E7EB"],
+.dark [style*="border: 1.5px solid #E5E7EB"], .dark [style*="border:1.5px solid #E5E7EB"] {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+.dark [style*="border-bottom:2px solid #E5E7EB"], .dark [style*="border-bottom: 2px solid #E5E7EB"] {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Charts and graphics */
+.dark .chart-daily-bar {
+    background: rgba(255, 255, 255, 0.04) !important;
+}
+.dark .chart-daily-bar[style*="var(--borma-primary)"] {
+    background: var(--borma-primary) !important;
+}
+
+/* Modal header background override for borma-primary modal headers */
+.dark .modal-header[style*="background: var(--borma-primary)"],
+.dark .modal-header[style*="background:var(--borma-primary)"],
+.dark .modal-header[style*="background: #33116C"],
+.dark .modal-header[style*="background:#33116C"] {
+    background: #110526 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Settings Page Dark Mode Contrast Fixes */
+.dark .setting-input {
+    background-color: #251448 !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #F8FAFC !important;
+}
+.dark .setting-input:focus {
+    border-color: #FED50B !important;
+    box-shadow: 0 0 0 4px rgba(254, 213, 11, 0.25) !important;
+}
+.dark .setting-input[readonly] {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+.dark .setting-field-label {
+    color: #ffffff !important;
+}
+.dark .detail-item-row {
+    border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+}
+.dark .detail-item-label {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+.dark .detail-item-val {
+    color: #ffffff !important;
+}
+
+/* Horizontal chart bars and layouts */
+.dark .chart-bar-h .label {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+.dark .chart-bar-h .bar-wrap {
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Timeline component overrides */
+.dark .timeline::before {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+.dark .timeline-dot {
+    background-color: #251448 !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+}
+.dark .timeline-dot.done {
+    background-color: var(--borma-primary) !important;
+    border-color: var(--borma-primary) !important;
+    color: #ffffff !important;
+}
+.dark .timeline-dot.active {
+    background-color: #FED50B !important;
+    border-color: #FED50B !important;
+    color: #110526 !important; /* Proper contrast on yellow */
+}
+.dark .timeline-sub {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Order item detail view overrides */
+.dark .item-icon {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+.dark .item-meta {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+.dark .item-price .unit {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+.dark .summary-row {
+    border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+}
+.dark .summary-row.grand-total {
+    border-top-color: rgba(255, 255, 255, 0.06) !important;
+}
+.dark .summary-row .label {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+.dark .summary-row .value {
+    color: #ffffff !important;
+}
+.dark .progress {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Notification Page Specific Overrides */
+.dark .notif-page-item:hover {
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+.dark .notif-page-content p {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+.dark .notif-page-time {
+    color: rgba(255, 255, 255, 0.4) !important;
+}
+.dark .notif-unread {
+    background: rgba(255, 255, 255, 0.02) !important;
+}
+.dark .notif-page-icon[style*="background: rgba(254, 213, 11, 0.2)"],
+.dark .notif-page-icon[style*="background:rgba(254, 213, 11, 0.2)"] {
+    background-color: rgba(254, 213, 11, 0.15) !important;
+    color: #FED50B !important;
+}
+
+/* Inline Styles Overrides for border: 1px dashed #D1D5DB etc. */
+.dark [style*="border: 1px dashed #D1D5DB"], .dark [style*="border:1px dashed #D1D5DB"],
+.dark [style*="border: 1px dashed #E5E7EB"], .dark [style*="border:1px dashed #E5E7EB"],
+.dark [style*="border:1px dashed #F3F4F6"], .dark [style*="border: 1px dashed #F3F4F6"] {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+.dark [style*="border-top: 1px dashed #E5E7EB"], .dark [style*="border-top:1px dashed #E5E7EB"] {
+    border-top-color: rgba(255, 255, 255, 0.1) !important;
+}
+.dark [style*="border-top: 2px solid #F3F4F6"], .dark [style*="border-top:2px solid #F3F4F6"] {
+    border-top-color: rgba(255, 255, 255, 0.08) !important;
+}
+.dark [style*="background: #F9FAFB"], .dark [style*="background:#F9FAFB"] {
+    background-color: rgba(255, 255, 255, 0.03) !important;
+}
+.dark [style*="border-bottom: 1px solid #F3F4F6"], .dark [style*="border-bottom:1px solid #F3F4F6"] {
+    border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+}
+.dark [style*="border-top: 1px solid #F3F4F6"], .dark [style*="border-top:1px solid #F3F4F6"] {
+    border-top-color: rgba(255, 255, 255, 0.06) !important;
+}
+.dark [style*="border-bottom:1px dashed #E5E7EB"], .dark [style*="border-bottom: 1px dashed #E5E7EB"] {
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+.dark [style*="border-top:1px dashed #E5E7EB"], .dark [style*="border-top: 1px dashed #E5E7EB"] {
+    border-top-color: rgba(255, 255, 255, 0.08) !important;
+}
+.dark [style*="background: #FFF8E1"], .dark [style*="background:#FFF8E1"] {
+    background-color: rgba(251, 191, 36, 0.15) !important;
+    color: #fbbf24 !important;
+}
+.dark [style*="background: #EDE9FE"], .dark [style*="background:#EDE9FE"] {
+    background-color: rgba(167, 139, 250, 0.15) !important;
+    color: #a78bfa !important;
+}
+.dark [style*="background: #E0F2FE"], .dark [style*="background:#E0F2FE"] {
+    background-color: rgba(96, 165, 250, 0.15) !important;
+    color: #60a5fa !important;
+}
+.dark [style*="background: #F0FDF4"], .dark [style*="background:#F0FDF4"] {
+    background-color: rgba(52, 211, 153, 0.15) !important;
+    color: #34d399 !important;
+}
+
+/* Close buttons and calendar picker indicators in dark mode */
+.dark .btn-close {
+    filter: invert(1) !important;
+}
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) !important;
+}
+
+/* Timeline and Section Labels */
+.dark .info-label {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+.dark .settings-section-sub {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Status Badges */
+.dark .status-cari-driver {
+    background-color: rgba(96, 165, 250, 0.15) !important;
+    color: #60a5fa !important;
+    border: 1px solid rgba(96, 165, 250, 0.2) !important;
+}
+
+/* Dynamic Inline Hex Color Overrides */
+.dark [style*="color:#D1D5DB"], .dark [style*="color: #D1D5DB"] { color: rgba(255, 255, 255, 0.3) !important; }
+.dark [style*="color:#D97706"], .dark [style*="color: #D97706"] { color: #fbbf24 !important; }
+.dark [style*="color:#DC2626"], .dark [style*="color: #DC2626"] { color: #f87171 !important; }
+.dark [style*="color:#2563EB"], .dark [style*="color: #2563EB"] { color: #60a5fa !important; }
+
+.dark [style*="background: #E8F5E9"], .dark [style*="background:#E8F5E9"] { background-color: rgba(52, 211, 153, 0.15) !important; }
+.dark [style*="color: #2E7D32"], .dark [style*="color:#2E7D32"] { color: #34d399 !important; }
+.dark [style*="background: #FFEBEE"], .dark [style*="background:#FFEBEE"] { background-color: rgba(248, 113, 113, 0.15) !important; }
+.dark [style*="color: #C62828"], .dark [style*="color:#C62828"] { color: #f87171 !important; }
+
+.dark [style*="background:rgba(51,17,108,.08)"], .dark [style*="background: rgba(51, 17, 108, 0.08)"],
+.dark [style*="background:rgba(51,17,108,0.08)"], .dark [style*="background: rgba(51, 17, 108, 0.08)"] {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+}
+.dark [style*="background:rgba(51,17,108,.05)"], .dark [style*="background: rgba(51, 17, 108, 0.05)"] {
+    background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+

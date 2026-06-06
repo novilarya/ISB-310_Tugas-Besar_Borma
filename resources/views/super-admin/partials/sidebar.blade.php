@@ -25,6 +25,12 @@
         </a>
         @endif
 
+        @if(auth()->user()->canAccessMenu('superadmin_admin_cabang'))
+        <a href="{{ route('superadmin.admin_cabang') }}" class="{{ request()->routeIs('superadmin.admin_cabang') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
+            <i class="fa-solid fa-user-tie w-5"></i> Manajemen Admin Cabang
+        </a>
+        @endif
+
         @if(auth()->user()->canAccessMenu('superadmin_member'))
         <a href="{{ route('superadmin.member') }}" class="{{ request()->routeIs('superadmin.member') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
             <i class="fa-solid fa-address-card w-5"></i> Manajemen Member

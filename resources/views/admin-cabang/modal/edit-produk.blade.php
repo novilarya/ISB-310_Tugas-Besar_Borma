@@ -1,24 +1,28 @@
 <div class="modal fade" id="editProdukModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content" style="border-radius: 20px; border: none; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+    <div class="modal-content bg-white dark:bg-slate-900 w-full rounded-3xl shadow-2xl border border-slate-200 dark:border-white/10 overflow-hidden" style="border: none;">
       <form action="{{ route('admin-cabang.produk.update', $produkCabang->id_produk_cabang) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
-        <div class="modal-header" style="background: var(--borma-primary); border: none; padding: 24px 32px;">
-          <h5 class="modal-title fw-800" style="color: var(--borma-secondary); font-family: var(--font-heading);">
-            <i class="bi bi-pencil-square me-2"></i> Edit Informasi Produk
+        
+        <div class="modal-header bg-slate-50 dark:bg-white/5 border-b border-slate-200 dark:border-white/10 p-6 flex justify-between items-center" style="border: none;">
+          <h5 class="modal-title font-bold text-lg text-slate-800 dark:text-white flex items-center gap-2">
+            <i class="fa-solid fa-pen-to-square text-borma-purple dark:text-borma-yellow"></i> Edit Informasi Produk
           </h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors border-0 bg-transparent p-0" data-bs-dismiss="modal" aria-label="Close">
+            <i class="fa-solid fa-xmark text-xl"></i>
+          </button>
         </div>
-        <div class="modal-body" style="padding: 32px;">
-            <div class="row g-3">
-                <div class="col-md-8">
-                    <label class="modal-label">Nama Produk <span class="text-danger">*</span></label>
-                    <input type="text" class="modal-input" name="nama_produk" required value="{{ $produkCabang->produk->nama_produk }}">
+        
+        <div class="modal-body p-6">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                <div class="md:col-span-8">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Nama Produk <span class="text-danger">*</span></label>
+                    <input type="text" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" name="nama_produk" required value="{{ $produkCabang->produk->nama_produk }}">
                 </div>
-                <div class="col-md-4">
-                    <label class="modal-label">Kategori <span class="text-danger">*</span></label>
-                    <select class="modal-input form-select" name="kategori" required style="cursor: pointer;">
+                <div class="md:col-span-4">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Kategori <span class="text-danger">*</span></label>
+                    <select class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" name="kategori" required style="cursor: pointer;">
                         <option value="Kebutuhan Pokok" {{ $produkCabang->produk->kategori == 'Kebutuhan Pokok' ? 'selected' : '' }}>Kebutuhan Pokok</option>
                         <option value="Minuman" {{ $produkCabang->produk->kategori == 'Minuman' ? 'selected' : '' }}>Minuman</option>
                         <option value="Snack" {{ $produkCabang->produk->kategori == 'Snack' ? 'selected' : '' }}>Snack</option>
@@ -26,34 +30,35 @@
                         <option value="Lain-lain" {{ $produkCabang->produk->kategori == 'Lain-lain' ? 'selected' : '' }}>Lain-lain</option>
                     </select>
                 </div>
-                <div class="col-12">
-                    <label class="modal-label">Deskripsi Produk</label>
-                    <textarea class="modal-input" name="deskripsi" rows="2">{{ $produkCabang->produk->deskripsi }}</textarea>
+                <div class="md:col-span-12">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Deskripsi Produk</label>
+                    <textarea class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" name="deskripsi" rows="2">{{ $produkCabang->produk->deskripsi }}</textarea>
                 </div>
-                <div class="col-12">
-                    <label class="modal-label">Gambar Produk Baru <small class="text-muted text-lowercase">(opsional)</small></label>
-                    <input type="file" class="modal-input" name="gambar_produk" accept="image/*" style="padding: 8px 16px;">
-                    <div class="form-text mt-1" style="font-size: 0.75rem;">Biarkan kosong jika tidak ingin mengubah gambar.</div>
+                <div class="md:col-span-12">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Gambar Produk Baru <small class="text-slate-500 dark:text-white/50 text-lowercase">(opsional)</small></label>
+                    <input type="file" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" name="gambar_produk" accept="image/*" style="padding: 8px 16px;">
+                    <div class="text-xs text-slate-400 dark:text-white/40 mt-1">Biarkan kosong jika tidak ingin mengubah gambar.</div>
                 </div>
-                <div class="col-md-4">
-                    <label class="modal-label">Harga Reguler <span class="text-danger">*</span></label>
-                    <input type="number" class="modal-input" name="harga_reguler" required value="{{ $produkCabang->produk->harga_reguler }}" id="editHargaReguler">
+                <div class="md:col-span-4">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Harga Reguler <span class="text-danger">*</span></label>
+                    <input type="number" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" name="harga_reguler" required value="{{ $produkCabang->produk->harga_reguler }}" id="editHargaReguler">
                 </div>
-                <div class="col-md-4">
-                    <label class="modal-label">Harga Member</label>
-                    <input type="number" class="modal-input" name="harga_member" value="{{ $produkCabang->produk->harga_member }}" id="editHargaMember">
-                    <div class="form-text mt-1" style="font-size: 0.75rem;">Kosongkan = otomatis dipotong 2% (&lt;50rb) atau Rp 2.000 (&ge;50rb)</div>
+                <div class="md:col-span-4">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Harga Member</label>
+                    <input type="number" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" name="harga_member" value="{{ $produkCabang->produk->harga_member }}" id="editHargaMember">
+                    <div class="text-xs text-slate-400 dark:text-white/40 mt-1">Kosongkan = otomatis dipotong 2% (<50rb) atau Rp 2.000 (&ge;50rb)</div>
                 </div>
-                <div class="col-md-4">
-                    <label class="modal-label">Jumlah Stok <span class="text-danger">*</span></label>
-                    <input type="number" class="modal-input" name="jumlah_stok" required value="{{ $produkCabang->jumlah_stok }}">
+                <div class="md:col-span-4">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Jumlah Stok <span class="text-danger">*</span></label>
+                    <input type="number" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" name="jumlah_stok" required value="{{ $produkCabang->jumlah_stok }}">
                 </div>
             </div>
         </div>
-        <div class="modal-footer" style="border: none; padding: 16px 32px 32px; gap: 12px;">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 10px; font-weight: 700; padding: 10px 24px;">Batal</button>
-          <button type="submit" class="btn-primary-custom" style="padding: 10px 28px;">
-            <i class="bi bi-check-lg me-1"></i> Simpan Perubahan
+        
+        <div class="modal-footer p-6 border-t border-slate-200 dark:border-white/10 flex justify-end gap-3 bg-slate-50 dark:bg-white/5" style="border: none;">
+          <button type="button" class="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 dark:text-white dark:bg-white/10 dark:hover:bg-white/20 transition-colors border-0" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-borma-purple hover:bg-purple-800 dark:bg-borma-yellow dark:text-slate-900 dark:hover:bg-yellow-500 transition-colors shadow-sm border-0">
+            <i class="fa-solid fa-circle-check mr-1"></i> Simpan Perubahan
           </button>
         </div>
       </form>

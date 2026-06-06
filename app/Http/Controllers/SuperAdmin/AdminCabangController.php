@@ -98,7 +98,7 @@ class AdminCabangController extends Controller
         return redirect()->route('superadmin.admin_cabang')->with('success', 'Admin Cabang berhasil diperbarui.');
     }
 
-    public function destroyAdminCabang($id)
+    public function destroyAdminCabang(Request $request, $id)
     {
         $adminCabang = \App\Models\AdminCabang::findOrFail($id);
         $user = $adminCabang->user;
@@ -107,6 +107,9 @@ class AdminCabangController extends Controller
         $adminCabang->delete();
         $user->delete();
 
-        return redirect()->route('superadmin.cabang.detail', $fromCabangId)->with('success', 'Admin Cabang berhasil dihapus.');
+        if ($request->input('from_cabang_detail')) {
+            return redirect()->route('superadmin.cabang.detail', $fromCabangId)->with('success', 'Admin Cabang berhasil dihapus.');
+        }
+        return redirect()->route('superadmin.admin_cabang')->with('success', 'Admin Cabang berhasil dihapus.');
     }
 }

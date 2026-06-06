@@ -1,0 +1,48 @@
+/* ── Status Badges ─────────────────────────────── */
+.status-badge-modern { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; font-size: 0.73rem; font-weight: 800; white-space: nowrap; }
+.status-pending   { background: #FFF8E1; color: #92400E; }
+.status-siap      { background: #EDE9FE; color: #5B21B6; }
+.status-cari-driver { background: #E0F2FE; color: #0369A1; }
+.status-dikirim   { background: #F0FDF4; color: #166534; }
+.status-selesai   { background: #ECFDF5; color: #065F46; }
+
+/* ── Mencari Kurir Animation ─────────────────── */
+@keyframes pulse-ring {
+    0%   { transform: scale(0.8); opacity: 0.8; }
+    70%  { transform: scale(1.4); opacity: 0; }
+    100% { transform: scale(1.4); opacity: 0; }
+}
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.driver-searching {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #1D4ED8;
+    position: relative;
+}
+.driver-searching .spin-icon {
+    animation: spin 1s linear infinite;
+    font-size: 0.9rem;
+}
+
+/* ── Tombol Aksi ─────────────────────────────── */
+.btn-confirm   { background: #33116C; color: white; border: none; padding: 5px 14px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
+.btn-confirm:hover { background: #4C1D95; }
+.btn-dispatch  { background: #FED50B; color: #33116C; border: none; padding: 5px 14px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
+.btn-dispatch:hover { background: #EAB308; }
+.btn-cancel    { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; padding: 5px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; cursor: pointer; }
+.btn-nota      { background: transparent; border: none; color: #6B7280; cursor: pointer; padding: 4px 6px; border-radius: 6px; transition: 0.2s; }
+.btn-nota:hover { background: #F3F4F6; color: #33116C; }
+
+/* ── Confirmation Modal ──────────────────────── */
+.modal-confirm-body { max-height: 60vh; overflow-y: auto; }
+.confirm-item-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F3F4F6; font-size: 0.85rem; }
+.confirm-item-row:last-child { border-bottom: none; }
+.confirm-total { font-size: 1rem; font-weight: 800; color: #33116C; }

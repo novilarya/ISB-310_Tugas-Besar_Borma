@@ -39,16 +39,16 @@ class ReportController extends Controller
         $pesananBulanIni = Pesanan::where('id_cabang', $idCabang)
             ->whereBetween('tanggal_pemesanan', [$mulai, $akhir]);
 
-        $totalPendapatan   = (clone $pesananBulanIni)->where('status_pesanan', 'Diterima')->sum('total_tagihan');
+        $totalPendapatan   = (clone $pesananBulanIni)->whereIn('status_pesanan', ['diterima', 'selesai'])->sum('total_tagihan');
         $totalPesanan      = (clone $pesananBulanIni)->count();
-        $pesananSelesai    = (clone $pesananBulanIni)->where('status_pesanan', 'Diterima')->count();
-        $totalDiskon       = (clone $pesananBulanIni)->where('status_pesanan', 'Diterima')->sum('diskon_voucher');
+        $pesananSelesai    = (clone $pesananBulanIni)->whereIn('status_pesanan', ['diterima', 'selesai'])->count();
+        $totalDiskon       = (clone $pesananBulanIni)->whereIn('status_pesanan', ['diterima', 'selesai'])->sum('diskon_voucher');
         $rataTagihan       = $pesananSelesai > 0 ? $totalPendapatan / $pesananSelesai : 0;
 
         // ── Penjualan Harian (untuk chart) ──────────────────────────────
         $penjualanHarian = Pesanan::where('id_cabang', $idCabang)
             ->whereBetween('tanggal_pemesanan', [$mulai, $akhir])
-            ->where('status_pesanan', 'Diterima')
+            ->whereIn('status_pesanan', ['diterima', 'selesai'])
             ->selectRaw('DATE(tanggal_pemesanan) as tanggal, SUM(total_tagihan) as total, COUNT(*) as jumlah')
             ->groupBy('tanggal')
             ->orderBy('tanggal')
@@ -60,7 +60,7 @@ class ReportController extends Controller
             ->join('produk', 'pesanan_produk.id_produk', '=', 'produk.id_produk')
             ->where('pesanan.id_cabang', $idCabang)
             ->whereBetween('pesanan.tanggal_pemesanan', [$mulai, $akhir])
-            ->where('pesanan.status_pesanan', 'Diterima')
+            ->whereIn('pesanan.status_pesanan', ['diterima', 'selesai'])
             ->selectRaw('produk.id_produk, produk.nama_produk, produk.kategori, SUM(pesanan_produk.jumlah) as total_terjual, SUM(pesanan_produk.subtotal) as total_revenue')
             ->groupBy('produk.id_produk', 'produk.nama_produk', 'produk.kategori')
             ->orderByDesc('total_terjual')
@@ -73,7 +73,7 @@ class ReportController extends Controller
             ->join('produk', 'pesanan_produk.id_produk', '=', 'produk.id_produk')
             ->where('pesanan.id_cabang', $idCabang)
             ->whereBetween('pesanan.tanggal_pemesanan', [$mulai, $akhir])
-            ->where('pesanan.status_pesanan', 'Diterima')
+            ->whereIn('pesanan.status_pesanan', ['diterima', 'selesai'])
             ->selectRaw('produk.kategori, SUM(pesanan_produk.subtotal) as total_revenue, SUM(pesanan_produk.jumlah) as total_item')
             ->groupBy('produk.kategori')
             ->orderByDesc('total_revenue')
@@ -90,7 +90,7 @@ class ReportController extends Controller
         // ── Metode Pembayaran ────────────────────────────────────────────
         $rekapPembayaran = Pesanan::where('id_cabang', $idCabang)
             ->whereBetween('tanggal_pemesanan', [$mulai, $akhir])
-            ->where('status_pesanan', 'Diterima')
+            ->whereIn('status_pesanan', ['diterima', 'selesai'])
             ->selectRaw('metode_pembayaran, COUNT(*) as jumlah, SUM(total_tagihan) as total')
             ->groupBy('metode_pembayaran')
             ->get();
@@ -107,7 +107,7 @@ class ReportController extends Controller
             ->where('id_cabang', $idCabang)
             ->whereBetween('tanggal_pemesanan', [$mulai, $akhir])
             ->orderByDesc('tanggal_pemesanan')
-            ->paginate(15)
+            ->paginate(10)
             ->withQueryString();
 
         // Opsi bulan/tahun untuk filter
@@ -139,6 +139,8 @@ class ReportController extends Controller
         $mulai  = Carbon::create($tahun, $bulan, 1)->startOfMonth();
         $akhir  = Carbon::create($tahun, $bulan, 1)->endOfMonth();
 
+        $cabang = Cabang::find($idCabang);
+
         $pesanan = Pesanan::with(['pelanggan.user', 'details'])
             ->where('id_cabang', $idCabang)
             ->whereBetween('tanggal_pemesanan', [$mulai, $akhir])
@@ -154,23 +156,57 @@ class ReportController extends Controller
             "Expires"             => "0"
         ];
 
-        $callback = function() use ($pesanan) {
+        $callback = function() use ($pesanan, $cabang, $mulai, $akhir) {
             $file = fopen('php://output', 'w');
             fputcsv($file, ['No. Pesanan', 'Tanggal', 'Pelanggan', 'Total Item', 'Total Belanja', 'Diskon', 'Total Tagihan', 'Pembayaran', 'Status']);
 
+            $totalBelanja = 0;
+            $totalDiskon = 0;
+            $totalTagihan = 0;
+            $totalItem = 0;
+
             foreach ($pesanan as $p) {
+                $qty = $p->details->sum('jumlah');
                 fputcsv($file, [
                     "#BRM-9" . str_pad($p->id_pesanan, 3, '0', STR_PAD_LEFT),
                     Carbon::parse($p->tanggal_pemesanan)->format('Y-m-d H:i:s'),
                     $p->pelanggan->user->nama ?? '-',
-                    $p->details->sum('jumlah'),
+                    $qty,
                     $p->total_belanja,
                     $p->diskon_voucher,
                     $p->total_tagihan,
                     $p->metode_pembayaran,
                     $p->status_pesanan
                 ]);
+
+                $totalBelanja += $p->total_belanja;
+                $totalDiskon += $p->diskon_voucher;
+                $totalTagihan += $p->total_tagihan;
+                $totalItem += $qty;
             }
+
+            // Summary totals block
+            fputcsv($file, []);
+            fputcsv($file, ['', '', '', 'TOTAL SUMMARY']);
+            fputcsv($file, ['', '', '', 'Total Item', $totalItem]);
+            fputcsv($file, ['', '', '', 'Total Belanja', $totalBelanja]);
+            fputcsv($file, ['', '', '', 'Total Diskon', $totalDiskon]);
+            fputcsv($file, ['', '', '', 'Total Tagihan', $totalTagihan]);
+
+            // Formal report footer block
+            fputcsv($file, []);
+            fputcsv($file, ['Laporan Formal Penjualan Cabang']);
+            fputcsv($file, ['Cabang:', $cabang->nama_cabang ?? 'Borma Toserba']);
+            fputcsv($file, ['Periode:', $mulai->format('d M Y') . ' s/d ' . $akhir->format('d M Y')]);
+            fputcsv($file, ['Dicetak Oleh:', auth()->user()->nama ?? 'Admin Cabang']);
+            fputcsv($file, ['Waktu Cetak:', Carbon::now()->format('d M Y H:i:s') . ' WIB']);
+            fputcsv($file, []);
+            fputcsv($file, ['Tanda Tangan Penanggung Jawab', '', '', '', 'Mengetahui,']);
+            fputcsv($file, []);
+            fputcsv($file, []);
+            fputcsv($file, ['( _______________________ )', '', '', '', '( _______________________ )']);
+            fputcsv($file, ['Admin Cabang', '', '', '', 'Super Admin']);
+
             fclose($file);
         };
 

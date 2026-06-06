@@ -16,12 +16,7 @@
 
 @section('content')
 <div class="space-y-6">
-    @if(session('success'))
-    <div class="bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300 p-4 rounded-xl flex items-center gap-3">
-        <i class="fa-solid fa-circle-check"></i>
-        {{ session('success') }}
-    </div>
-    @endif
+
 
     <div class="bg-white dark:bg-white/5 rounded-2xl shadow-sm border border-slate-200 dark:border-white/10 overflow-hidden">
         <div class="overflow-x-auto">

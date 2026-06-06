@@ -30,6 +30,7 @@ Route::post('/internal/logout', [AuthController::class, 'logout'])->name('intern
 Route::prefix('superadmin')->middleware(['auth', 'superadmin'])->name('superadmin.')->group(function () {
     
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/notifikasi', [DashboardController::class, 'notifikasi'])->name('notifikasi');
 
     Route::get('/pesanan', [PesananController::class, 'pesanan'])->name('pesanan');
     Route::get('/pesanan/{id}', [PesananController::class, 'pesananDetail'])->name('pesanan.detail');
@@ -163,6 +164,10 @@ Route::get('/pelanggan/checkout', [CartController::class, 'checkout'])
 Route::get('/pelanggan/profil', [\App\Http\Controllers\ProfileController::class, 'index'])
     ->middleware('auth')
     ->name('pelanggan.profil');
+
+Route::post('/pelanggan/pesanan/{id}/confirm-received', [\App\Http\Controllers\ProfileController::class, 'confirmReceived'])
+    ->middleware('auth')
+    ->name('pelanggan.pesanan.confirm-received');
 
 Route::get('/pelanggan/member', [PelangganMemberController::class, 'index'])->name('pelanggan.member');
 Route::post('/pelanggan/member/activate', [PelangganMemberController::class, 'activate'])

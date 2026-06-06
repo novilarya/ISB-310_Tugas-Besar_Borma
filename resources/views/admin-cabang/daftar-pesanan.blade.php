@@ -4,94 +4,33 @@
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/admin-cabang.css') }}">
 <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-<style>
-/* ── Status Badges ─────────────────────────────── */
-.status-badge-modern { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; font-size: 0.73rem; font-weight: 800; white-space: nowrap; }
-.status-pending   { background: #FFF8E1; color: #92400E; }
-.status-siap      { background: #EDE9FE; color: #5B21B6; }
-.status-cari-driver { background: #E0F2FE; color: #0369A1; }
-.status-dikirim   { background: #F0FDF4; color: #166534; }
-.status-selesai   { background: #ECFDF5; color: #065F46; }
-
-/* ── Mencari Kurir Animation ─────────────────── */
-@keyframes pulse-ring {
-    0%   { transform: scale(0.8); opacity: 0.8; }
-    70%  { transform: scale(1.4); opacity: 0; }
-    100% { transform: scale(1.4); opacity: 0; }
-}
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-.driver-searching {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #EFF6FF;
-    border: 1px solid #BFDBFE;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.72rem;
-    font-weight: 800;
-    color: #1D4ED8;
-    position: relative;
-}
-.driver-searching .spin-icon {
-    animation: spin 1s linear infinite;
-    font-size: 0.9rem;
-}
-
-/* ── Tombol Aksi ─────────────────────────────── */
-.btn-confirm   { background: #33116C; color: white; border: none; padding: 5px 14px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
-.btn-confirm:hover { background: #4C1D95; }
-.btn-dispatch  { background: #FED50B; color: #33116C; border: none; padding: 5px 14px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
-.btn-dispatch:hover { background: #EAB308; }
-.btn-cancel    { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; padding: 5px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; cursor: pointer; }
-.btn-nota      { background: transparent; border: none; color: #6B7280; cursor: pointer; padding: 4px 6px; border-radius: 6px; transition: 0.2s; }
-.btn-nota:hover { background: #F3F4F6; color: #33116C; }
-
-/* ── Confirmation Modal ──────────────────────── */
-.modal-confirm-body { max-height: 60vh; overflow-y: auto; }
-.confirm-item-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F3F4F6; font-size: 0.85rem; }
-.confirm-item-row:last-child { border-bottom: none; }
-.confirm-total { font-size: 1rem; font-weight: 800; color: #33116C; }
-</style>
+<link rel="stylesheet" href="{{ asset('css/admin-cabang/daftar-pesanan.css') }}">
 @endpush
 
 @section('content')
 
 {{-- ── HEADER ─────────────────────────────────────────────────────────── --}}
 <div class="d-flex justify-content-between align-items-end mb-4">
-    <div style="max-width: 600px;">
+    <div class="page-header-text">
         <h1 class="page-title mb-2">Manajemen Pesanan</h1>
-        <p class="page-subtitle">Kelola dan pantau seluruh transaksi yang masuk ke cabang secara real-time.</p>
+        <p class="page-subtitle text-muted m-0">Kelola dan pantau seluruh transaksi yang masuk ke cabang secara real-time.</p>
     </div>
     <div class="d-flex gap-3">
         <!-- Cetak Rekap deleted as requested -->
     </div>
 </div>
 
-{{-- ── FLASH MESSAGES ─────────────────────────────────────────────────── --}}
-@if(session('success'))
-<div class="alert alert-success alert-dismissible fade show mb-4" style="border-radius:12px;border:none;font-weight:600;">
-    <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-</div>
-@endif
-@if(session('error'))
-<div class="alert alert-danger alert-dismissible fade show mb-4" style="border-radius:12px;border:none;font-weight:600;">
-    <i class="bi bi-x-circle-fill me-2"></i>{{ session('error') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-</div>
-@endif
+
 
 {{-- ── KPI CARDS ───────────────────────────────────────────────────────── --}}
 <div class="row g-4 mb-5">
     @php
         $kpiItems = [
             ['label'=>'Pesanan Baru',     'val'=>$allCabangOrders->where('status_pesanan','Menunggu')->count(),        'icon'=>'bi-cart-plus',     'class'=>'text-primary-custom', 'bg'=>'bg-primary-light',   'hover'=>'hover-primary'],
-            ['label'=>'Sedang Disiapkan', 'val'=>$allCabangOrders->where('status_pesanan','Disiapkan')->count(),       'icon'=>'bi-box-seam',      'class'=>'text-dark',           'bg'=>'bg-secondary-light', 'hover'=>'hover-secondary'],
-            ['label'=>'Mencari Kurir',    'val'=>$allCabangOrders->where('status_pesanan','Mencari Kurir')->count(),   'icon'=>'bi-geo-alt',       'class'=>'text-primary',        'bg'=>'bg-primary-light',   'hover'=>'hover-primary'],
-            ['label'=>'Sedang Dikirim',   'val'=>$allCabangOrders->where('status_pesanan','Sedang Dikirim')->count(),  'icon'=>'bi-truck',         'class'=>'text-tertiary-custom','bg'=>'bg-tertiary-light',  'hover'=>'hover-tertiary'],
-            ['label'=>'Selesai',          'val'=>$allCabangOrders->where('status_pesanan','Diterima')->count(),        'icon'=>'bi-check-circle',  'class'=>'text-success',        'bg'=>'',                   'hover'=>'hover-primary'],
+            ['label'=>'Sedang Disiapkan', 'val'=>$allCabangOrders->whereIn('status_pesanan', ['Disiapkan', 'diterima_driver', 'diambil'])->count(),       'icon'=>'bi-box-seam',      'class'=>'text-dark',           'bg'=>'bg-secondary-light', 'hover'=>'hover-secondary'],
+            ['label'=>'Mencari Kurir',    'val'=>$allCabangOrders->where('status_pesanan','mencari_driver')->count(),   'icon'=>'bi-geo-alt',       'class'=>'text-primary',        'bg'=>'bg-primary-light',   'hover'=>'hover-primary'],
+            ['label'=>'Sedang Dikirim',   'val'=>$allCabangOrders->whereIn('status_pesanan', ['dalam_pengiriman', 'diterima'])->count(),  'icon'=>'bi-truck',         'class'=>'text-tertiary-custom','bg'=>'bg-tertiary-light',  'hover'=>'hover-tertiary'],
+            ['label'=>'Selesai',          'val'=>$allCabangOrders->where('status_pesanan','selesai')->count(),        'icon'=>'bi-check-circle',  'class'=>'text-success',        'bg'=>'',                   'hover'=>'hover-primary'],
         ];
     @endphp
     @foreach($kpiItems as $kpi)
@@ -124,9 +63,10 @@
                     <option value="">Semua Status</option>
                     <option value="Menunggu"       {{ request('status')=='Menunggu'       ? 'selected':'' }}>Menunggu Konfirmasi</option>
                     <option value="Disiapkan"      {{ request('status')=='Disiapkan'      ? 'selected':'' }}>Sedang Disiapkan</option>
-                    <option value="Mencari Kurir" {{ request('status')=='Mencari Kurir' ? 'selected':'' }}>Mencari Kurir</option>
-                    <option value="Sedang Dikirim" {{ request('status')=='Sedang Dikirim' ? 'selected':'' }}>Sedang Dikirim</option>
-                    <option value="Diterima"       {{ request('status')=='Diterima'       ? 'selected':'' }}>Selesai</option>
+                    <option value="mencari_driver" {{ request('status')=='mencari_driver' ? 'selected':'' }}>Mencari Kurir</option>
+                    <option value="dalam_pengiriman" {{ request('status')=='dalam_pengiriman' ? 'selected':'' }}>Sedang Dikirim</option>
+                    <option value="diterima"       {{ request('status')=='diterima'       ? 'selected':'' }}>Pesanan Tiba</option>
+                    <option value="selesai"        {{ request('status')=='selesai'        ? 'selected':'' }}>Selesai</option>
                 </select>
             </div>
             <div class="col-md-4">
@@ -173,11 +113,16 @@
                 @forelse($pesanans as $pesanan)
                 @php
                     $statusMap = [
-                        'Menunggu'       => ['class'=>'status-pending',    'icon'=>'bi-clock',        'label'=>'Menunggu'],
-                        'Disiapkan'      => ['class'=>'status-siap',       'icon'=>'bi-box-seam',     'label'=>'Disiapkan'],
-                        'Mencari Kurir'  => ['class'=>'status-cari-driver','icon'=>'bi-geo-alt-fill', 'label'=>'Mencari Kurir'],
-                        'Sedang Dikirim' => ['class'=>'status-dikirim',    'icon'=>'bi-truck',        'label'=>'Dikirim'],
-                        'Diterima'       => ['class'=>'status-selesai',    'icon'=>'bi-check-circle', 'label'=>'Selesai'],
+                        'Menunggu'         => ['class'=>'status-pending',    'icon'=>'bi-clock',        'label'=>'Menunggu Konfirmasi'],
+                        'Disiapkan'        => ['class'=>'status-siap',       'icon'=>'bi-box-seam',     'label'=>'Disiapkan'],
+                        'mencari_driver'   => ['class'=>'status-cari-driver','icon'=>'bi-geo-alt-fill', 'label'=>'Mencari Kurir'],
+                        'diterima_driver'  => ['class'=>'status-siap',       'icon'=>'bi-person-check', 'label'=>'Diterima Driver'],
+                        'diambil'          => ['class'=>'status-siap',       'icon'=>'bi-box-seam',     'label'=>'Diambil Driver'],
+                        'dalam_pengiriman' => ['class'=>'status-dikirim',    'icon'=>'bi-truck',        'label'=>'Dikirim'],
+                        'diterima'         => ['class'=>'status-pending',    'icon'=>'bi-geo-alt',      'label'=>'Pesanan Tiba'],
+                        'selesai'          => ['class'=>'status-selesai',    'icon'=>'bi-check-circle', 'label'=>'Selesai'],
+                        'gagal'            => ['class'=>'status-pending',    'icon'=>'bi-exclamation-circle', 'label'=>'Gagal Kirim'],
+                        'ditolak_driver'   => ['class'=>'status-pending',    'icon'=>'bi-x-circle',     'label'=>'Ditolak Driver'],
                     ];
                     $st = $statusMap[$pesanan->status_pesanan] ?? ['class'=>'status-pending','icon'=>'bi-question','label'=>$pesanan->status_pesanan];
                     $oid = '#BRM-9' . str_pad($pesanan->id_pesanan, 3, '0', STR_PAD_LEFT);
@@ -213,7 +158,7 @@
                     </td>
                     {{-- Status --}}
                     <td>
-                        @if($pesanan->status_pesanan === 'Mencari Kurir')
+                        @if($pesanan->status_pesanan === 'mencari_driver')
                             <div class="driver-searching">
                                 <i class="bi bi-arrow-repeat spin-icon"></i>
                                 Mencari Kurir...
@@ -259,7 +204,7 @@
                                     </button>
                                 </form>
 
-                            @elseif($pesanan->status_pesanan === 'Mencari Kurir')
+                            @elseif($pesanan->status_pesanan === 'mencari_driver')
                                 {{-- Batalkan dispatch --}}
                                 <form action="{{ route('admin-cabang.pesanan.cancel-dispatch', $pesanan->id_pesanan) }}" method="POST" class="d-inline"
                                       onsubmit="return confirm('Batalkan pencarian driver untuk pesanan ini?')">
@@ -269,17 +214,17 @@
                                     </button>
                                 </form>
 
-                            @elseif($pesanan->status_pesanan === 'Sedang Dikirim')
+                            @elseif(in_array($pesanan->status_pesanan, ['dalam_pengiriman', 'diterima']))
                                 {{-- Selesaikan manual (override oleh admin) --}}
                                 <form action="{{ route('admin-cabang.pesanan.complete', $pesanan->id_pesanan) }}" method="POST" class="d-inline"
-                                      onsubmit="return confirm('Tandai pesanan ini sudah diterima?')">
+                                       onsubmit="return confirm('Selesaikan pesanan ini secara manual?')">
                                     @csrf
-                                    <button type="submit" class="btn-confirm" style="background:#10B981;" title="Tandai Selesai">
-                                        <i class="bi bi-check-circle me-1"></i>Selesai
+                                    <button type="submit" class="btn-confirm" style="background:#10B981;" title="Selesaikan Pesanan">
+                                        <i class="bi bi-check-circle me-1"></i>Selesaikan
                                     </button>
                                 </form>
 
-                            @elseif($pesanan->status_pesanan === 'Diterima')
+                            @elseif($pesanan->status_pesanan === 'selesai')
                                 <span class="text-success" style="font-size:0.78rem;font-weight:700;">
                                     <i class="bi bi-check-circle-fill me-1"></i>Selesai
                                 </span>
