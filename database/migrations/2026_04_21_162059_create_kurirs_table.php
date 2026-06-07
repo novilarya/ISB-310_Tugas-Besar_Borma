@@ -18,8 +18,7 @@ return new class extends Migration
             $table->string('warna_kendaraan');
             $table->string('plat_nomor');
             $table->foreignId('id_cabang')->constrained('cabangs', 'id_cabang')->onDelete('cascade');
-            $table->decimal('penghasilan_kotor', 15, 2);
-            $table->decimal('penghasilan_bersih', 15, 2);
+            $table->decimal('pendapatan_pengiriman', 15, 2);
             $table->enum('status_mengirim', ['Sedang Mengirim', 'Tidak Mengirim']);
             $table->enum('status_aktif', ['Aktif', 'Tidak Aktif']);
             $table->timestamps();

@@ -163,7 +163,7 @@
 
     .map-container {
         width: 100%;
-        height: 220px;
+        height: 240px;
         background: #E8E6EE;
         border-radius: var(--radius-md);
         overflow: hidden;
@@ -176,6 +176,101 @@
         width: 100%;
         height: 100%;
         z-index: 1;
+    }
+
+    /* Map loading overlay */
+    .map-loading-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(255,255,255,0.82);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        z-index: 900;
+        border-radius: var(--radius-md);
+        backdrop-filter: blur(2px);
+        transition: opacity 0.3s ease;
+    }
+
+    .map-loading-overlay.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .map-spinner {
+        width: 32px;
+        height: 32px;
+        border: 3px solid var(--color-primary-pale);
+        border-top-color: var(--color-primary);
+        border-radius: 50%;
+        animation: spin 0.75s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .map-loading-text {
+        font-family: var(--font-body);
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--color-primary);
+        letter-spacing: 0.06em;
+    }
+
+    /* Route info badge */
+    .map-route-info {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(51, 17, 108, 0.92);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-family: var(--font-body);
+        font-size: 11px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 800;
+        backdrop-filter: blur(4px);
+        box-shadow: 0 2px 10px rgba(51,17,108,0.35);
+        opacity: 0;
+        transition: opacity 0.4s ease 0.3s;
+        white-space: nowrap;
+    }
+
+    .map-route-info.visible { opacity: 1; }
+
+    .map-route-info i {
+        font-size: 12px;
+        opacity: 0.8;
+    }
+
+    .map-route-divider {
+        width: 1px;
+        height: 12px;
+        background: rgba(255,255,255,0.3);
+    }
+
+    /* Route error badge */
+    .map-route-error {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(235, 59, 2, 0.88);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-family: var(--font-body);
+        font-size: 10px;
+        font-weight: 600;
+        z-index: 800;
+        display: none;
+        white-space: nowrap;
     }
 
     .map-legend {
@@ -205,6 +300,19 @@
 
     .legend-dot.gudang { background: var(--color-primary); }
     .legend-dot.customer { background: var(--color-tertiary); }
+
+    .legend-route {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+    }
+
+    .legend-route-line {
+        width: 22px;
+        height: 3px;
+        background: #2563eb;
+        border-radius: 2px;
+    }
 
     /* ================================================
        INFO GRID (Customer + Ringkasan Item)
@@ -727,10 +835,30 @@
     </div>
 </div>
 
-{{-- ===== MAP (Leaflet.js) ===== --}}
+{{-- ===== MAP (Leaflet.js + OSRM Routing) ===== --}}
 <div class="map-section fade-up delay-1">
     <div class="map-container">
         <div id="delivery-map"></div>
+
+        {{-- Loading overlay --}}
+        <div class="map-loading-overlay" id="map-loading">
+            <div class="map-spinner"></div>
+            <span class="map-loading-text">Memuat rute jalan...</span>
+        </div>
+
+        {{-- Route info badge --}}
+        <div class="map-route-info" id="map-route-info">
+            <i class="bi bi-signpost-2-fill"></i>
+            <span id="route-distance">-</span>
+            <div class="map-route-divider"></div>
+            <i class="bi bi-clock-fill"></i>
+            <span id="route-duration">-</span>
+        </div>
+
+        {{-- Error badge --}}
+        <div class="map-route-error" id="map-route-error">
+            <i class="bi bi-exclamation-triangle-fill"></i> Rute jalan tidak tersedia
+        </div>
     </div>
     <div class="map-legend">
         <div class="map-legend-item">
@@ -740,6 +868,12 @@
         <div class="map-legend-item">
             <span class="legend-dot customer"></span>
             Lokasi Penerima
+        </div>
+        <div class="map-legend-item">
+            <span class="legend-route">
+                <span class="legend-route-line"></span>
+            </span>
+            Rute Jalan
         </div>
     </div>
 </div>
@@ -983,27 +1117,102 @@
             .addTo(map)
             .bindPopup('<b>Lokasi Penerima</b><br>{{ $pesanan->alamat_pengiriman }}');
 
-        // Route line
-        L.polyline([
-            [gudangLat, gudangLng],
-            [custLat, custLng]
-        ], {
-            color: '#33116C',
-            weight: 3,
-            opacity: 0.7,
-            dashArray: '8, 8',
-            lineCap: 'round'
-        }).addTo(map);
-
-        // Fit bounds
+        // Fit bounds awal (before route loads)
         const bounds = L.latLngBounds([
             [gudangLat, gudangLng],
             [custLat, custLng]
         ]);
-        map.fitBounds(bounds, { padding: [30, 30] });
+        map.fitBounds(bounds, { padding: [40, 40] });
 
         // Fix map rendering setelah animasi
         setTimeout(() => { map.invalidateSize(); }, 600);
+
+        // =============================================
+        // OSRM Real Road Routing
+        // =============================================
+        const osrmUrl =
+            `https://router.project-osrm.org/route/v1/driving/` +
+            `${gudangLng},${gudangLat};${custLng},${custLat}` +
+            `?overview=full&geometries=geojson&steps=false`;
+
+        let routeLayer = null;
+
+        fetch(osrmUrl)
+            .then(res => {
+                if (!res.ok) throw new Error('Network error');
+                return res.json();
+            })
+            .then(data => {
+                const loadingEl  = document.getElementById('map-loading');
+                const routeInfo  = document.getElementById('map-route-info');
+                const distEl     = document.getElementById('route-distance');
+                const durEl      = document.getElementById('route-duration');
+
+                if (!data.routes || data.routes.length === 0) {
+                    throw new Error('No route found');
+                }
+
+                const route     = data.routes[0];
+                const coords    = route.geometry.coordinates; // [lng, lat]
+                const latLngs   = coords.map(c => [c[1], c[0]]);
+
+                // Distance & duration
+                const km   = (route.distance / 1000).toFixed(1);
+                const mins = Math.round(route.duration / 60);
+                const hrs  = Math.floor(mins / 60);
+                const rem  = mins % 60;
+                const durText = hrs > 0 ? `${hrs} jam ${rem} mnt` : `${rem} mnt`;
+
+                distEl.textContent = `${km} km`;
+                durEl.textContent  = durText;
+
+                // Draw route shadow (outline)
+                L.polyline(latLngs, {
+                    color: '#1d4ed8',
+                    weight: 7,
+                    opacity: 0.25,
+                    lineCap: 'round',
+                    lineJoin: 'round'
+                }).addTo(map);
+
+                // Draw main route line
+                routeLayer = L.polyline(latLngs, {
+                    color: '#2563eb',
+                    weight: 4.5,
+                    opacity: 0.92,
+                    lineCap: 'round',
+                    lineJoin: 'round'
+                }).addTo(map);
+
+                // Fit to route
+                map.fitBounds(routeLayer.getBounds(), { padding: [36, 36] });
+
+                // Hide loading, show route info
+                loadingEl.classList.add('hidden');
+                routeInfo.classList.add('visible');
+            })
+            .catch(err => {
+                console.warn('OSRM routing failed:', err);
+
+                // Fallback: show dashed straight line
+                L.polyline([
+                    [gudangLat, gudangLng],
+                    [custLat, custLng]
+                ], {
+                    color: '#33116C',
+                    weight: 3,
+                    opacity: 0.6,
+                    dashArray: '8, 8',
+                    lineCap: 'round'
+                }).addTo(map);
+
+                const loadingEl = document.getElementById('map-loading');
+                const errorEl   = document.getElementById('map-route-error');
+                loadingEl.classList.add('hidden');
+                errorEl.style.display = 'flex';
+
+                map.fitBounds(bounds, { padding: [40, 40] });
+            });
     });
 
 
