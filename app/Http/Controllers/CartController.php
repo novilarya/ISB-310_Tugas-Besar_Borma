@@ -126,8 +126,11 @@ class CartController extends Controller
         $cart = session()->get('cart', []);
         $key = md5($productName);
 
+        $qty = intval($request->input('quantity', 1));
+        if ($qty < 1) $qty = 1;
+
         if (isset($cart[$key])) {
-            $cart[$key]['quantity'] += 1;
+            $cart[$key]['quantity'] += $qty;
         } else {
             $cart[$key] = [
                 'name' => $product['name'],
@@ -135,7 +138,7 @@ class CartController extends Controller
                 'price' => $product['sale'] > 0 ? $product['sale'] : $product['price'],
                 'original_price' => $product['price'],
                 'img' => $product['img'],
-                'quantity' => 1,
+                'quantity' => $qty,
             ];
         }
 
@@ -233,11 +236,30 @@ class CartController extends Controller
             return redirect()->route('pelanggan.keranjang')->with('error', 'Keranjang masih kosong.');
         }
 
+        // Check if address/profile is incomplete (Scenario 1 & 2)
+        $user = auth()->user();
+        $pelanggan = $user->pelanggan;
+
+        $isIncomplete = !$user->nama || 
+                        !$user->no_telepon || $user->no_telepon === '-' ||
+                        !$pelanggan || 
+                        !$pelanggan->provinsi || $pelanggan->provinsi === '-' ||
+                        !$pelanggan->kota_kabupaten || $pelanggan->kota_kabupaten === '-' ||
+                        !$pelanggan->kecamatan || $pelanggan->kecamatan === '-' ||
+                        !$pelanggan->alamat || $pelanggan->alamat === '-';
+
+        if ($isIncomplete) {
+            return redirect()->route('pelanggan.profil')->with('error', 'Lengkapi profil, nomor telepon, dan alamat pengiriman Anda terlebih dahulu untuk melanjutkan pembayaran.');
+        }
+
         $categories = $this->getCategoryLabels();
         $totalItems = collect($cart)->sum('quantity');
         $subtotal = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
 
-        return view('pelanggan.checkout', compact('cart', 'categories', 'totalItems', 'subtotal'));
+        // Get additional addresses from database
+        $alamatTambahan = $pelanggan ? $pelanggan->alamatTambahan()->orderBy('created_at', 'desc')->first() : null;
+
+        return view('pelanggan.checkout', compact('cart', 'categories', 'totalItems', 'subtotal', 'alamatTambahan'));
     }
 
     /**

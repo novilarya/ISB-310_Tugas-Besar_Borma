@@ -23,12 +23,13 @@ class PaymentController extends Controller
     public function createTransaction(Request $request)
     {
         $request->validate([
-            'payment_method' => 'required|in:cod,transfer',
+            'payment_method' => 'required|in:cod,transfer,qris',
             'total' => 'required|numeric|min:1',
             'customer_name' => 'required|string',
             'customer_email' => 'nullable|email',
             'customer_phone' => 'nullable|string',
             'items' => 'nullable|array',
+            'shipping_address' => 'nullable|string',
         ]);
 
         if (!Auth::check()) {
@@ -52,11 +53,13 @@ class PaymentController extends Controller
 
         // Check if this is a membership activation order
         $isMembership = false;
+        $paketCode = '1_bulan';
         $itemsInput = $request->input('items', []);
         if (!empty($itemsInput)) {
             foreach ($itemsInput as $item) {
                 if (isset($item['id']) && str_starts_with($item['id'], 'MEMBER-')) {
                     $isMembership = true;
+                    $paketCode = strtolower(str_replace('MEMBER-', '', $item['id']));
                     break;
                 }
             }
@@ -84,7 +87,13 @@ class PaymentController extends Controller
             $paymentMethodLabel = $isMembership ? 'Aktivasi Member Plus' : ($paymentMethod === 'cod' ? 'Cash On Delivery' : 'Transfer / Pembayaran Online');
 
             // Construct delivery address
-            $alamatPengiriman = $isMembership ? 'Aktivasi Borma Plus Premium' : ($pelanggan->alamat . ', ' . $pelanggan->kecamatan . ', ' . $pelanggan->kota_kabupaten . ', ' . $pelanggan->provinsi);
+            if ($isMembership) {
+                $alamatPengiriman = 'Aktivasi Borma Plus ' . strtoupper($paketCode);
+            } elseif ($request->filled('shipping_address')) {
+                $alamatPengiriman = $request->input('shipping_address');
+            } else {
+                $alamatPengiriman = $pelanggan->alamat . ', ' . $pelanggan->kecamatan . ', ' . $pelanggan->kota_kabupaten . ', ' . $pelanggan->provinsi;
+            }
 
             // Create Pesanan record
             $pesanan = \App\Models\Pesanan::create([
@@ -104,12 +113,13 @@ class PaymentController extends Controller
 
             // Save order items (pesanan_produks)
             if ($isMembership) {
-                $produk = \App\Models\Produk::query()->where('nama_produk', 'Aktivasi Member Plus')->first();
+                $paketLabel = 'Aktivasi Borma Plus - ' . ($paketCode === '2_bulan' ? '2 Bulan' : ($paketCode === '3_bulan' ? '3 Bulan' : '1 Bulan'));
+                $produk = \App\Models\Produk::query()->where('nama_produk', $paketLabel)->first();
                 if (!$produk) {
                     $produk = \App\Models\Produk::create([
-                        'nama_produk' => 'Aktivasi Member Plus',
+                        'nama_produk' => $paketLabel,
                         'kategori' => 'Membership',
-                        'deskripsi' => 'Aktivasi Member Premium Borma Plus',
+                        'deskripsi' => 'Aktivasi Member Premium Borma Plus - ' . $paketLabel,
                         'harga_reguler' => $total,
                         'harga_member' => $total,
                         'gambar_produk' => 'default.jpg'
@@ -285,8 +295,17 @@ class PaymentController extends Controller
                     if ($pesanan->metode_pembayaran === 'Aktivasi Member Plus' || str_contains($pesanan->alamat_pengiriman, 'Aktivasi Borma Plus')) {
                         $pelanggan = $pesanan->pelanggan;
                         if ($pelanggan) {
-                            $pelanggan->update(['status_member' => 1]);
-                            Log::info("Pelanggan {$pelanggan->id_pelanggan} status_member updated to 1 via Webhook");
+                            $months = 1;
+                            if (str_contains(strtoupper($pesanan->alamat_pengiriman), '2_BULAN')) {
+                                $months = 2;
+                            } elseif (str_contains(strtoupper($pesanan->alamat_pengiriman), '3_BULAN')) {
+                                $months = 3;
+                            }
+                            $pelanggan->update([
+                                'status_member' => 1,
+                                'tanggal_berakhir_member_plus' => now()->addMonths($months)->toDateString()
+                            ]);
+                            Log::info("Pelanggan {$pelanggan->id_pelanggan} status_member updated to 1 and expiration set to {$months} months via Webhook");
                         }
                     }
                 } elseif ($transactionStatus == 'pending') {
@@ -327,9 +346,19 @@ class PaymentController extends Controller
                 if ($pesanan->metode_pembayaran === 'Aktivasi Member Plus' || str_contains($pesanan->alamat_pengiriman, 'Aktivasi Borma Plus')) {
                     $pelanggan = $pesanan->pelanggan;
                     if ($pelanggan) {
-                        $pelanggan->update(['status_member' => 1]);
-                        Log::info("Pelanggan {$pelanggan->id_pelanggan} membership set to 1 locally.");
+                        $months = 1;
+                        if (str_contains(strtoupper($pesanan->alamat_pengiriman), '2_BULAN')) {
+                            $months = 2;
+                        } elseif (str_contains(strtoupper($pesanan->alamat_pengiriman), '3_BULAN')) {
+                            $months = 3;
+                        }
+                        $pelanggan->update([
+                            'status_member' => 1,
+                            'tanggal_berakhir_member_plus' => now()->addMonths($months)->toDateString()
+                        ]);
+                        Log::info("Pelanggan {$pelanggan->id_pelanggan} membership set to 1 and expiration set to {$months} months locally.");
                     }
+                    return redirect()->route('pelanggan.profil')->with('success', 'Pembayaran berhasil! Status Anda telah berubah menjadi pelanggan Borma Plus.');
                 }
             }
         }

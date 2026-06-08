@@ -78,4 +78,85 @@ class ProfileController extends Controller
             ], 500);
         }
     }
+
+    public function edit()
+    {
+        $user = Auth::user();
+        $pelanggan = $user->pelanggan;
+
+        if (!$pelanggan) {
+            $pelanggan = new Pelanggan();
+            $pelanggan->provinsi = '-';
+            $pelanggan->kota_kabupaten = '-';
+            $pelanggan->kecamatan = '-';
+            $pelanggan->alamat = '-';
+        }
+
+        return view('pelanggan.profil-edit', compact('user', 'pelanggan'));
+    }
+
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+        
+        $rules = [
+            'nama' => 'required|string|max:255',
+            'no_telepon' => ['required', 'regex:/^[0-9]{10,15}$/'],
+            'provinsi' => 'required|string|max:255',
+            'kota_kabupaten' => 'required|string|max:255',
+            'kecamatan' => 'required|string|max:255',
+            'alamat' => 'required|string',
+        ];
+
+        $messages = [
+            'nama.required' => 'Nama lengkap wajib diisi.',
+            'no_telepon.required' => 'Nomor telepon wajib diisi.',
+            'no_telepon.regex' => 'Nomor telepon hanya boleh berisi angka (10-15 digit).',
+            'provinsi.required' => 'Provinsi wajib diisi.',
+            'kota_kabupaten.required' => 'Kota/Kabupaten wajib diisi.',
+            'kecamatan.required' => 'Kecamatan wajib diisi.',
+            'alamat.required' => 'Detail alamat wajib diisi.',
+        ];
+
+        if ($request->filled('password')) {
+            $rules['password'] = 'required|string|min:8|confirmed';
+            $messages['password.min'] = 'Password baru minimal harus 8 karakter.';
+            $messages['password.confirmed'] = 'Konfirmasi password baru tidak cocok.';
+        }
+
+        $request->validate($rules, $messages);
+
+        $userData = [
+            'nama' => $request->nama,
+            'no_telepon' => $request->no_telepon,
+        ];
+
+        if ($request->filled('password')) {
+            $userData['password'] = bcrypt($request->password);
+        }
+
+        $user->update($userData);
+
+        $pelanggan = $user->pelanggan;
+        if ($pelanggan) {
+            $pelanggan->update([
+                'provinsi' => $request->provinsi,
+                'kota_kabupaten' => $request->kota_kabupaten,
+                'kecamatan' => $request->kecamatan,
+                'alamat' => $request->alamat,
+            ]);
+        } else {
+            Pelanggan::create([
+                'id_pengguna' => $user->id_pengguna,
+                'status_member' => false,
+                'poin_member' => 0,
+                'provinsi' => $request->provinsi,
+                'kota_kabupaten' => $request->kota_kabupaten,
+                'kecamatan' => $request->kecamatan,
+                'alamat' => $request->alamat,
+            ]);
+        }
+
+        return redirect()->route('pelanggan.profil')->with('success', 'Profil berhasil diperbarui.');
+    }
 }

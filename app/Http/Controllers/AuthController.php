@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -128,37 +131,52 @@ class AuthController extends Controller
             'password.regex' => 'Password harus mengandung minimal 1 huruf besar dan 1 angka (contoh: Dudunk0425).',
         ]);
 
-        DB::beginTransaction();
+        $recaptchaResponse = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+            'secret'   => env('RECAPTCHA_SECRET_KEY'),
+            'response' => $request->input('g-recaptcha-response'),
+            'remoteip' => $request->ip(),
+        ]);
 
-        try {
-            $user = User::create([
+        $recaptchaData = $recaptchaResponse->json();
+
+        if (!$recaptchaResponse->successful() || !$recaptchaData['success']) {
+            return back()->withErrors([
+                'g-recaptcha-response' => 'Validasi reCAPTCHA gagal! Centang "I\'m not a robot" terlebih dahulu.',
+            ])->withInput();
+        }
+        
+        // Generate OTP
+        $otp = rand(100000, 999999);
+
+        // Store registration data in session
+        session([
+            'otp_code' => $otp,
+            'otp_expires_at' => now()->addMinutes(5),
+            'otp_email' => $request->email,
+            'otp_action' => 'register',
+            'register_data' => [
                 'nama' => $request->nama,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'no_telepon' => $request->no_telepon,
                 'role' => 'Pelanggan',
-            ]);
-
-            Pelanggan::create([
-                'id_pengguna' => $user->id_pengguna,
-                'status_member' => false,
-                'poin_member' => 0,
                 'provinsi' => $request->provinsi,
                 'kota_kabupaten' => $request->kota_kabupaten,
                 'kecamatan' => $request->kecamatan,
                 'alamat' => $request->alamat,
-            ]);
+            ]
+        ]);
 
-            DB::commit();
-
-            Auth::login($user);
-
-            return redirect()->route('pelanggan.dashboard')->with('success', 'Registrasi berhasil! Selamat datang di Borma.');
-
+        // Send Email
+        try {
+            Mail::raw("Halo! Kode OTP Anda untuk menyelesaikan pendaftaran di Borma Toserba adalah: $otp. Kode ini berlaku selama 5 menit.", function($message) use ($request) {
+                $message->to($request->email)->subject('Kode OTP Registrasi - Borma Toserba');
+            });
         } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withErrors(['error' => 'Terjadi kesalahan saat registrasi. Silakan coba lagi.'])->withInput();
+            Log::error('Gagal mengirim OTP registrasi ke ' . $request->email . ': ' . $e->getMessage());
         }
+
+        return redirect()->route('auth.otp');
     }
 
     /**
@@ -177,5 +195,125 @@ class AuthController extends Controller
         }
 
         return redirect()->route('login');
+    }
+
+    /**
+     * Show OTP verification form
+     */
+    public function showOtpForm()
+    {
+        if (!session()->has('otp_code')) {
+            return redirect()->route('login')->withErrors(['email' => 'Silakan login atau daftar terlebih dahulu.']);
+        }
+        return view('auth.otp');
+    }
+
+    /**
+     * Verify OTP
+     */
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'otp' => 'required|string|size:6',
+        ]);
+
+        if (!session()->has('otp_code')) {
+            return redirect()->route('login')->withErrors(['email' => 'Sesi OTP telah berakhir. Silakan coba lagi.']);
+        }
+
+        $sessionOtp = session('otp_code');
+        $expiresAt = session('otp_expires_at');
+        $action = session('otp_action');
+        $email = session('otp_email');
+
+        if (now()->greaterThan($expiresAt)) {
+            return back()->withErrors(['otp' => 'Kode OTP telah kedaluwarsa. Silakan kirim ulang OTP.']);
+        }
+
+        if ($request->otp != $sessionOtp) {
+            return back()->withErrors(['otp' => 'Kode OTP yang Anda masukkan salah.']);
+        }
+
+        if ($action === 'register') {
+            $regData = session('register_data');
+
+            DB::beginTransaction();
+            try {
+                $user = User::create([
+                    'nama' => $regData['nama'],
+                    'email' => $regData['email'],
+                    'password' => $regData['password'],
+                    'no_telepon' => $regData['no_telepon'],
+                    'role' => $regData['role'],
+                ]);
+
+                Pelanggan::create([
+                    'id_pengguna' => $user->id_pengguna,
+                    'status_member' => false,
+                    'poin_member' => 0,
+                    'provinsi' => $regData['provinsi'],
+                    'kota_kabupaten' => $regData['kota_kabupaten'],
+                    'kecamatan' => $regData['kecamatan'],
+                    'alamat' => $regData['alamat'],
+                ]);
+
+                DB::commit();
+
+                // Clear session
+                session()->forget(['otp_code', 'otp_expires_at', 'otp_email', 'otp_action', 'register_data']);
+
+                Auth::login($user);
+                return redirect()->route('pelanggan.dashboard')->with('success', 'Registrasi berhasil! Selamat datang di Borma.');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error('Error registering user via OTP: ' . $e->getMessage());
+                return redirect()->route('register')->withErrors(['error' => 'Terjadi kesalahan saat menyimpan data. Silakan coba lagi.']);
+            }
+        } elseif ($action === 'login') {
+            $userId = session('otp_user_id');
+            $user = User::find($userId);
+
+            if (!$user) {
+                return redirect()->route('login')->withErrors(['email' => 'User tidak ditemukan.']);
+            }
+
+            // Clear session
+            session()->forget(['otp_code', 'otp_expires_at', 'otp_email', 'otp_action', 'otp_user_id']);
+
+            Auth::login($user);
+            return redirect()->route('pelanggan.dashboard')->with('success', 'Berhasil masuk.');
+        }
+
+        return redirect()->route('login');
+    }
+
+    /**
+     * Resend OTP
+     */
+    public function resendOtp()
+    {
+        if (!session()->has('otp_email')) {
+            return redirect()->route('login');
+        }
+
+        $email = session('otp_email');
+        $otp = rand(100000, 999999);
+
+        // Update session
+        session([
+            'otp_code' => $otp,
+            'otp_expires_at' => now()->addMinutes(5)
+        ]);
+
+        // Send Email
+        try {
+            Mail::raw("Halo! Kode OTP baru Anda adalah: $otp. Kode ini berlaku selama 5 menit.", function($message) use ($email) {
+                $message->to($email)->subject('Kode OTP Baru - Borma Toserba');
+            });
+        } catch (\Exception $e) {
+            Log::error('Gagal mengirim ulang OTP ke ' . $email . ': ' . $e->getMessage());
+        }
+
+        return back()->with('success', 'Kode OTP baru telah dikirim ke email kamu.');
     }
 }

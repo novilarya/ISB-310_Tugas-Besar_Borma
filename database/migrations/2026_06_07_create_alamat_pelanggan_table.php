@@ -11,16 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pelanggan', function (Blueprint $table) {
-            $table->id('id_pelanggan');
-            $table->foreignId('id_pengguna')->constrained('pengguna', 'id_pengguna')->onDelete('cascade');
-            $table->boolean('status_member')->default(false);
-            $table->integer('poin_member')->default(0);
-            $table->date('tanggal_berakhir_member_plus')->nullable();
+        Schema::create('alamat_pelanggan', function (Blueprint $table) {
+            $table->id('id_alamat');
+            $table->foreignId('id_pelanggan')->constrained('pelanggan', 'id_pelanggan')->onDelete('cascade');
+            $table->string('label')->default('Alamat Tambahan'); // e.g. "Kantor", "Rumah Kedua"
             $table->string('provinsi');
             $table->string('kota_kabupaten');
             $table->string('kecamatan');
             $table->text('alamat');
+            $table->boolean('is_default')->default(false);
             $table->timestamps();
         });
     }
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pelanggan');
+        Schema::dropIfExists('alamat_pelanggan');
     }
 };
