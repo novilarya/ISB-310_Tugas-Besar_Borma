@@ -16,7 +16,6 @@
             <nav class="hidden lg:flex items-center gap-8 font-semibold text-sm">
                 <a href="{{ route('pelanggan.dashboard') }}" class="{{ request()->routeIs('pelanggan.dashboard') ? 'text-primary-700 border-b-2 border-primary-700 pb-1 -mb-[2px]' : 'text-neutral-600 hover:text-primary-700 transition-colors' }}">Home</a>
                 <a href="{{ route('pelanggan.katalog') }}" class="{{ request()->routeIs('pelanggan.katalog') ? 'text-primary-700 border-b-2 border-primary-700 pb-1 -mb-[2px]' : 'text-neutral-600 hover:text-primary-700 transition-colors' }}">Katalog</a>
-                <a href="#" class="text-neutral-600 hover:text-primary-700 transition-colors">Promo</a>
             </nav>
 
             <!-- Right Actions -->

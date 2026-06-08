@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Driver\DashboardController as DriverDashboardController;
 use App\Http\Controllers\Driver\TugasController;
 use App\Http\Controllers\Driver\RiwayatController;
@@ -21,11 +22,15 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\MemberController as PelangganMemberController;
 use App\Http\Controllers\PaymentController;
 use App\Models\Cabang;
+use App\Http\Controllers\GoogleAuthController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 // Auth Routes
 Route::get('/internal/login', [AuthController::class, 'showInternalLoginForm'])->name('internal.login');
 Route::post('/internal/login', [AuthController::class, 'authenticateInternal'])->name('internal.login.post');
 Route::post('/internal/logout', [AuthController::class, 'logout'])->name('internal.logout');
+Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect']);
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback']);
 
 // Super Admin Routes
 Route::prefix('superadmin')->middleware(['auth', 'superadmin'])->name('superadmin.')->group(function () {
@@ -72,7 +77,7 @@ Route::prefix('superadmin')->middleware(['auth', 'superadmin'])->name('superadmi
     Route::post('/hak-akses/{userId}', [HakAksesController::class, 'updateHakAkses'])->name('hak_akses.update');
 });
 
-Route::prefix('admin-cabang')->middleware(['auth', 'admin_cabang'])->group(function () {
+    Route::prefix('admin-cabang')->middleware(['auth', 'admin_cabang'])->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\AdminCabang\DashboardController::class, 'index'])
         ->name('admin-cabang.dashboard');
     Route::get('/notifikasi', [\App\Http\Controllers\AdminCabang\DashboardController::class, 'notifikasi'])
@@ -135,7 +140,7 @@ Route::get('/preview-invoice', function () {
 Route::get('/invoice/nota/{id}', [\App\Http\Controllers\AdminCabang\OrderController::class, 'publicNota'])->name('public.pesanan.nota');
 
 Route::get('/', function () {
-    $user = auth()->user();
+    $user = \Illuminate\Support\Facades\Auth::user();
     if (!$user) return redirect()->route('login');
     $role = strtolower($user->role);
     if (in_array($role, ['super admin', 'admin super', 'staf operasional'])) return redirect()->route('superadmin.dashboard');
@@ -152,6 +157,10 @@ Route::get('/pelanggan/dashboard', function () {
 Route::get('/pelanggan/katalog', function () {
     return view('pelanggan.katalog');
 })->name('pelanggan.katalog');
+
+Route::get('/pelanggan/produk/{slug}', function ($slug) {
+    return view('pelanggan.produk-detail', compact('slug'));
+})->name('pelanggan.produk.detail');
 
 Route::get('/pelanggan/keranjang', [CartController::class, 'index'])->name('pelanggan.keranjang');
 
@@ -170,6 +179,14 @@ Route::get('/pelanggan/profil', [\App\Http\Controllers\ProfileController::class,
     ->middleware('auth')
     ->name('pelanggan.profil');
 
+Route::get('/pelanggan/profil/edit', [\App\Http\Controllers\ProfileController::class, 'edit'])
+    ->middleware('auth')
+    ->name('pelanggan.profil.edit');
+
+Route::post('/pelanggan/profil/update', [\App\Http\Controllers\ProfileController::class, 'update'])
+    ->middleware('auth')
+    ->name('pelanggan.profil.update');
+
 Route::post('/pelanggan/pesanan/{id}/confirm-received', [\App\Http\Controllers\ProfileController::class, 'confirmReceived'])
     ->middleware('auth')
     ->name('pelanggan.pesanan.confirm-received');
@@ -178,6 +195,14 @@ Route::get('/pelanggan/member', [PelangganMemberController::class, 'index'])->na
 Route::post('/pelanggan/member/activate', [PelangganMemberController::class, 'activate'])
     ->middleware('auth')
     ->name('pelanggan.member.activate');
+
+// Alamat Tambahan Pelanggan API routes
+Route::middleware('auth')->prefix('pelanggan/alamat')->name('pelanggan.alamat.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\AlamatPelangganController::class, 'index'])->name('index');
+    Route::post('/', [\App\Http\Controllers\AlamatPelangganController::class, 'store'])->name('store');
+    Route::put('/{id}', [\App\Http\Controllers\AlamatPelangganController::class, 'update'])->name('update');
+    Route::delete('/{id}', [\App\Http\Controllers\AlamatPelangganController::class, 'destroy'])->name('destroy');
+});
 
 // API route for cabang data
 Route::get('/api/cabangs', function () {
@@ -201,6 +226,11 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// OTP routes
+Route::get('/auth/otp', [AuthController::class, 'showOtpForm'])->name('auth.otp');
+Route::post('/auth/otp', [AuthController::class, 'verifyOtp'])->name('auth.otp.verify');
+Route::post('/auth/otp/resend', [AuthController::class, 'resendOtp'])->name('auth.otp.resend');
 
 // Payment routes
 Route::post('/payment/create', [PaymentController::class, 'createTransaction'])->name('payment.create');

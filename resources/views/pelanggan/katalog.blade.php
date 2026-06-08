@@ -159,7 +159,7 @@ $productCount = count($filtered);
 
     <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         @foreach($filtered as $product)
-        <div class="product-card bg-white rounded-2xl border border-neutral-200 shadow-sm hover:shadow-md hover:border-primary-300 transition-all duration-300 group flex flex-col overflow-hidden" data-name="{{ strtolower($product['name']) }}">
+        <a href="{{ route('pelanggan.produk.detail', ['slug' => Str::slug($product['name'])]) }}" class="product-card bg-white rounded-2xl border border-neutral-200 shadow-sm hover:shadow-md hover:border-primary-300 transition-all duration-300 group flex flex-col overflow-hidden no-underline" data-name="{{ strtolower($product['name']) }}">
             <div class="relative bg-neutral-50 flex items-center justify-center border-b border-neutral-100 overflow-hidden" style="aspect-ratio:1/1;">
                 @if($product['sale'] > 0)
                 <div class="absolute top-3 right-3 z-10">
@@ -189,7 +189,7 @@ $productCount = count($filtered);
                     @endif
                 </div>
             </div>
-        </div>
+        </a>
         @endforeach
     </div>
 </div>
