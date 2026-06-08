@@ -34,7 +34,7 @@ class TugasController extends Controller
 
     public function show($id)
     {
-        $pesanan = Pesanan::with(['pelanggan.user', 'cabang', 'details.produk', 'pengirimanTracking', 'buktiPengiriman'])
+        $pesanan = Pesanan::with(['pelanggan.user', 'cabang', 'details.produk', 'pengirimanTracking', 'buktiPengiriman', 'kurir'])
             ->findOrFail($id);
 
         return view('driver.tugas.show', compact('pesanan'));
@@ -360,6 +360,61 @@ class TugasController extends Controller
     }
 
     /**
+     * Update posisi GPS driver secara real-time
+     * Dipanggil oleh frontend setiap ~15 detik selama pengiriman aktif
+     */
+    public function updateLocation(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'lat' => 'required|numeric|between:-90,90',
+                'lng' => 'required|numeric|between:-180,180',
+            ]);
+
+            $pesanan = Pesanan::findOrFail($id);
+
+            // Hanya update lokasi jika pengiriman masih aktif
+            $activeStatuses = ['diterima_driver', 'diambil', 'dalam_pengiriman'];
+            if (!in_array($pesanan->status_pesanan, $activeStatuses)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pengiriman tidak aktif'
+                ], 400);
+            }
+
+            // Ambil data kurir dari pesanan
+            $kurir = Kurir::find($pesanan->id_kurir);
+            if (!$kurir) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data kurir tidak ditemukan'
+                ], 404);
+            }
+
+            // Simpan koordinat GPS
+            $kurir->driver_lat = $request->lat;
+            $kurir->driver_lng = $request->lng;
+            $kurir->location_updated_at = now();
+            $kurir->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Lokasi driver diperbarui',
+                'data' => [
+                    'lat' => $kurir->driver_lat,
+                    'lng' => $kurir->driver_lng,
+                    'updated_at' => $kurir->location_updated_at,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Polling: Ambil antrian tugas FCFS terbaru
      */
     public function getLatestAntrian(Request $request)
@@ -371,7 +426,6 @@ class TugasController extends Controller
             ->get();
 
         if ($request->wantsJson()) {
-            // Format to match JS needs
             $formatted = $antrianTugas->map(function($p) {
                 return [
                     'id' => $p->id_pesanan,
@@ -383,7 +437,6 @@ class TugasController extends Controller
             return response()->json($formatted);
         }
 
-        // Mengembalikan view partial untuk dirender ulang di sisi klien
         return view('driver.components.stacked-cards-partial', compact('antrianTugas'));
     }
 }

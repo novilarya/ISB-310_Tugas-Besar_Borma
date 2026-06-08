@@ -22,27 +22,85 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // ===== CREATE CABANG =====
-        $cabangAntapani = Cabang::create([
-            'nama_cabang' => 'Borma Toserba Antapani',
-            'alamat_cabang' => 'Jl. Terusan Jakarta No.53, Cicaheum, Kec. Kiaracondong, Kota Bandung 40291',
-            'koordinat_gps' => '-6.9147,107.6542',
-            'status' => 'Aktif',
-        ]);
+        $cabangs = [
+            [
+                'nama_cabang' => 'Borma Toserba Antapani',
+                'alamat_cabang' => 'Jl. Terusan Jakarta No.53, Cicaheum, Kec. Kiaracondong, Kota Bandung 40291',
+                'koordinat_gps' => '-6.9147,107.6542',
+                'status' => 'Aktif',
+            ],
+            [
+                'nama_cabang' => 'Borma Toserba Bojongsoang',
+                'alamat_cabang' => 'Jl. Terusan Bojongsoang, Bojongsoang, Kec. Bojongsoang, Kab. Bandung 40288',
+                'koordinat_gps' => '-6.9700,107.6400',
+                'status' => 'Aktif',
+            ],
+            [
+                'nama_cabang' => 'Borma Toserba Dago',
+                'alamat_cabang' => 'Jl. Ir. H. Juanda No. 348, Bandung',
+                'koordinat_gps' => '-6.8848,107.6146',
+                'status' => 'Aktif',
+            ],
+            [
+                'nama_cabang' => 'Borma Toserba Cikutra',
+                'alamat_cabang' => 'Jl. Cikutra Barat No. 66, Bandung',
+                'koordinat_gps' => '-6.8967,107.6253',
+                'status' => 'Aktif',
+            ],
+            [
+                'nama_cabang' => 'Borma Toserba Dakota',
+                'alamat_cabang' => 'Jl. Dakota Raya No. 109, Bandung',
+                'koordinat_gps' => '-6.8941,107.5706',
+                'status' => 'Aktif',
+            ],
+            [
+                'nama_cabang' => 'Borma Toserba Buah Batu',
+                'alamat_cabang' => 'Jl. Buah Batu No. 235 A, Bandung',
+                'koordinat_gps' => '-6.9404,107.6277',
+                'status' => 'Aktif',
+            ],
+            [
+                'nama_cabang' => 'Borma Toserba Cibaduyut',
+                'alamat_cabang' => 'Jl. Terusan Cibaduyut No. 9, Bandung',
+                'koordinat_gps' => '-6.9460,107.5937',
+                'status' => 'Aktif',
+            ],
+            [
+                'nama_cabang' => 'Borma Toserba Caringin',
+                'alamat_cabang' => 'Jl. Caringin No. 175, Bandung',
+                'koordinat_gps' => '-6.9405,107.5755',
+                'status' => 'Aktif',
+            ],
+            [
+                'nama_cabang' => 'Borma Toserba Kopo / Gempol',
+                'alamat_cabang' => 'Jl. Gempol Sari Raya No. 9, Bandung',
+                'koordinat_gps' => '-6.9248,107.5562',
+                'status' => 'Aktif',
+            ],
+            [
+                'nama_cabang' => 'Borma Toserba Cihanjuang',
+                'alamat_cabang' => 'Jl. Cihanjuang No. 102, Bandung',
+                'koordinat_gps' => '-6.8778,107.5606',
+                'status' => 'Aktif',
+            ],
+            [
+                'nama_cabang' => 'Borma Toserba Cinunuk',
+                'alamat_cabang' => 'Jl. Raya Cinunuk No. 160, Bandung',
+                'koordinat_gps' => '-6.9348,107.7428',
+                'status' => 'Aktif',
+            ]
+        ];
 
-        $cabangPusat = Cabang::create([
-            'nama_cabang' => 'Borma Toserba Bojongsoang',
-            'alamat_cabang' => 'Jl. Terusan Bojongsoang, Bojongsoang, Kec. Bojongsoang, Kab. Bandung 40288',
-            'koordinat_gps' => '-6.9700,107.6400',
-            'status' => 'Aktif',
-        ]);
+        $createdCabangs = [];
+        foreach ($cabangs as $c) {
+            $createdCabangs[] = Cabang::create($c);
+        }
 
-        $cabangBelumadd = Cabang::create([
-            'nama_cabang' => 'Borma Toserba Cikutra',
-            'alamat_cabang' => 'Jl. Cikutra Barat No. 66, Cigadung, Cibeunying Kaler, Kota Bandung 40191',
-            'koordinat_gps' => '-6.8967,107.6253',
-            'status' => 'Aktif',
-        ]);
+        // Simpan reference ke cabang pertama dan kedua untuk seeder pesanan (sama seperti sebelumnya)
+        $cabangAntapani = $createdCabangs[0];
+        $cabangPusat = $createdCabangs[1];
+        $cabangBelumadd = $createdCabangs[3]; // Cikutra
+
 
         // ===== CREATE PRODUCTS =====
         $produk1 = Produk::create([
@@ -114,8 +172,7 @@ class DatabaseSeeder extends Seeder
             'kendaraan' => 'Motor',
             'warna_kendaraan' => 'Hitam',
             'plat_nomor' => 'B 1234 ABC',
-            'penghasilan_kotor' => 1000000,
-            'penghasilan_bersih' => 900000,
+            'pendapatan_pengiriman' => 1000000,
             'status_mengirim' => 'Sedang Mengirim',
             'status_aktif' => 'Aktif',
         ]);
@@ -126,8 +183,7 @@ class DatabaseSeeder extends Seeder
             'kendaraan' => 'Mobil',
             'warna_kendaraan' => 'Putih',
             'plat_nomor' => 'B 5678 XYZ',
-            'penghasilan_kotor' => 1200000,
-            'penghasilan_bersih' => 1100000,
+            'pendapatan_pengiriman' => 1200000,
             'status_mengirim' => 'Tidak Mengirim',
             'status_aktif' => 'Aktif',
         ]);

@@ -4,9 +4,8 @@
 @section('header_back', true)
 
 @push('styles')
-{{-- Leaflet CSS --}}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+{{-- Leaflet CSS (local) --}}
+<link rel="stylesheet" href="{{ asset('assets/vendor/leaflet/leaflet.min.css') }}" />
 
 <style>
     /* ================================================
@@ -894,12 +893,11 @@
 @endsection
 
 @push('scripts')
-{{-- Leaflet JS --}}
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+{{-- Leaflet JS (local) --}}
+<script src="{{ asset('assets/vendor/leaflet/leaflet.min.js') }}"></script>
 
-{{-- SweetAlert2 --}}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{{-- SweetAlert2 (local) --}}
+<script src="{{ asset('assets/vendor/sweetalert2/sweetalert2.min.js') }}"></script>
 
 <script>
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
@@ -950,36 +948,143 @@
             popupAnchor: [0, -34],
         });
 
-        // Markers
-        L.marker([gudangLat, gudangLng], { icon: gudangIcon })
+        // Markers — pakai let bukan const supaya bisa diakses di seluruh scope
+        let gudangMarker = L.marker([gudangLat, gudangLng], { icon: gudangIcon })
             .addTo(map)
             .bindPopup('<b>Gudang {{ $pesanan->cabang->nama_cabang ?? "Borma" }}</b><br>{{ $pesanan->cabang->alamat_cabang ?? "" }}');
 
-        L.marker([custLat, custLng], { icon: customerIcon })
+        let customerMarker = L.marker([custLat, custLng], { icon: customerIcon })
             .addTo(map)
             .bindPopup('<b>Lokasi Penerima</b><br>{{ $pesanan->alamat_pengiriman }}');
 
-        // Route line
-        L.polyline([
-            [gudangLat, gudangLng],
-            [custLat, custLng]
-        ], {
-            color: '#33116C',
-            weight: 3,
-            opacity: 0.7,
-            dashArray: '8, 8',
-            lineCap: 'round'
-        }).addTo(map);
-
-        // Fit bounds
+        // Fit bounds awal
         const bounds = L.latLngBounds([
             [gudangLat, gudangLng],
             [custLat, custLng]
         ]);
-        map.fitBounds(bounds, { padding: [30, 30] });
+        map.fitBounds(bounds, { padding: [40, 40] });
 
         // Fix map rendering setelah animasi
         setTimeout(() => { map.invalidateSize(); }, 600);
+
+        const STATUS = '{{ $pesanan->status_pesanan }}';
+
+        // Custom icon checkmark (hijau)
+        const checkIcon = L.divIcon({
+            className: 'custom-marker',
+            html: `<div style="background: #22C55E; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(34,197,94,0.4); border: 3px solid white;">
+                    <svg width="20" height="20" fill="white" viewBox="0 0 16 16"><path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/></svg>
+                   </div>`,
+            iconSize: [32, 32],
+            iconAnchor: [16, 16],
+            popupAnchor: [0, -20],
+        });
+
+        // Motor icon
+        const driverIcon = L.divIcon({
+            className: 'custom-marker',
+            html: `<div style="background: #16A34A; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(22,163,74,0.4); border: 3px solid white;">
+                    <svg width="18" height="18" fill="white" viewBox="0 0 16 16"><path d="M6.315 2.114a.5.5 0 0 1 .63-.061l2.5 1.5a.5.5 0 0 1 .15.75l-1.5 2.5a.5.5 0 1 1-.858-.514l1.205-2.008-2.066-1.24a.5.5 0 0 1-.06-.627zM2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/><path d="M4 11a3 3 0 0 0 5.613 1.488l3.199-3.2a1 1 0 0 0 .188-1.2l-1.215-2.025a1.5 1.5 0 0 0-2.455-.26l-1.127 1.127-1.393-.836a.5.5 0 0 0-.514.858l1.79 1.074-2.22 2.22A3 3 0 1 0 4 11m0-2a2 2 0 1 1 0 4 2 2 0 0 1 0-4m8 4a2 2 0 1 1 0-4 2 2 0 0 1 0 4"/></svg>
+                   </div>`,
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -34],
+        });
+
+        let driverLat = gudangLat - 0.008; // ~800m away
+        let driverLng = gudangLng + 0.008;
+
+        // Atur marker icon saja untuk diterima
+        if (STATUS === 'diterima') {
+            customerMarker.setIcon(checkIcon); 
+        } else if (STATUS === 'diterima_driver') {
+            // Posisi mock driver sebelum ambil barang
+            L.marker([driverLat, driverLng], { icon: driverIcon })
+                .addTo(map)
+                .bindPopup('<b>Posisi Driver Saat Ini</b>');
+        }
+
+        // =============================================
+        // OSRM Real Road Routing
+        // Cache pakai window variable — tidak kena blokir Tracking Prevention browser
+        // =============================================
+        const osrmUrl =
+            `https://router.project-osrm.org/route/v1/driving/` +
+            `${gudangLng},${gudangLat};${custLng},${custLat}` +
+            `?overview=full&geometries=geojson&steps=false`;
+
+        window._osrmCache = window._osrmCache || {};
+        const cacheKey = `route_{{ $pesanan->id_pesanan }}`;
+
+        function drawFallbackRoute(isGray = false) {
+            L.polyline([
+                [gudangLat, gudangLng],
+                [custLat, custLng]
+            ], {
+                color: isGray ? '#9ca3af' : '#33116C',
+                weight: 4,
+                opacity: 0.6,
+                dashArray: '8, 8',
+                lineCap: 'round'
+            }).addTo(map);
+            map.fitBounds(L.latLngBounds([[gudangLat, gudangLng], [custLat, custLng]]), { padding: [40, 40] });
+        }
+
+        function drawRoute(latLngs) {
+            if (STATUS === 'diterima') {
+                // Full gray route
+                L.polyline(latLngs, { color: '#e5e7eb', weight: 7, opacity: 0.5, lineCap: 'round' }).addTo(map);
+                const line = L.polyline(latLngs, { color: '#9ca3af', weight: 4.5, opacity: 0.92, lineCap: 'round' }).addTo(map);
+                map.fitBounds(line.getBounds(), { padding: [36, 36] });
+                
+            } else if (STATUS === 'dalam_pengiriman' || STATUS === 'diambil') {
+                // Split line into gray (passed) and blue (upcoming)
+                let percent = STATUS === 'diambil' ? 0.05 : 0.6;
+                let posIndex = Math.floor(latLngs.length * percent);
+                if (posIndex >= latLngs.length) posIndex = latLngs.length - 1;
+                if (posIndex < 0) posIndex = 0;
+                
+                let passedPath = latLngs.slice(0, posIndex + 1);
+                let upcomingPath = latLngs.slice(posIndex);
+
+                // draw gray for passed
+                if (passedPath.length > 1) {
+                    L.polyline(passedPath, { color: '#9ca3af', weight: 4.5, opacity: 0.8, lineCap: 'round' }).addTo(map);
+                }
+                // draw blue for upcoming
+                if (upcomingPath.length > 1) {
+                    L.polyline(upcomingPath, { color: '#1d4ed8', weight: 7, opacity: 0.25, lineCap: 'round' }).addTo(map);
+                    L.polyline(upcomingPath, { color: '#2563eb', weight: 4.5, opacity: 0.92, lineCap: 'round' }).addTo(map);
+                }
+                map.fitBounds(L.polyline(latLngs).getBounds(), { padding: [36, 36] });
+
+                // place driver marker exactly on the route
+                L.marker(latLngs[posIndex], { icon: driverIcon }).addTo(map).bindPopup('<b>Posisi Driver Saat Ini</b>');
+
+            } else {
+                // diterima_driver (tampilkan rute full biru juga dari gudang ke cust)
+                L.polyline(latLngs, { color: '#1d4ed8', weight: 7, opacity: 0.25, lineCap: 'round' }).addTo(map);
+                const line = L.polyline(latLngs, { color: '#2563eb', weight: 4.5, opacity: 0.92, lineCap: 'round' }).addTo(map);
+                map.fitBounds(line.getBounds(), { padding: [36, 36] });
+            }
+        }
+
+        if (window._osrmCache[cacheKey]) {
+            drawRoute(window._osrmCache[cacheKey]);
+        } else {
+            fetch(osrmUrl)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.routes || data.routes.length === 0) throw new Error('No route');
+                    const coords = data.routes[0].geometry.coordinates;
+                    const latLngs = coords.map(c => [c[1], c[0]]);
+                    window._osrmCache[cacheKey] = latLngs;
+                    drawRoute(latLngs);
+                })
+                .catch(err => {
+                    drawFallbackRoute(STATUS === 'diterima');
+                });
+        }
     });
 
     // =============================================
@@ -1074,6 +1179,113 @@
         });
     }
 
+    // =============================================
+    // UPDATE UI TANPA RELOAD HALAMAN
+    // =============================================
+    const statusLabelsMap = {
+        'diterima_driver': 'Diterima Driver',
+        'diambil': 'Diambil',
+        'dalam_pengiriman': 'Dalam Pengiriman',
+        'diterima': 'Diterima',
+        'gagal': 'Gagal Kirim',
+    };
+
+    const statusFlow = ['diterima_driver', 'diambil', 'dalam_pengiriman', 'diterima'];
+
+    const timelineConfig = [
+        { status: 'diterima_driver', label: 'Pesanan Dikonfirmasi',  desc: 'Driver mengkonfirmasi pesanan' },
+        { status: 'diambil',         label: 'Pesanan Diambil',       desc: 'Diambil dari gudang' },
+        { status: 'dalam_pengiriman',label: 'Dalam Pengiriman',      desc: 'Menuju lokasi pelanggan' },
+        { status: 'diterima',        label: 'Pesanan Diterima',      desc: 'Diterima oleh pelanggan' },
+    ];
+
+    let currentStatus = '{{ $pesanan->status_pesanan }}';
+
+    function updateUI(newStatus, alasanGagal = null) {
+        currentStatus = newStatus;
+        const now = new Date();
+        const timeStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0') + ' WIB';
+
+        // 1. Update status card
+        const statusCard = document.querySelector('.order-status-card');
+        if (statusCard) {
+            // Hapus semua class status lama
+            statusCard.className = statusCard.className.replace(/status-\S+/g, '').trim();
+            statusCard.classList.add('order-status-card', `status-${newStatus}`);
+
+            const dot = statusCard.querySelector('.order-status-dot');
+            const val = statusCard.querySelector('.order-status-value');
+            if (val) {
+                val.innerHTML = `<span class="order-status-dot"></span> ${statusLabelsMap[newStatus] || newStatus}`;
+            }
+        }
+
+        // 2. Update tombol status — disable tombol yang sudah aktif
+        document.querySelectorAll('.status-btn').forEach(btn => {
+            btn.classList.remove('active-status');
+        });
+        const activeBtn = document.querySelector(`.status-btn[onclick*="${newStatus}"]`);
+        if (activeBtn) activeBtn.classList.add('active-status');
+
+        // Sembunyikan tombol yang sudah tidak relevan
+        const statusOrder = ['diambil', 'dalam_pengiriman', 'diterima'];
+        const newIdx = statusOrder.indexOf(newStatus);
+        statusOrder.forEach((s, i) => {
+            const btn = document.querySelector(`.status-btn[onclick*="${s}"]`);
+            if (btn && i <= newIdx) {
+                btn.classList.add('active-status');
+                btn.style.pointerEvents = 'none';
+            }
+        });
+
+        // 3. Update timeline
+        const newFlowIdx = statusFlow.indexOf(newStatus);
+        const timelineItems = document.querySelectorAll('.timeline-item');
+
+        timelineConfig.forEach((step, i) => {
+            const item = timelineItems[i];
+            if (!item) return;
+
+            const dot = item.querySelector('.timeline-dot');
+            const timeEl = item.querySelector('.timeline-step-time');
+            const stepFlowIdx = statusFlow.indexOf(step.status);
+
+            item.classList.remove('is-pending');
+
+            if (newStatus === 'gagal') {
+                dot.className = 'timeline-dot pending';
+                item.classList.add('is-pending');
+            } else if (stepFlowIdx < newFlowIdx) {
+                // Step sebelumnya = done
+                dot.className = 'timeline-dot done';
+            } else if (step.status === newStatus) {
+                // Step aktif sekarang
+                dot.className = 'timeline-dot active';
+                if (timeEl) timeEl.textContent = `${timeStr} — ${step.desc}`;
+            } else {
+                // Step berikutnya = pending
+                dot.className = 'timeline-dot pending';
+                item.classList.add('is-pending');
+            }
+        });
+
+        // Tambah timeline item gagal jika perlu
+        if (newStatus === 'gagal') {
+            const timelineList = document.querySelector('.timeline-list');
+            const existing = document.querySelector('.timeline-item-gagal');
+            if (!existing && timelineList) {
+                const gagalItem = document.createElement('div');
+                gagalItem.className = 'timeline-item timeline-item-gagal';
+                gagalItem.innerHTML = `
+                    <div class="timeline-dot failed"><i class="bi bi-x-lg"></i></div>
+                    <p class="timeline-step-title" style="color: var(--color-tertiary);">Gagal Kirim</p>
+                    <p class="timeline-step-time">${timeStr} — ${alasanGagal || 'Gagal kirim'}</p>
+                `;
+                timelineList.appendChild(gagalItem);
+            }
+        }
+    }
+
     function sendStatusUpdate(status, alasanGagal = null) {
         Swal.fire({
             title: 'Memproses...',
@@ -1097,6 +1309,9 @@
         }).then(response => response.json())
         .then(data => {
             if (data.success) {
+                // Update UI langsung tanpa reload — peta tidak terganggu
+                updateUI(status, alasanGagal);
+
                 Swal.fire({
                     title: 'Berhasil!',
                     text: data.message,
@@ -1104,8 +1319,6 @@
                     confirmButtonColor: '#33116C',
                     timer: 1500,
                     timerProgressBar: true
-                }).then(() => {
-                    location.reload();
                 });
             } else {
                 Swal.fire({

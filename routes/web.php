@@ -39,6 +39,8 @@ Route::prefix('driver')->name('driver.')->group(function () {
          ->name('tugas.updateStatus');
     Route::post('/tugas/{id}/upload-proof', [TugasController::class, 'uploadProof'])
          ->name('tugas.uploadProof');
+    Route::post('/tugas/{id}/update-location', [TugasController::class, 'updateLocation'])
+         ->name('tugas.updateLocation');
          
     // Antrian Pesanan FCFS
     Route::post('/pesanan/{id}/ambil', [TugasController::class, 'ambil'])

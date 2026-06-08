@@ -1,0 +1,28 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Tambahkan kolom GPS driver ke tabel kurirs
+     * untuk tracking posisi real-time.
+     */
+    public function up(): void
+    {
+        Schema::table('kurirs', function (Blueprint $table) {
+            $table->decimal('driver_lat', 10, 7)->nullable()->after('status_aktif');
+            $table->decimal('driver_lng', 10, 7)->nullable()->after('driver_lat');
+            $table->timestamp('location_updated_at')->nullable()->after('driver_lng');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('kurirs', function (Blueprint $table) {
+            $table->dropColumn(['driver_lat', 'driver_lng', 'location_updated_at']);
+        });
+    }
+};
