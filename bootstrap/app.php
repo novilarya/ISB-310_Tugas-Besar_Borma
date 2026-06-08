@@ -21,5 +21,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->renderable(function (\Illuminate\Session\TokenMismatchException $e, $request) {
+            return redirect()->back()->withInput($request->except('password', '_token'))
+                ->withErrors(['error' => 'Sesi Anda telah kedaluwarsa. Silakan muat ulang halaman dan coba lagi.']);
+        });
     })->create();

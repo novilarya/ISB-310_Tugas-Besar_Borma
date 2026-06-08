@@ -1,4 +1,4 @@
-@extends('driver.layouts.app')
+﻿@extends('driver.layouts.app')
 
 @section('title', 'Detail Tugas #BRM-' . $pesanan->id_pesanan)
 @section('header_back', true)
@@ -64,10 +64,30 @@
     </div>
 </div>
 
-{{-- ===== MAP (Leaflet.js) ===== --}}
+{{-- ===== MAP (Leaflet.js + OSRM Routing) ===== --}}
 <div class="map-section fade-up delay-1">
     <div class="map-container">
         <div id="delivery-map"></div>
+
+        {{-- Loading overlay --}}
+        <div class="map-loading-overlay" id="map-loading">
+            <div class="map-spinner"></div>
+            <span class="map-loading-text">Memuat rute jalan...</span>
+        </div>
+
+        {{-- Route info badge --}}
+        <div class="map-route-info" id="map-route-info">
+            <i class="bi bi-signpost-2-fill"></i>
+            <span id="route-distance">-</span>
+            <div class="map-route-divider"></div>
+            <i class="bi bi-clock-fill"></i>
+            <span id="route-duration">-</span>
+        </div>
+
+        {{-- Error badge --}}
+        <div class="map-route-error" id="map-route-error">
+            <i class="bi bi-exclamation-triangle-fill"></i> Rute jalan tidak tersedia
+        </div>
     </div>
     <div class="map-legend">
         <div class="map-legend-item">
@@ -77,6 +97,12 @@
         <div class="map-legend-item">
             <span class="legend-dot customer"></span>
             Lokasi Penerima
+        </div>
+        <div class="map-legend-item">
+            <span class="legend-route">
+                <span class="legend-route-line"></span>
+            </span>
+            Rute Jalan
         </div>
     </div>
 </div>
@@ -172,9 +198,9 @@
                 <p class="timeline-step-title">{{ $step['label'] }}</p>
                 <p class="timeline-step-time">
                     @if($tracking)
-                        {{ \Carbon\Carbon::parse($tracking->created_at)->format('H:i') }} WIB — {{ $tracking->keterangan ?? $step['desc'] }}
+                        {{ \Carbon\Carbon::parse($tracking->created_at)->format('H:i') }} WIB â€” {{ $tracking->keterangan ?? $step['desc'] }}
                     @elseif($isActive)
-                        {{ now()->format('H:i') }} WIB — {{ $step['desc'] }}
+                        {{ now()->format('H:i') }} WIB â€” {{ $step['desc'] }}
                     @elseif($step['status'] === 'diterima' && !$isGagal)
                         Estimasi {{ $pesanan->estimasi_tiba ? \Carbon\Carbon::parse($pesanan->estimasi_tiba)->format('H:i') . ' WIB' : '-' }}
                     @else
@@ -193,7 +219,7 @@
             <p class="timeline-step-title" style="color: var(--color-tertiary);">Gagal Kirim</p>
             <p class="timeline-step-time">
                 @if(isset($trackingMap['gagal']))
-                    {{ \Carbon\Carbon::parse($trackingMap['gagal']->created_at)->format('H:i') }} WIB — {{ $pesanan->alasan_gagal ?? 'Gagal kirim' }}
+                    {{ \Carbon\Carbon::parse($trackingMap['gagal']->created_at)->format('H:i') }} WIB â€” {{ $pesanan->alasan_gagal ?? 'Gagal kirim' }}
                 @else
                     {{ $pesanan->alasan_gagal ?? 'Gagal kirim' }}
                 @endif
@@ -318,36 +344,161 @@
         });
 
         // Markers
-        L.marker([gudangLat, gudangLng], { icon: gudangIcon })
+        let gudangMarker = L.marker([gudangLat, gudangLng], { icon: gudangIcon })
             .addTo(map)
             .bindPopup('<b>Gudang {{ $pesanan->cabang->nama_cabang ?? "Borma" }}</b><br>{{ $pesanan->cabang->alamat_cabang ?? "" }}');
 
-        L.marker([custLat, custLng], { icon: customerIcon })
+        let customerMarker = L.marker([custLat, custLng], { icon: customerIcon })
             .addTo(map)
             .bindPopup('<b>Lokasi Penerima</b><br>{{ $pesanan->alamat_pengiriman }}');
 
-        // Route line
-        L.polyline([
-            [gudangLat, gudangLng],
-            [custLat, custLng]
-        ], {
-            color: '#33116C',
-            weight: 3,
-            opacity: 0.7,
-            dashArray: '8, 8',
-            lineCap: 'round'
-        }).addTo(map);
-
-        // Fit bounds
+        // Fit bounds awal (before route loads)
         const bounds = L.latLngBounds([
             [gudangLat, gudangLng],
             [custLat, custLng]
         ]);
-        map.fitBounds(bounds, { padding: [30, 30] });
+        map.fitBounds(bounds, { padding: [40, 40] });
 
         // Fix map rendering setelah animasi
         setTimeout(() => { map.invalidateSize(); }, 600);
+
+        const STATUS = '{{ $pesanan->status_pesanan }}';
+
+        // Checkmark Icon
+        const checkIcon = L.divIcon({
+            className: 'custom-marker',
+            html: `<div style="background: #22C55E; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(34,197,94,0.4); border: 3px solid white;">
+                    <svg width="20" height="20" fill="white" viewBox="0 0 16 16"><path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/></svg>
+                   </div>`,
+            iconSize: [32, 32],
+            iconAnchor: [16, 16],
+            popupAnchor: [0, -20],
+        });
+
+        // Driver Motor Icon
+        const driverIcon = L.divIcon({
+            className: 'custom-marker',
+            html: `<div style="background: #16A34A; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(22,163,74,0.4); border: 3px solid white;">
+                    <svg width="18" height="18" fill="white" viewBox="0 0 16 16"><path d="M6.315 2.114a.5.5 0 0 1 .63-.061l2.5 1.5a.5.5 0 0 1 .15.75l-1.5 2.5a.5.5 0 1 1-.858-.514l1.205-2.008-2.066-1.24a.5.5 0 0 1-.06-.627zM2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/><path d="M4 11a3 3 0 0 0 5.613 1.488l3.199-3.2a1 1 0 0 0 .188-1.2l-1.215-2.025a1.5 1.5 0 0 0-2.455-.26l-1.127 1.127-1.393-.836a.5.5 0 0 0-.514.858l1.79 1.074-2.22 2.22A3 3 0 1 0 4 11m0-2a2 2 0 1 1 0 4 2 2 0 0 1 0-4m8 4a2 2 0 1 1 0-4 2 2 0 0 1 0 4"/></svg>
+                   </div>`,
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -34],
+        });
+
+        let driverMarker;
+        let driverLat = gudangLat - 0.008; // ~800m away
+        let driverLng = gudangLng + 0.008;
+
+        // Atur marker icon saja untuk diterima
+        if (STATUS === 'diterima') {
+            customerMarker.setIcon(checkIcon); 
+        } else if (STATUS === 'diterima_driver') {
+            // Posisi mock driver sebelum ambil barang
+            driverMarker = L.marker([driverLat, driverLng], { icon: driverIcon })
+                .addTo(map)
+                .bindPopup('<b>Posisi Driver Saat Ini</b>');
+        }
+
+        // =============================================
+        // ROUTING BERDASARKAN STATUS
+        // =============================================
+        const loadingEl = document.getElementById('map-loading');
+        const routeInfoEl = document.getElementById('map-route-info');
+
+        function drawFallbackRoute(lat1, lng1, lat2, lng2, isGray = false) {
+            L.polyline([[lat1, lng1], [lat2, lng2]], {
+                color: isGray ? '#9ca3af' : '#33116C',
+                weight: 4,
+                opacity: 0.6,
+                dashArray: '8, 8',
+                lineCap: 'round'
+            }).addTo(map);
+            map.fitBounds(L.latLngBounds([[lat1, lng1], [lat2, lng2]]), { padding: [40, 40] });
+            loadingEl.classList.add('hidden');
+            document.getElementById('map-route-error').style.display = 'flex';
+        }
+
+        function drawOsrmRoute(startLat, startLng, endLat, endLng) {
+            const osrmUrl =
+                `https://router.project-osrm.org/route/v1/driving/` +
+                `${startLng},${startLat};${endLng},${endLat}` +
+                `?overview=full&geometries=geojson&steps=false`;
+
+            const timeoutId = setTimeout(() => {
+                drawFallbackRoute(startLat, startLng, endLat, endLng, STATUS === 'diterima');
+            }, 6000);
+
+            fetch(osrmUrl)
+                .then(res => { if (!res.ok) throw new Error('err'); return res.json(); })
+                .then(data => {
+                    clearTimeout(timeoutId);
+                    if (!data.routes || data.routes.length === 0) throw new Error('no route');
+                    const route   = data.routes[0];
+                    const latLngs = route.geometry.coordinates.map(c => [c[1], c[0]]);
+                    const km      = (route.distance / 1000).toFixed(1);
+                    const mins    = Math.round(route.duration / 60);
+                    const hrs     = Math.floor(mins / 60);
+                    const rem     = mins % 60;
+
+                    document.getElementById('route-distance').textContent = `${km} km`;
+                    document.getElementById('route-duration').textContent = hrs > 0 ? `${hrs} jam ${rem} mnt` : `${rem} mnt`;
+
+                    if (STATUS === 'diterima') {
+                        // Full gray route
+                        L.polyline(latLngs, { color: '#e5e7eb', weight: 7, opacity: 0.5, lineCap: 'round' }).addTo(map);
+                        const line = L.polyline(latLngs, { color: '#9ca3af', weight: 4.5, opacity: 0.92, lineCap: 'round' }).addTo(map);
+                        map.fitBounds(line.getBounds(), { padding: [36, 36] });
+                        
+                    } else if (STATUS === 'dalam_pengiriman' || STATUS === 'diambil') {
+                        // Split line into gray (passed) and blue (upcoming)
+                        let percent = STATUS === 'diambil' ? 0.05 : 0.6;
+                        let posIndex = Math.floor(latLngs.length * percent);
+                        if (posIndex >= latLngs.length) posIndex = latLngs.length - 1;
+                        if (posIndex < 0) posIndex = 0;
+                        
+                        let passedPath = latLngs.slice(0, posIndex + 1);
+                        let upcomingPath = latLngs.slice(posIndex);
+
+                        // draw gray for passed
+                        if (passedPath.length > 1) {
+                            L.polyline(passedPath, { color: '#9ca3af', weight: 4.5, opacity: 0.8, lineCap: 'round' }).addTo(map);
+                        }
+                        // draw blue for upcoming
+                        if (upcomingPath.length > 1) {
+                            L.polyline(upcomingPath, { color: '#1d4ed8', weight: 7, opacity: 0.25, lineCap: 'round' }).addTo(map);
+                            L.polyline(upcomingPath, { color: '#2563eb', weight: 4.5, opacity: 0.92, lineCap: 'round' }).addTo(map);
+                        }
+                        map.fitBounds(L.polyline(latLngs).getBounds(), { padding: [36, 36] });
+
+                        // place driver marker exactly on the route
+                        L.marker(latLngs[posIndex], { icon: driverIcon }).addTo(map).bindPopup('<b>Posisi Driver Saat Ini</b>');
+
+                    } else {
+                        // diterima_driver
+                        L.polyline(latLngs, { color: '#1d4ed8', weight: 7, opacity: 0.25, lineCap: 'round' }).addTo(map);
+                        const line = L.polyline(latLngs, { color: '#2563eb', weight: 4.5, opacity: 0.92, lineCap: 'round' }).addTo(map);
+                        map.fitBounds(line.getBounds(), { padding: [36, 36] });
+                    }
+
+                    loadingEl.classList.add('hidden');
+                    routeInfoEl.classList.add('visible');
+                })
+                .catch(() => {
+                    clearTimeout(timeoutId);
+                    drawFallbackRoute(startLat, startLng, endLat, endLng, STATUS === 'diterima');
+                });
+        }
+
+        if (STATUS === 'diterima_driver') {
+            drawOsrmRoute(driverLat, driverLng, gudangLat, gudangLng);
+        } else {
+            drawOsrmRoute(gudangLat, gudangLng, custLat, custLng);
+        }
     });
+
+
+
 
 
 
@@ -628,3 +779,4 @@
     }
 </script>
 @endpush
+

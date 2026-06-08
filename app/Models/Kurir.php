@@ -8,11 +8,7 @@ class Kurir extends Model
 {
     protected $table = 'kurir';
     protected $primaryKey = 'id_kurir';
-    protected $fillable   = [
-        'id_pengguna', 'kendaraan', 'warna_kendaraan', 'plat_nomor',
-        'id_cabang', 'pendapatan_pengiriman',
-        'status_mengirim', 'status_aktif',
-    ];
+    protected $fillable = ['id_pengguna', 'id_cabang', 'kendaraan', 'warna_kendaraan', 'plat_nomor', 'pendapatan_pengiriman', 'status_mengirim', 'status_aktif', 'driver_lat', 'driver_lng', 'location_updated_at'];
 
     protected $casts = [
         'pendapatan_pengiriman' => 'decimal:2',

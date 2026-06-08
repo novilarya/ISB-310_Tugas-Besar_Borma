@@ -423,10 +423,22 @@ class DatabaseSeeder extends Seeder
             'id_kurir' => 1,
             'id_pengguna' => 3,
             'kendaraan' => 'Motor',
-            'warna_kendaraan' => 'Merah',
-            'plat_nomor' => 'D 1234 ABC',
-            'id_cabang' => 1,
-            'pendapatan_pengiriman' => 0,
+            'warna_kendaraan' => 'Hitam',
+            'plat_nomor' => 'B 1234 ABC',
+            'pendapatan_pengiriman' => 1000000,
+            'status_mengirim' => 'Sedang Mengirim',
+            'status_aktif' => 'Aktif',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now()
+        ]);
+
+        $kurir2 = Kurir::create([
+            'id_pengguna' => $userDriver2->id_pengguna,
+            'id_cabang' => $cabangBelumadd->id_cabang,
+            'kendaraan' => 'Mobil',
+            'warna_kendaraan' => 'Putih',
+            'plat_nomor' => 'B 5678 XYZ',
+            'pendapatan_pengiriman' => 1200000,
             'status_mengirim' => 'Tidak Mengirim',
             'status_aktif' => 'Aktif',
             'created_at' => Carbon::now(),
