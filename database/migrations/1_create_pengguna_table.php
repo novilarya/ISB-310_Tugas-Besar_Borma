@@ -15,12 +15,11 @@ return new class extends Migration
             $table->id('id_pengguna');
             $table->string('nama');
             $table->string('email')->unique();
-            $table->string('password');
+            $table->string('google_id')->nullable();
+            $table->string('password')->nullable();
             $table->string('no_telepon');
             $table->enum('role', ['Pelanggan', 'Admin Super', 'Admin Cabang', 'Kurir']);
             $table->json('settings')->nullable();
-            $table->string('google_id')->nullable()->after('email');
-            $table->string('password')->nullable()->change();
             $table->timestamps();
         });
     }

@@ -27,26 +27,38 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-
-            $user = Auth::user();
+        if (Auth::validate($credentials)) {
+            $user = Auth::getProvider()->retrieveByCredentials($credentials);
             $role = strtolower($user->role);
 
-            switch (true) {
-                case in_array($role, ['super admin', 'admin super', 'staf operasional']):
-                    return redirect()->intended('superadmin/dashboard');
-                case in_array($role, ['admin cabang', 'admin']):
-                    return redirect()->intended('admin-cabang/dashboard');
-                case in_array($role, ['kurir', 'driver']):
-                    return redirect()->intended('driver/dashboard');
-                case $role === 'pelanggan':
-                default:
-                    Auth::logout();
-                    return back()->withErrors([
-                        'email' => 'Role Anda tidak memiliki akses ke sistem internal.',
-                    ]);
+            if ($role === 'pelanggan') {
+                return back()->withErrors([
+                    'email' => 'Role Anda tidak memiliki akses ke sistem internal.',
+                ])->onlyInput('email');
             }
+
+            // Generate OTP
+            $otp = rand(100000, 999999);
+
+            // Store in session
+            session([
+                'otp_code' => $otp,
+                'otp_expires_at' => now()->addMinutes(5),
+                'otp_email' => $user->email,
+                'otp_action' => 'login_internal',
+                'otp_user_id' => $user->id_pengguna
+            ]);
+
+            // Send Email
+            try {
+                Mail::raw("Halo! Kode OTP Anda untuk masuk ke Portal Internal Borma Toserba adalah: $otp. Kode ini berlaku selama 5 menit.", function($message) use ($user) {
+                    $message->to($user->email)->subject('Kode OTP Internal Login - Borma Toserba');
+                });
+            } catch (\Exception $e) {
+                Log::error('Gagal mengirim OTP internal login ke ' . $user->email . ': ' . $e->getMessage());
+            }
+
+            return redirect()->route('auth.otp');
         }
 
         return back()->withErrors([
@@ -87,9 +99,31 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->intended(route('pelanggan.dashboard'));
+        if (Auth::validate($credentials)) {
+            $user = Auth::getProvider()->retrieveByCredentials($credentials);
+
+            // Generate OTP
+            $otp = rand(100000, 999999);
+
+            // Store in session
+            session([
+                'otp_code' => $otp,
+                'otp_expires_at' => now()->addMinutes(5),
+                'otp_email' => $user->email,
+                'otp_action' => 'login',
+                'otp_user_id' => $user->id_pengguna
+            ]);
+
+            // Send Email
+            try {
+                Mail::raw("Halo! Kode OTP Anda untuk masuk ke Borma Toserba adalah: $otp. Kode ini berlaku selama 5 menit.", function($message) use ($user) {
+                    $message->to($user->email)->subject('Kode OTP Login - Borma Toserba');
+                });
+            } catch (\Exception $e) {
+                Log::error('Gagal mengirim OTP login ke ' . $user->email . ': ' . $e->getMessage());
+            }
+
+            return redirect()->route('auth.otp');
         }
 
         return back()->withErrors([
@@ -274,19 +308,32 @@ class AuthController extends Controller
                 Log::error('Error registering user via OTP: ' . $e->getMessage());
                 return redirect()->route('register')->withErrors(['error' => 'Terjadi kesalahan saat menyimpan data. Silakan coba lagi.']);
             }
-        } elseif ($action === 'login') {
+        } elseif ($action === 'login' || $action === 'login_internal') {
             $userId = session('otp_user_id');
             $user = User::find($userId);
 
             if (!$user) {
-                return redirect()->route('login')->withErrors(['email' => 'User tidak ditemukan.']);
+                $loginRoute = $action === 'login_internal' ? 'internal.login' : 'login';
+                return redirect()->route($loginRoute)->withErrors(['email' => 'User tidak ditemukan.']);
             }
 
             // Clear session
             session()->forget(['otp_code', 'otp_expires_at', 'otp_email', 'otp_action', 'otp_user_id']);
 
             Auth::login($user);
-            return redirect()->route('pelanggan.dashboard')->with('success', 'Berhasil masuk.');
+            $request->session()->regenerate();
+
+            $role = strtolower($user->role);
+            
+            if (in_array($role, ['super admin', 'admin super', 'staf operasional'])) {
+                return redirect()->intended(route('superadmin.dashboard'))->with('success', 'Berhasil masuk ke portal internal.');
+            } elseif (in_array($role, ['admin cabang', 'admin'])) {
+                return redirect()->intended(route('admin-cabang.dashboard'))->with('success', 'Berhasil masuk ke portal internal.');
+            } elseif (in_array($role, ['kurir', 'driver'])) {
+                return redirect()->intended(route('driver.dashboard'))->with('success', 'Berhasil masuk ke portal internal.');
+            }
+
+            return redirect()->intended(route('pelanggan.dashboard'))->with('success', 'Berhasil masuk.');
         }
 
         return redirect()->route('login');

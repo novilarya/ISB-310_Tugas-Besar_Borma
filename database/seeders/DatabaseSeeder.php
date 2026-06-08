@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             [
                 'id_pengguna' => 1,
                 'nama' => 'Super Admin 1',
-                'email' => 'superadmin@gmail.com',
+                // 'email' => 'isi email sendiri@gmail.com',
                 'password' => Hash::make('12345678'),
                 'no_telepon' => '081234567891',
                 'role' => 'Admin Super',
@@ -422,6 +422,7 @@ class DatabaseSeeder extends Seeder
         DB::table('kurir')->insert([
             'id_kurir' => 1,
             'id_pengguna' => 3,
+            'id_cabang' => 1,
             'kendaraan' => 'Motor',
             'warna_kendaraan' => 'Hitam',
             'plat_nomor' => 'B 1234 ABC',
@@ -431,20 +432,6 @@ class DatabaseSeeder extends Seeder
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ]);
-
-        $kurir2 = Kurir::create([
-            'id_pengguna' => $userDriver2->id_pengguna,
-            'id_cabang' => $cabangBelumadd->id_cabang,
-            'kendaraan' => 'Mobil',
-            'warna_kendaraan' => 'Putih',
-            'plat_nomor' => 'B 5678 XYZ',
-            'pendapatan_pengiriman' => 1200000,
-            'status_mengirim' => 'Tidak Mengirim',
-            'status_aktif' => 'Aktif',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now()
-        ]);
-        
         // 8. Data Transaksi Pesanan
         DB::table('pesanan')->insert([
             [
