@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('no_telepon');
             $table->enum('role', ['Pelanggan', 'Admin Super', 'Admin Cabang', 'Kurir']);
             $table->json('settings')->nullable();
+            $table->string('google_id')->nullable()->after('email');
+            $table->string('password')->nullable()->change();
             $table->timestamps();
         });
     }

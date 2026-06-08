@@ -99,17 +99,25 @@
             </a>
             @endif
 
+            <div class="pt-4 mt-4 border-t border-slate-200 dark:border-white/10">
+                <p class="px-4 text-xs font-semibold text-slate-400 dark:text-white/40 uppercase tracking-wider mb-2">Pengaturan</p>
+                @if(auth()->user()->canAccessMenu('admincabang_pengaturan'))
+                <a href="{{ route('admin-cabang.pengaturan') }}" class="{{ request()->routeIs('admin-cabang.pengaturan*') ? 'flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-borma-purple dark:text-borma-yellow border border-slate-200 dark:border-white/10 font-bold transition-all' : 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-borma-purple dark:hover:text-white font-medium transition-all' }}">
+                    <i class="fa-solid fa-gear w-5"></i> Pengaturan
+                </a>
+                @endif
+            </div>
+
         @endif
     </nav>
 
-    @if(in_array(strtolower(auth()->user()->role), ['super admin', 'admin super', 'staf operasional']))
     <div class="p-4 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/20">
         <div class="flex items-center gap-3 bg-white dark:bg-white/5 p-3 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none">
             <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-borma-yellow/20 flex items-center justify-center font-bold text-borma-purple dark:text-borma-yellow text-sm">
-                {{ strtoupper(substr(auth()->user()->nama ?? 'AC', 0, 2)) }}
+                {{ strtoupper(substr(auth()->user()->nama ?? (in_array(strtolower(auth()->user()->role), ['super admin', 'admin super', 'staf operasional']) ? 'SA' : 'AC'), 0, 2)) }}
             </div>
             <div class="flex-1 min-w-0">
-                <p class="text-sm font-bold text-slate-800 dark:text-white truncate">{{ auth()->user()->nama ?? 'Admin' }}</p>
+                <p class="text-sm font-bold text-slate-800 dark:text-white truncate">{{ auth()->user()->nama ?? (in_array(strtolower(auth()->user()->role), ['super admin', 'admin super', 'staf operasional']) ? 'Super Admin' : 'Admin Cabang') }}</p>
                 <p class="text-xs text-slate-500 dark:text-white/60 truncate">{{ auth()->user()->role ?? 'Admin' }}</p>
             </div>
             <form action="{{ route('internal.logout') }}" method="POST" class="m-0 p-0 flex items-center">
@@ -120,5 +128,4 @@
             </form>
         </div>
     </div>
-    @endif
 </aside>
