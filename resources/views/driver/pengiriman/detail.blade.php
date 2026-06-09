@@ -204,6 +204,7 @@
 
     .legend-dot.gudang { background: var(--color-primary); }
     .legend-dot.customer { background: var(--color-tertiary); }
+    .legend-dot.driver { background: #22c55e; }
 
     /* ================================================
        INFO GRID (Customer + Ringkasan Item)
@@ -732,6 +733,10 @@
         <div id="delivery-map"></div>
     </div>
     <div class="map-legend">
+        <div class="map-legend-item">
+            <span class="legend-dot driver"></span>
+            Driver
+        </div>
         <div class="map-legend-item">
             <span class="legend-dot gudang"></span>
             Gudang

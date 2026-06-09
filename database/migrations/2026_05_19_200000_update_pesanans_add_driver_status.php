@@ -17,11 +17,11 @@ return new class extends Migration
         DB::statement("ALTER TABLE pesanans MODIFY COLUMN status_pesanan VARCHAR(255)");
 
         // Update data to match new enum
-        DB::statement("UPDATE pesanans SET status_pesanan = 'pending' WHERE status_pesanan = 'menunggu'");
+        DB::statement("UPDATE pesanans SET status_pesanan = 'mencari_driver' WHERE status_pesanan = 'menunggu'");
         DB::statement("UPDATE pesanans SET status_pesanan = 'gagal' WHERE status_pesanan = 'gagal_kirim'");
 
         // Update enum status_pesanan to include new statuses
-        DB::statement("ALTER TABLE pesanans MODIFY COLUMN status_pesanan ENUM('pending','diterima_driver','ditolak_driver','diambil','dalam_pengiriman','diterima','gagal') DEFAULT 'pending'");
+        DB::statement("ALTER TABLE pesanans MODIFY COLUMN status_pesanan ENUM('mencari_driver','diterima_driver','ditolak_driver','diambil','dalam_pengiriman','diterima','gagal') DEFAULT 'mencari_driver'");
 
         // Add new columns for delivery details
         Schema::table('pesanans', function (Blueprint $table) {
@@ -48,7 +48,7 @@ return new class extends Migration
 
         // Revert data
         DB::statement("UPDATE pesanans SET status_pesanan = 'diambil' WHERE status_pesanan = 'diterima_driver'");
-        DB::statement("UPDATE pesanans SET status_pesanan = 'menunggu' WHERE status_pesanan IN ('ditolak_driver', 'pending')");
+        DB::statement("UPDATE pesanans SET status_pesanan = 'menunggu' WHERE status_pesanan IN ('ditolak_driver', 'mencari_driver')");
         DB::statement("UPDATE pesanans SET status_pesanan = 'gagal_kirim' WHERE status_pesanan = 'gagal'");
 
         // Then modify enum back to old values

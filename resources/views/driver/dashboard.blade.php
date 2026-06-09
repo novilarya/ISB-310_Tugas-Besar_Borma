@@ -510,7 +510,7 @@
     <p class="greeting-label">Selamat datang,</p>
     <h1 class="driver-name">{{ strtoupper(Auth::check() ? Auth::user()->nama : ($kurir->user->nama ?? 'DRIVER')) }}</h1>
     <p class="driver-cabang">
-        Cabang: <span>{{ strtoupper($kurir->cabang->nama_cabang ?? 'Tidak Diketahui') }} — {{ $kurir->kode_driver ?? '-' }}</span>
+        Cabang: <span>{{ strtoupper($kurir->cabang->nama_cabang ?? 'Tidak Diketahui') }}</span>
     </p>
 </div>
 

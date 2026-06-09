@@ -276,18 +276,6 @@
 
 @section('content')
 
-{{-- ===== DRIVER INFO ===== --}}
-@if($kurir)
-<div class="driver-info-section fade-up" style="margin-bottom: 24px;">
-    <p style="font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 4px;">Driver Anda</p>
-    <h2 style="font-family: var(--font-headline); font-size: 24px; font-weight: 800; color: var(--color-neutral); text-transform: uppercase; margin-bottom: 8px;">
-        {{ strtoupper($kurir->user->nama ?? 'DRIVER') }}
-    </h2>
-    <p style="font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-text-muted);">
-        Cabang: <span style="color: var(--color-primary);">{{ strtoupper($kurir->cabang->nama_cabang ?? 'Tidak Diketahui') }} — {{ $kurir->kode_driver ?? '-' }}</span>
-    </p>
-</div>
-@endif
 
 {{-- ===== HEADING ===== --}}
 <div class="page-heading fade-up delay-1">
@@ -295,16 +283,14 @@
     <p>Log aktivitas pengiriman selesai dan gagal.</p>
 </div>
 
-{{-- ===== FILTER TABS ===== --}}
-<div class="filter-tabs fade-up delay-2">
-    <a href="{{ route('driver.riwayat.index') }}"
-       class="filter-tab {{ !request('status') ? 'active' : '' }}">Semua</a>
-    <a href="{{ route('driver.riwayat.index', ['status' => 'diterima']) }}"
-       class="filter-tab {{ request('status') == 'diterima' ? 'active' : '' }}">Diterima</a>
-    <a href="{{ route('driver.riwayat.index', ['status' => 'gagal']) }}"
-       class="filter-tab {{ request('status') == 'gagal' ? 'active' : '' }}">Gagal Kirim</a>
-    <a href="{{ route('driver.riwayat.index', ['status' => 'ditolak_driver']) }}"
-       class="filter-tab {{ request('status') == 'ditolak_driver' ? 'active' : '' }}">Ditolak</a>
+{{-- ===== FILTER DROPDOWN ===== --}}
+<div class="filter-dropdown fade-up delay-2" style="margin-bottom: 20px;">
+    <select onchange="window.location.href=this.value" style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1.5px solid var(--color-border); background: var(--color-surface); font-family: var(--font-body); font-size: 13px; color: var(--color-neutral); outline: none; cursor: pointer;">
+        <option value="{{ route('driver.riwayat.index') }}" {{ !request('status') ? 'selected' : '' }}>Semua</option>
+        <option value="{{ route('driver.riwayat.index', ['status' => 'diterima']) }}" {{ request('status') == 'diterima' ? 'selected' : '' }}>Diterima</option>
+        <option value="{{ route('driver.riwayat.index', ['status' => 'gagal']) }}" {{ request('status') == 'gagal' ? 'selected' : '' }}>Gagal Kirim</option>
+        <option value="{{ route('driver.riwayat.index', ['status' => 'ditolak_driver']) }}" {{ request('status') == 'ditolak_driver' ? 'selected' : '' }}>Ditolak</option>
+    </select>
 </div>
 
 {{-- ===== RIWAYAT LIST ===== --}}

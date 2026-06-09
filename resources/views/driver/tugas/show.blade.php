@@ -300,6 +300,7 @@
 
     .legend-dot.gudang { background: var(--color-primary); }
     .legend-dot.customer { background: var(--color-tertiary); }
+    .legend-dot.driver { background: #22c55e; }
 
     .legend-route {
         display: inline-flex;
@@ -698,21 +699,28 @@
     ================================================ */
     .status-buttons {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 8px;
+        gap: 12px;
         margin-bottom: 8px;
     }
 
+    .status-buttons.single {
+        grid-template-columns: 1fr;
+    }
+
+    .status-buttons.double {
+        grid-template-columns: 2fr 1fr;
+    }
+
     @media (max-width: 480px) {
-        .status-buttons { grid-template-columns: repeat(2, 1fr); }
+        .status-buttons.double { grid-template-columns: 1fr; }
     }
 
     .status-btn {
-        padding: 12px 6px;
+        padding: 14px 12px;
         border: 1.5px solid var(--color-border);
         border-radius: var(--radius-sm);
         font-family: var(--font-headline);
-        font-size: 10px;
+        font-size: 11px;
         font-weight: 700;
         letter-spacing: 0.08em;
         text-transform: uppercase;
@@ -723,17 +731,16 @@
         transition: all 0.2s;
     }
 
-    .status-btn:hover {
-        background: var(--color-primary-pale);
+    .status-btn-main {
+        background: var(--color-primary);
+        color: white;
         border-color: var(--color-primary);
-        color: var(--color-primary);
     }
 
-    .status-btn.active-status {
-        background: var(--color-primary);
-        border-color: var(--color-primary);
+    .status-btn-main:hover {
+        background: var(--color-primary-light, #4A1D9A);
+        border-color: var(--color-primary-light, #4A1D9A);
         color: white;
-        pointer-events: none;
     }
 
     .status-btn.btn-gagal {
@@ -741,10 +748,8 @@
         color: var(--color-tertiary);
     }
 
-    .status-btn.btn-gagal:hover,
-    .status-btn.btn-gagal.active-status {
+    .status-btn.btn-gagal:hover {
         background: var(--color-tertiary);
-        border-color: var(--color-tertiary);
         color: white;
     }
 
@@ -865,6 +870,10 @@
         </div>
     </div>
     <div class="map-legend">
+        <div class="map-legend-item">
+            <span class="legend-dot driver"></span>
+            Driver
+        </div>
         <div class="map-legend-item">
             <span class="legend-dot gudang"></span>
             Gudang
@@ -1034,24 +1043,38 @@
 @endif
 
 {{-- ===== STATUS BUTTONS ===== --}}
-<div class="status-buttons fade-up delay-5" id="status-buttons">
-    <button type="button" class="status-btn {{ $pesanan->status_pesanan == 'diambil' ? 'active-status' : '' }}"
-            onclick="updateStatus('diambil')" data-status="diambil">
-        Diambil
+@if(in_array($pesanan->status_pesanan, ['diterima_driver', 'diambil', 'dalam_pengiriman']))
+@php
+    $btnAction = '';
+    $btnText = '';
+    if ($pesanan->status_pesanan == 'diterima_driver') {
+        $btnAction = "updateStatus('diambil')";
+        $btnText = 'Ambil Pesanan';
+    } elseif ($pesanan->status_pesanan == 'diambil') {
+        $btnAction = "updateStatus('dalam_pengiriman')";
+        $btnText = 'Mulai Pengiriman';
+    } elseif ($pesanan->status_pesanan == 'dalam_pengiriman') {
+        $btnAction = "openBuktiModal()";
+        $btnText = 'Selesaikan Pengiriman';
+    }
+    
+    $isTahapAkhir = $pesanan->status_pesanan == 'dalam_pengiriman';
+@endphp
+
+<div class="status-buttons {{ $isTahapAkhir ? 'double' : 'single' }} fade-up delay-5" id="status-buttons">
+    <button type="button" class="status-btn status-btn-main"
+            onclick="{{ $btnAction }}">
+        <i class="bi bi-arrow-right-circle" style="margin-right: 6px;"></i> {{ $btnText }}
     </button>
-    <button type="button" class="status-btn {{ $pesanan->status_pesanan == 'dalam_pengiriman' ? 'active-status' : '' }}"
-            onclick="updateStatus('dalam_pengiriman')" data-status="dalam_pengiriman">
-        Dalam Pengiriman
+    
+    @if($isTahapAkhir)
+    <button type="button" class="status-btn btn-gagal"
+            onclick="updateStatusGagal()">
+        <i class="bi bi-x-circle" style="margin-right: 6px;"></i> Gagal Kirim
     </button>
-    <button type="button" class="status-btn {{ $pesanan->status_pesanan == 'diterima' ? 'active-status' : '' }}"
-            onclick="openBuktiModal()" data-status="diterima">
-        Diterima
-    </button>
-    <button type="button" class="status-btn btn-gagal {{ $pesanan->status_pesanan == 'gagal' ? 'active-status' : '' }}"
-            onclick="updateStatusGagal()" data-status="gagal">
-        Gagal Kirim
-    </button>
+    @endif
 </div>
+@endif
 
 @endsection
 

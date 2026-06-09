@@ -234,11 +234,6 @@
                 <span class="brand-sub">@yield('header_sub', 'Driver Panel')</span>
             </div>
         @endif
-
-        <button class="btn-notif" id="btn-notif" title="Notifikasi">
-            <i class="bi bi-bell"></i>
-            <span class="notif-badge"></span>
-        </button>
     </header>
 
     {{-- ===== MAIN CONTENT ===== --}}
@@ -253,6 +248,12 @@
            id="nav-dashboard">
             <i class="bi bi-speedometer2"></i>
             <span>Dashboard</span>
+        </a>
+        <a href="{{ route('driver.tugas.index') }}"
+           class="nav-item {{ request()->routeIs('driver.tugas.*') ? 'active' : '' }}"
+           id="nav-tugas">
+            <i class="bi bi-list-task"></i>
+            <span>Tugas</span>
         </a>
         <a href="{{ route('driver.riwayat.index') }}"
            class="nav-item {{ request()->routeIs('driver.riwayat.*') ? 'active' : '' }}"
