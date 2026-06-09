@@ -30,7 +30,7 @@
                 <i class="fa-solid fa-bell"></i>
                 <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 dark:bg-borma-yellow rounded-full badge-notif"></span>
             </button>
-            <div id="notif-dropdown-menu" class="hidden absolute right-0 p-0 border border-slate-200 dark:border-white/10 bg-white dark:bg-borma-dark shadow-xl rounded-2xl overflow-hidden z-50" style="width: 320px; margin-top: 12px;">
+            <div id="notif-dropdown-menu" class="hidden absolute right-0 p-0 border border-slate-200 dark:border-white/10 bg-white dark:bg-borma-dark shadow-xl rounded-2xl overflow-hidden z-50 w-[320px] mt-3">
                 <div class="p-4 border-b border-slate-200 dark:border-white/10 flex justify-between items-center bg-slate-50 dark:bg-black/20">
                     <h6 class="m-0 font-bold text-slate-800 dark:text-white text-sm">Notifikasi</h6>
                     <div class="flex items-center gap-2">
@@ -134,7 +134,7 @@
                 </div>
                 <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 dark:text-white/40 ml-1"></i>
             </div>
-            <ul class="dropdown-menu dropdown-menu-end p-2 border border-slate-200 dark:border-white/10 bg-white dark:bg-borma-dark shadow-xl rounded-2xl overflow-hidden" style="width: 220px; margin-top: 12px;">
+            <ul class="dropdown-menu dropdown-menu-end p-2 border border-slate-200 dark:border-white/10 bg-white dark:bg-borma-dark shadow-xl rounded-2xl overflow-hidden w-[220px] mt-3">
                 <div class="px-3 py-2 border-b border-slate-100 dark:divide-white/5 mb-2">
                     <p class="text-[9px] text-slate-400 dark:text-white/40 uppercase tracking-wider font-bold">Login Sebagai</p>
                     <p class="text-xs font-bold text-slate-700 dark:text-white truncate">{{ auth()->user()->email ?? 'admin@borma.co.id' }}</p>

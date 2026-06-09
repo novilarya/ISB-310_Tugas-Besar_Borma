@@ -208,10 +208,6 @@
 
 </div>
 
-<style>
-.dropdown-loading { position: relative; }
-.dropdown-loading::after { content: 'Memuat...'; position: absolute; right: 36px; top: 50%; transform: translateY(-50%); font-size: 11px; color: #a3a3a3; pointer-events: none; }
-</style>
 @endsection
 
 @push('scripts')

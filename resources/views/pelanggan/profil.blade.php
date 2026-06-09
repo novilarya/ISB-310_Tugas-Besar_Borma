@@ -582,35 +582,6 @@
             </div>
         </div>
     </div>
-
-    <style>
-        @keyframes successCheckDraw {
-            0% { stroke-dashoffset: 30; }
-            100% { stroke-dashoffset: 0; }
-        }
-        @keyframes successPulse {
-            0% { transform: scale(1); opacity: 0.6; }
-            100% { transform: scale(1.5); opacity: 0; }
-        }
-        @keyframes fadeInUp {
-            0% { opacity: 0; transform: translateY(20px) scale(0.95); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .animate-fade-in-up {
-            animation: fadeInUp 0.4s ease-out;
-        }
-        .success-check-path {
-            stroke-dasharray: 30;
-            stroke-dashoffset: 30;
-        }
-        .success-checkmark-icon.animate .success-check-path {
-            animation: successCheckDraw 0.5s ease-out 0.3s forwards;
-        }
-        .success-pulse-ring.animate {
-            animation: successPulse 1s ease-out 0.5s forwards;
-        }
-    </style>
-
 </div>
 @endsection
 

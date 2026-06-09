@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             [
                 'id_pengguna' => 1,
                 'nama' => 'Super Admin 1',
-                // 'email' => 'isi email sendiri@gmail.com',
+                'email' => 'boxcraft80@gmail.com',
                 'password' => Hash::make('12345678'),
                 'no_telepon' => '081234567891',
                 'role' => 'Admin Super',
@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
             [
                 'id_pengguna' => 2,
                 'nama' => 'Admin Cabang 1',
-                'email' => 'admincabang@gmail.com',
+                'email' => 'muhammadhafiz2102@gmail.com',
                 'password' => Hash::make('12345678'),
                 'no_telepon' => '081234567892',
                 'role' => 'Admin Cabang',
@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
             [
                 'id_pengguna' => 3,
                 'nama' => 'Kurir 1',
-                'email' => 'kurir@gmail.com',
+                'email' => 'mj9603488@gmail.com',
                 'password' => Hash::make('12345678'),
                 'no_telepon' => '081234567893',
                 'role' => 'Kurir',
@@ -221,202 +221,265 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // 5. Data Master Produk
-        DB::table('produk')->insert([
+        $originalProducts = [
             [
                 'id_produk' => 1,
                 'nama_produk' => 'Beras Premium 10kg',
-                'kategori' => 'Bahan Pokok',
+                'kategori' => 'Sembako & Bahan Pokok',
                 'deskripsi' => 'Beras premium kualitas terbaik dengan berat 10kg',
                 'harga_reguler' => 240000,
                 'harga_member' => 235000,
                 'gambar_produk' => 'produk1.jpg',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
             ],
             [
                 'id_produk' => 2,   
                 'nama_produk' => 'Minyak Goreng Sania 2L',
-                'kategori' => 'Bahan Pokok',
+                'kategori' => 'Sembako & Bahan Pokok',
                 'deskripsi' => 'Minyak goreng berkualitas dengan berat 2L',
                 'harga_reguler' => 35000,
                 'harga_member' => 33000,
                 'gambar_produk' => 'produk2.jpg',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
             ],
             [
                 'id_produk' => 3,   
                 'nama_produk' => 'Gula Pasir Gulaku 1kg',
-                'kategori' => 'Bahan Pokok',
+                'kategori' => 'Sembako & Bahan Pokok',
                 'deskripsi' => 'Gula pasir berkualitas dengan berat 1kg',
                 'harga_reguler' => 17000,
                 'harga_member' => 15000,
                 'gambar_produk' => 'produk3.jpg',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
             ],
             [
                 'id_produk' => 4,   
                 'nama_produk' => 'Telur Ayam Negeri 1kg',
-                'kategori' => 'Bahan Pokok',
+                'kategori' => 'Sembako & Bahan Pokok',
                 'deskripsi' => 'Telur ayam negeri berkualitas dengan berat 1kg',
                 'harga_reguler' => 28000,
                 'harga_member' => 26000,
                 'gambar_produk' => 'produk4.jpg',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
             ],
             [
                 'id_produk' => 5,   
                 'nama_produk' => 'Daging Sapi Murni 1kg',
-                'kategori' => 'Bahan Pokok',
+                'kategori' => 'Daging & Ikan',
                 'deskripsi' => 'Daging sapi murni kualitas terbaik dengan berat 1kg',
                 'harga_reguler' => 130000,
                 'harga_member' => 125000,
                 'gambar_produk' => 'produk5.jpg',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
             ],
             [
                 'id_produk' => 6,   
                 'nama_produk' => 'Ayam Broiler Utuh 1kg',
-                'kategori' => 'Bahan Pokok',
+                'kategori' => 'Daging & Ikan',
                 'deskripsi' => 'Ayam broiler utuh kualitas terbaik dengan berat 1kg',
                 'harga_reguler' => 45000,
                 'harga_member' => 42000,
                 'gambar_produk' => 'produk6.jpg',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
             ],
             [
                 'id_produk' => 7,   
                 'nama_produk' => 'Ikan Mas',
-                'kategori' => 'Bahan Pokok',
+                'kategori' => 'Daging & Ikan',
                 'deskripsi' => 'Ikan mas kualitas segar dengan berat 1kg',
                 'harga_reguler' => 55000,
                 'harga_member' => 52000,
                 'gambar_produk' => 'produk7.jpg',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
             ],
             [
                 'id_produk' => 8,   
                 'nama_produk' => 'Udang',
-                'kategori' => 'Bahan Pokok',
+                'kategori' => 'Daging & Ikan',
                 'deskripsi' => 'Udang segar kualitas premium dengan berat 1kg',
                 'harga_reguler' => 85000,
                 'harga_member' => 82000,
                 'gambar_produk' => 'produk8.jpg',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
             ],
             [
                 'id_produk' => 9,   
                 'nama_produk' => 'Sosis Sapi',
-                'kategori' => 'Olahan Daging',
+                'kategori' => 'Daging & Ikan',
                 'deskripsi' => 'Sosis sapi kualitas premium dengan berat 500gr',
                 'harga_reguler' => 45000,
                 'harga_member' => 42000,
                 'gambar_produk' => 'produk9.jpg',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
             ],
             [
                 'id_produk' => 10,   
                 'nama_produk' => 'Bakso Sapi',
-                'kategori' => 'Olahan Daging',
+                'kategori' => 'Daging & Ikan',
                 'deskripsi' => 'Bakso sapi kualitas premium dengan berat 500gr',
                 'harga_reguler' => 55000,
                 'harga_member' => 52000,
                 'gambar_produk' => 'produk10.jpg',
+            ],
+        ];
+
+        $catalogProducts = [
+            // Sembako (10 products)
+            ['name' => 'Beras Pandan Wangi 5kg', 'cat' => 'Sembako & Bahan Pokok', 'price' => 78000, 'sale' => 72000, 'img' => 'beras-wangi-5kg.jpg'],
+            ['name' => 'Minyak Goreng Bimoli 2L', 'cat' => 'Sembako & Bahan Pokok', 'price' => 45000, 'sale' => 32500, 'img' => 'minyak-bimoli-2lt.avif'],
+            ['name' => 'Gulaku Pasir 1kg', 'cat' => 'Sembako & Bahan Pokok', 'price' => 18000, 'sale' => 0, 'img' => 'gulaku-pasir-1kg.jpg'],
+            ['name' => 'Tepung Terigu Segitiga Biru 1kg', 'cat' => 'Sembako & Bahan Pokok', 'price' => 14500, 'sale' => 0, 'img' => 'tepung-segitigabiru-1kg.jpg'],
+            ['name' => 'Mie Instan Sedap Goreng (5pcs)', 'cat' => 'Sembako & Bahan Pokok', 'price' => 15000, 'sale' => 12500, 'img' => 'miesedap-isi5.jpg'],
+            ['name' => 'Kecap Manis ABC 130ml', 'cat' => 'Sembako & Bahan Pokok', 'price' => 22000, 'sale' => 0, 'img' => 'kecapmaniABC130ml.jpg'],
+            ['name' => 'Telur Ayam 1kg', 'cat' => 'Sembako & Bahan Pokok', 'price' => 28000, 'sale' => 26000, 'img' => 'telurayam-1kg.jpg'],
+            ['name' => 'Garam Dapur Cap Kapal 500g', 'cat' => 'Sembako & Bahan Pokok', 'price' => 5000, 'sale' => 0, 'img' => 'garamdapur-500gr.jpg'],
+            ['name' => 'Santan Kara 200ml', 'cat' => 'Sembako & Bahan Pokok', 'price' => 8500, 'sale' => 7000, 'img' => 'santankara-200ml.jpg'],
+            ['name' => 'Saus Tomat ABC 335ml', 'cat' => 'Sembako & Bahan Pokok', 'price' => 12000, 'sale' => 0, 'img' => 'saustomatABC-335ml.jpg'],
+
+            // Sayur & Buah (11 products)
+            ['name' => 'Apel Fuji Premium 1kg', 'cat' => 'Sayur & Buah', 'price' => 45000, 'sale' => 36000, 'img' => 'apelfuji-1kg.jpg'],
+            ['name' => 'Wortel Lokal Organik 500g', 'cat' => 'Sayur & Buah', 'price' => 12000, 'sale' => 0, 'img' => 'wortel500gr.jpg'],
+            ['name' => 'Pisang Cavendish (Sisir)', 'cat' => 'Sayur & Buah', 'price' => 25000, 'sale' => 0, 'img' => 'pisang.jpg'],
+            ['name' => 'Brokoli Segar 250g', 'cat' => 'Sayur & Buah', 'price' => 39000, 'sale' => 0, 'img' => 'brokoli-250gr.jpg'],
+            ['name' => 'Bayam Petik (Ikat)', 'cat' => 'Sayur & Buah', 'price' => 4500, 'sale' => 0, 'img' => 'bayam.jpg'],
+            ['name' => 'Strawberry Korea (Box)', 'cat' => 'Sayur & Buah', 'price' => 85000, 'sale' => 75000, 'img' => 'strawberrybox.jpg'],
+            ['name' => 'Tomat Merah 500g', 'cat' => 'Sayur & Buah', 'price' => 10000, 'sale' => 0, 'img' => 'tomatmerah500gr.jpg'],
+            ['name' => 'Jeruk Sunkist 1kg', 'cat' => 'Sayur & Buah', 'price' => 35000, 'sale' => 30000, 'img' => 'jeruksunkist.jpg'],
+            ['name' => 'Kentang Dieng 1kg', 'cat' => 'Sayur & Buah', 'price' => 16000, 'sale' => 0, 'img' => 'kentang1kg.jpg'],
+            ['name' => 'Kangkung Segar (Ikat)', 'cat' => 'Sayur & Buah', 'price' => 3500, 'sale' => 0, 'img' => 'kangkung.jpg'],
+            ['name' => 'Mangga Harum Manis 1kg', 'cat' => 'Sayur & Buah', 'price' => 28000, 'sale' => 24000, 'img' => 'manggaharummanis.jpg'],
+
+            // Daging & Ikan (10 products)
+            ['name' => 'Daging Sapi Has Dalam 500g', 'cat' => 'Daging & Ikan', 'price' => 75000, 'sale' => 0, 'img' => 'daginghasdalam.jpg'],
+            ['name' => 'Ayam Potong Broiler 1kg', 'cat' => 'Daging & Ikan', 'price' => 38000, 'sale' => 34000, 'img' => 'ayampotong.jpg'],
+            ['name' => 'Ikan Salmon Fillet 200g', 'cat' => 'Daging & Ikan', 'price' => 65000, 'sale' => 0, 'img' => 'salmonfillet.jpg'],
+            ['name' => 'Udang Vaname 500g', 'cat' => 'Daging & Ikan', 'price' => 55000, 'sale' => 48000, 'img' => 'udangvaname.jpg'],
+            ['name' => 'Bakso Sapi Sule Kemasan 500g', 'cat' => 'Daging & Ikan', 'price' => 32000, 'sale' => 0, 'img' => 'baksosapipolos.jpg'],
+            ['name' => 'Ikan Tuna Fillet 300g', 'cat' => 'Daging & Ikan', 'price' => 42000, 'sale' => 0, 'img' => 'ikantunafillet.jpg'],
+            ['name' => 'Sosis Ayam So Nice 375g', 'cat' => 'Daging & Ikan', 'price' => 25000, 'sale' => 22000, 'img' => 'sosissonice.jpg'],
+            ['name' => 'Nugget Fiesta 500g', 'cat' => 'Daging & Ikan', 'price' => 38000, 'sale' => 0, 'img' => 'nuggetfiesta.jpg'],
+            ['name' => 'Cumi-Cumi Segar 500g', 'cat' => 'Daging & Ikan', 'price' => 45000, 'sale' => 0, 'img' => 'cumicumi.jpg'],
+            ['name' => 'Daging Giling Sapi 500g', 'cat' => 'Daging & Ikan', 'price' => 60000, 'sale' => 55000, 'img' => 'daginggiling.jpg'],
+
+            // Susu & Olahan (10 products)
+            ['name' => 'Susu Ultra Milk Full Cream 1L', 'cat' => 'Susu & Olahan', 'price' => 21000, 'sale' => 18500, 'img' => 'susuultramilk.jpg'],
+            ['name' => 'Keju Kraft Cheddar 165g', 'cat' => 'Susu & Olahan', 'price' => 18000, 'sale' => 0, 'img' => 'kejucheddar.jpg'],
+            ['name' => 'Yogurt Cimory 250ml', 'cat' => 'Susu & Olahan', 'price' => 12000, 'sale' => 10000, 'img' => 'yoghurtplain.jpg'],
+            ['name' => 'Mentega Blue Band 200g', 'cat' => 'Susu & Olahan', 'price' => 15000, 'sale' => 0, 'img' => 'blueband.jpg'],
+            ['name' => 'Susu Kental Manis Frisian Flag 370g', 'cat' => 'Susu & Olahan', 'price' => 14000, 'sale' => 0, 'img' => 'susukental.jpg'],
+            ['name' => 'Susu Indomilk Coklat 1L', 'cat' => 'Susu & Olahan', 'price' => 19000, 'sale' => 0, 'img' => 'indomilkcoklat.jpg'],
+            ['name' => 'Keju Mozzarella Greenfields 200g', 'cat' => 'Susu & Olahan', 'price' => 35000, 'sale' => 30000, 'img' => 'kejumozza.jpg'],
+            ['name' => 'Cream Cheese Yummy 250g', 'cat' => 'Susu & Olahan', 'price' => 42000, 'sale' => 0, 'img' => 'krimkeju.jpg'],
+            ['name' => 'Susu Bear Brand Gold 140ml', 'cat' => 'Susu & Olahan', 'price' => 12000, 'sale' => 10500, 'img' => 'susuberuang.jpg'],
+            ['name' => 'Butter Wijsman 200g', 'cat' => 'Susu & Olahan', 'price' => 55000, 'sale' => 0, 'img' => 'wisman.jpg'],
+
+            // Minuman (10 products)
+            ['name' => 'Teh Botol Sosro 450ml', 'cat' => 'Minuman', 'price' => 5000, 'sale' => 0, 'img' => 'sosro.jpg'],
+            ['name' => 'Coca Cola 1.5L', 'cat' => 'Minuman', 'price' => 16000, 'sale' => 14000, 'img' => 'coke.jpg'],
+            ['name' => 'Aqua 600ml (6pcs)', 'cat' => 'Minuman', 'price' => 12000, 'sale' => 0, 'img' => 'aqua6pcs.jpg'],
+            ['name' => 'Kopi Good Day Cappuccino 10s', 'cat' => 'Minuman', 'price' => 18000, 'sale' => 15000, 'img' => 'goodday.jpg'],
+            ['name' => 'Yakult 5x65ml', 'cat' => 'Minuman', 'price' => 10000, 'sale' => 0, 'img' => 'yakult.jpg'],
+            ['name' => 'Pocari Sweat 500ml', 'cat' => 'Minuman', 'price' => 8000, 'sale' => 0, 'img' => 'pocari.jpg'],
+            ['name' => 'Sirup Marjan Cocopandan 460ml', 'cat' => 'Minuman', 'price' => 22000, 'sale' => 19000, 'img' => 'marjan.jpg'],
+            ['name' => 'Le Minerale 330ml (6pcs)', 'cat' => 'Minuman', 'price' => 11000, 'sale' => 0, 'img' => 'leminerale.jpg'],
+            ['name' => 'Fanta Strawberry 1.5L', 'cat' => 'Minuman', 'price' => 14000, 'sale' => 0, 'img' => 'fantastrawberry.jpg'],
+            ['name' => 'Nutrisari Jeruk Peras 10s', 'cat' => 'Minuman', 'price' => 12000, 'sale' => 10000, 'img' => 'nutrisari.jpg'],
+
+            // Snack & Camilan (10 products)
+            ['name' => 'Chitato Sapi Panggang 68g', 'cat' => 'Snack & Camilan', 'price' => 10000, 'sale' => 0, 'img' => 'chitatosapi.jpg'],
+            ['name' => 'Oreo Vanilla 133g', 'cat' => 'Snack & Camilan', 'price' => 12000, 'sale' => 10000, 'img' => 'oreovanilla.jpg'],
+            ['name' => 'Pringles Original 110g', 'cat' => 'Snack & Camilan', 'price' => 28000, 'sale' => 0, 'img' => 'pringles.jpg'],
+            ['name' => 'Pocky Strawberry 45g', 'cat' => 'Snack & Camilan', 'price' => 9000, 'sale' => 0, 'img' => 'pockystrawberry.jpg'],
+            ['name' => 'Coklat Silverqueen 65g', 'cat' => 'Snack & Camilan', 'price' => 16000, 'sale' => 14000, 'img' => 'silverqueen.jpg'],
+            ['name' => 'Tango Wafer Coklat 176g', 'cat' => 'Snack & Camilan', 'price' => 14000, 'sale' => 0, 'img' => 'wafertango.jpg'],
+            ['name' => 'Lays Classic 68g', 'cat' => 'Snack & Camilan', 'price' => 10000, 'sale' => 0, 'img' => 'lays.jpg'],
+            ['name' => 'Biskuit Roma Kelapa 300g', 'cat' => 'Snack & Camilan', 'price' => 8000, 'sale' => 6500, 'img' => 'biskuit-roma.jpg'],
+            ['name' => 'Kacang Garuda 100g', 'cat' => 'Snack & Camilan', 'price' => 12000, 'sale' => 0, 'img' => 'kacang-garuda.jpg'],
+            ['name' => 'Nabati Richeese 150g', 'cat' => 'Snack & Camilan', 'price' => 11000, 'sale' => 9500, 'img' => 'nabati.jpg'],
+
+            // Kebutuhan Rumah (10 products)
+            ['name' => 'Deterjen Rinso Anti Noda 800g', 'cat' => 'Kebutuhan Rumah', 'price' => 22000, 'sale' => 0, 'img' => 'rinso.jpg'],
+            ['name' => 'Sabun Cuci Piring Sunlight 800ml', 'cat' => 'Kebutuhan Rumah', 'price' => 16000, 'sale' => 14000, 'img' => 'sunlight.jpg'],
+            ['name' => 'Pewangi Molto 900ml', 'cat' => 'Kebutuhan Rumah', 'price' => 24000, 'sale' => 0, 'img' => 'molto.jpg'],
+            ['name' => 'Pembersih Lantai Super Pell 800ml', 'cat' => 'Kebutuhan Rumah', 'price' => 14000, 'sale' => 0, 'img' => 'super-pell.jpg'],
+            ['name' => 'Tissue Paseo 250 Sheet', 'cat' => 'Kebutuhan Rumah', 'price' => 18000, 'sale' => 15000, 'img' => 'tissue.jpg'],
+            ['name' => 'Sapu Ijuk Premium', 'cat' => 'Kebutuhan Rumah', 'price' => 25000, 'sale' => 0, 'img' => 'sapu.jpg'],
+            ['name' => 'Kain Lap Microfiber 3pcs', 'cat' => 'Kebutuhan Rumah', 'price' => 20000, 'sale' => 0, 'img' => 'lap-microfiber.jpg'],
+            ['name' => 'Baygon Aerosol 600ml', 'cat' => 'Kebutuhan Rumah', 'price' => 35000, 'sale' => 30000, 'img' => 'baygon.jpg'],
+            ['name' => 'Ember Plastik 20L', 'cat' => 'Kebutuhan Rumah', 'price' => 28000, 'sale' => 0, 'img' => 'ember.jpg'],
+            ['name' => 'Trash Bag Roll 45x50 20pcs', 'cat' => 'Kebutuhan Rumah', 'price' => 12000, 'sale' => 0, 'img' => 'trash-bag.jpg'],
+
+            // Perawatan Diri (10 products)
+            ['name' => 'Shampo Pantene 400ml', 'cat' => 'Perawatan Diri', 'price' => 42000, 'sale' => 38000, 'img' => 'shampo.jpg'],
+            ['name' => 'Sabun Lifebuoy 100g (4pcs)', 'cat' => 'Perawatan Diri', 'price' => 18000, 'sale' => 0, 'img' => 'sabun-lifebuoy.jpg'],
+            ['name' => 'Pasta Gigi Pepsodent 190g', 'cat' => 'Perawatan Diri', 'price' => 14000, 'sale' => 12000, 'img' => 'pasta-gigi.jpg'],
+            ['name' => 'Deodoran Rexona 50ml', 'cat' => 'Perawatan Diri', 'price' => 22000, 'sale' => 0, 'img' => 'deodoran.jpg'],
+            ['name' => 'Sunscreen Nivea SPF50 100ml', 'cat' => 'Perawatan Diri', 'price' => 48000, 'sale' => 0, 'img' => 'sunscreen.jpg'],
+            ['name' => 'Hand Body Vaseline 200ml', 'cat' => 'Perawatan Diri', 'price' => 25000, 'sale' => 22000, 'img' => 'hand-body.jpg'],
+            ['name' => 'Sikat Gigi Oral-B 3pcs', 'cat' => 'Perawatan Diri', 'price' => 28000, 'sale' => 0, 'img' => 'sikat-gigi.jpg'],
+            ['name' => 'Kapas Wajah Selection 50g', 'cat' => 'Perawatan Diri', 'price' => 8000, 'sale' => 0, 'img' => 'kapas.jpg'],
+            ['name' => 'Conditioner Dove 320ml', 'cat' => 'Perawatan Diri', 'price' => 35000, 'sale' => 30000, 'img' => 'conditioner.jpg'],
+            ['name' => 'Sabun Cair Dettol 300ml', 'cat' => 'Perawatan Diri', 'price' => 32000, 'sale' => 0, 'img' => 'sabun-cair.jpg'],
+        ];
+
+        $productsToInsert = [];
+        $nextId = 11;
+        
+        foreach ($originalProducts as $op) {
+            $productsToInsert[] = [
+                'id_produk' => $op['id_produk'],
+                'nama_produk' => $op['nama_produk'],
+                'kategori' => $op['kategori'],
+                'deskripsi' => $op['deskripsi'],
+                'harga_reguler' => $op['harga_reguler'],
+                'harga_member' => $op['harga_member'],
+                'gambar_produk' => '', // Hilangkan gambar produk
                 'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ]   
-        ]);
+                'updated_at' => Carbon::now(),
+            ];
+        }
+
+        foreach ($catalogProducts as $cp) {
+            $productsToInsert[] = [
+                'id_produk' => $nextId++,
+                'nama_produk' => $cp['name'],
+                'kategori' => $cp['cat'],
+                'deskripsi' => $cp['name'] . ' berkualitas dari Borma.',
+                'harga_reguler' => $cp['price'],
+                'harga_member' => $cp['sale'] > 0 ? $cp['sale'] : $cp['price'],
+                'gambar_produk' => '', // Hilangkan gambar produk
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ];
+        }
+
+        DB::table('produk')->insert($productsToInsert);
 
         // 6. Data Stok Produk di Cabang
-        DB::table('produk_cabang')->insert([
-            [
-                'id_produk_cabang' => 1,
-                'id_produk' => 1,
-                'id_cabang' => 1,
-                'jumlah_stok' => 10,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'id_produk_cabang' => 2,
-                'id_produk' => 2,
-                'id_cabang' => 1,
-                'jumlah_stok' => 20,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'id_produk_cabang' => 3,
-                'id_produk' => 3,
-                'id_cabang' => 1,
-                'jumlah_stok' => 30,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'id_produk_cabang' => 4,
-                'id_produk' => 4,
-                'id_cabang' => 1,
-                'jumlah_stok' => 40,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'id_produk_cabang' => 5,
-                'id_produk' => 5,
-                'id_cabang' => 2,
-                'jumlah_stok' => 50,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'id_produk_cabang' => 6,
-                'id_produk' => 6,
-                'id_cabang' => 2,
-                'jumlah_stok' => 60,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'id_produk_cabang' => 7,
-                'id_produk' => 7,
-                'id_cabang' => 2,
-                'jumlah_stok' => 70,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'id_produk_cabang' => 8,
-                'id_produk' => 8,
-                'id_cabang' => 2,
-                'jumlah_stok' => 80,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'id_produk_cabang' => 9,
-                'id_produk' => 9,
-                'id_cabang' => 2,
-                'jumlah_stok' => 90,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'id_produk_cabang' => 10,
-                'id_produk' => 10,
-                'id_cabang' => 2,
-                'jumlah_stok' => 100,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ]
-        ]);
+        $produkCabangRows = [];
+        $idProdukCabang = 1;
+        
+        foreach ($productsToInsert as $p) {
+            $prodId = $p['id_produk'];
+            $prodName = $p['nama_produk'];
+            for ($c = 1; $c <= 14; $c++) {
+                // Sembako pokok selalu ada di semua cabang
+                $isStaple = str_contains(strtolower($prodName), 'beras') || 
+                            str_contains(strtolower($prodName), 'minyak') || 
+                            str_contains(strtolower($prodName), 'gula') || 
+                            str_contains(strtolower($prodName), 'telur');
+                
+                // Produk lainnya dibedakan berdasarkan ganjil/genap ID produk + nomor cabang
+                $isAvailable = $isStaple || (($prodId + $c) % 2 === 0);
+                
+                if ($isAvailable) {
+                    $produkCabangRows[] = [
+                        'id_produk_cabang' => $idProdukCabang++,
+                        'id_produk' => $prodId,
+                        'id_cabang' => $c,
+                        'jumlah_stok' => rand(15, 80),
+                        'jumlah_terjual' => rand(0, 25),
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ];
+                }
+            }
+        }
+
+        foreach (array_chunk($produkCabangRows, 200) as $chunk) {
+            DB::table('produk_cabang')->insert($chunk);
+        }
 
         // 7. Data Detail Kurir (Relasi ke Pengguna 3 & Cabang 1)
         DB::table('kurir')->insert([

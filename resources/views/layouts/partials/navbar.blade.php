@@ -12,6 +12,8 @@
                 </div>
             </a>
 
+
+
             <!-- Navigation Links -->
             <nav class="hidden lg:flex items-center gap-8 font-semibold text-sm">
                 <a href="{{ route('pelanggan.dashboard') }}" class="{{ request()->routeIs('pelanggan.dashboard') ? 'text-primary-700 border-b-2 border-primary-700 pb-1 -mb-[2px]' : 'text-neutral-600 hover:text-primary-700 transition-colors' }}">Home</a>

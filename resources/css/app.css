@@ -174,7 +174,6 @@ body {
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     font-weight: 800;
-    color: var(--borma-neutral);
 }
 
 /* Sidebar Styling */
@@ -376,4 +375,147 @@ h1, h2, h3, h4, h5, h6 {
 .content-area {
     padding: 32px;
     flex-grow: 1;
+}
+
+/* --- Refactored Styles from Views & Layouts --- */
+
+/* Modal & Maps Animations (from layouts/pelanggan.blade.php) */
+@keyframes fadeInModal {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+.animate-fade-in-modal {
+    animation: fadeInModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes userPulse {
+    0% { transform: scale(0.8); opacity: 0.6; }
+    100% { transform: scale(2); opacity: 0; }
+}
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+.user-marker { z-index: 1000 !important; }
+.leaflet-popup-content-wrapper { border-radius: 12px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.12) !important; }
+.leaflet-popup-tip { box-shadow: 0 2px 5px rgba(0,0,0,0.08) !important; }
+
+/* Dropdown Loading Indicators (from checkout.blade.php & profil-edit.blade.php) */
+.dropdown-loading { position: relative; }
+.dropdown-loading::after { content: 'Memuat...'; position: absolute; right: 36px; top: 50%; transform: translateY(-50%); font-size: 11px; color: #a3a3a3; pointer-events: none; }
+
+/* Success Animation Elements (from profil.blade.php) */
+@keyframes successCheckDraw {
+    0% { stroke-dashoffset: 30; }
+    100% { stroke-dashoffset: 0; }
+}
+@keyframes successPulse {
+    0% { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+.success-check-path {
+    stroke-dasharray: 30;
+    stroke-dashoffset: 30;
+}
+.success-checkmark-icon.animate .success-check-path {
+    animation: successCheckDraw 0.5s ease-out 0.3s forwards;
+}
+.success-pulse-ring.animate {
+    animation: successPulse 1s ease-out 0.5s forwards;
+}
+
+/* Hero Carousel Layout & Carousel Slide Styles (from dashboard.blade.php) */
+.hero-carousel-container {
+    min-height: 280px;
+}
+.carousel-track-container {
+    will-change: transform;
+}
+.carousel-slide {
+    width: 100%;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    min-height: 280px;
+}
+.carousel-slide-1 {
+    background: linear-gradient(135deg, #2d0e5e 0%, #3d1580 40%, #5320a8 100%);
+}
+.carousel-slide-2 {
+    background: linear-gradient(135deg, #160730 0%, #220a48 35%, #3d1580 100%);
+}
+.carousel-slide-3 {
+    background: linear-gradient(135deg, #3d1580 0%, #2d0e5e 45%, #160730 100%);
+}
+
+/* Slide Product Images */
+.carousel-slide-img {
+    position: absolute;
+    pointer-events: none;
+    right: 4rem;
+    top: 50%;
+    height: 95%;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 12px 32px rgba(0,0,0,0.5)) drop-shadow(0 4px 12px rgba(0,0,0,0.35));
+}
+.carousel-slide-img-1 {
+    transform: translateY(-50%) scale(1.05);
+}
+.carousel-slide-img-2 {
+    transform: translateY(-50%) scale(1.0);
+}
+.carousel-slide-img-3 {
+    transform: translateY(-50%) scale(1.05);
+}
+
+/* Slide Content */
+.carousel-slide-content {
+    margin-left: 1rem;
+    position: relative;
+    z-index: 10;
+    padding: 2rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    min-height: 280px;
+}
+@media (min-width: 640px) {
+    .carousel-slide-content {
+        padding: 3rem;
+    }
+}
+
+.carousel-title {
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    color: #ffffff;
+}
+.carousel-title-accent {
+    color: #FED50B;
+}
+.carousel-desc {
+    color: rgba(255,255,255,0.9);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+/* Decorative Blobs & Background Blur effects */
+.blob-yellow-light-1 {
+    background: rgba(254,213,11,0.08);
+}
+.blob-yellow-light-2 {
+    background: rgba(254,213,11,0.06);
+}
+.blob-yellow-light-3 {
+    background: rgba(254,213,11,0.07);
+}
+.blob-yellow-light-4 {
+    background: rgba(254,213,11,0.05);
+}
+.blob-white-light-1 {
+    background: rgba(255,255,255,0.04);
+}
+.blob-white-light-2 {
+    background: rgba(255,255,255,0.03);
+}
+.blob-orange-light {
+    background: rgba(235,59,2,0.1);
 }

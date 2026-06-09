@@ -23,7 +23,7 @@ class PaymentController extends Controller
     public function createTransaction(Request $request)
     {
         $request->validate([
-            'payment_method' => 'required|in:cod,transfer,qris',
+            'payment_method' => 'required|in:transfer,qris',
             'total' => 'required|numeric|min:1',
             'customer_name' => 'required|string',
             'customer_email' => 'nullable|email',
@@ -84,7 +84,7 @@ class PaymentController extends Controller
         DB::beginTransaction();
         try {
             // Determine payment method label
-            $paymentMethodLabel = $isMembership ? 'Aktivasi Member Plus' : ($paymentMethod === 'cod' ? 'Cash On Delivery' : 'Transfer / Pembayaran Online');
+            $paymentMethodLabel = $isMembership ? 'Aktivasi Member Plus' : 'Transfer / Pembayaran Online';
 
             // Construct delivery address
             if ($isMembership) {
@@ -95,10 +95,10 @@ class PaymentController extends Controller
                 $alamatPengiriman = $pelanggan->alamat . ', ' . $pelanggan->kecamatan . ', ' . $pelanggan->kota_kabupaten . ', ' . $pelanggan->provinsi;
             }
 
-            // Create Pesanan record
+            // Create Pesanan record using session's active branch
             $pesanan = \App\Models\Pesanan::create([
                 'id_pelanggan' => $pelanggan->id_pelanggan,
-                'id_cabang' => 1, // Default branch (Borma Gempol)
+                'id_cabang' => session('selected_cabang_id', 1),
                 'id_kurir' => null,
                 'id_promo' => null,
                 'tanggal_pemesanan' => now(),
@@ -108,7 +108,7 @@ class PaymentController extends Controller
                 'total_tagihan' => $totalTagihan,
                 'metode_pembayaran' => $paymentMethodLabel,
                 'alamat_pengiriman' => $alamatPengiriman,
-                'status_pesanan' => $paymentMethod === 'cod' ? 'Disiapkan' : 'Menunggu',
+                'status_pesanan' => 'Menunggu',
             ]);
 
             // Save order items (pesanan_produks)
@@ -157,18 +157,6 @@ class PaymentController extends Controller
                         'catatan_produk' => null,
                     ]);
                 }
-            }
-
-            if ($paymentMethod === 'cod') {
-                DB::commit();
-                session()->forget('cart');
-
-                return response()->json([
-                    'status' => 'success',
-                    'payment_method' => 'cod',
-                    'order_id' => $pesanan->id_pesanan,
-                    'message' => 'Pesanan berhasil dibuat. Pembayaran akan dilakukan saat barang diterima.',
-                ]);
             }
 
             // For online payment (transfer), generate Midtrans Snap Token
@@ -291,6 +279,8 @@ class PaymentController extends Controller
                     $pesanan->update(['status_pesanan' => 'Menunggu']);
                     Log::info("Payment successful for order: {$orderId}, status updated to Menunggu");
 
+                    self::processPaymentAndStock($pesanan);
+
                     // Activate membership status if this order is for membership activation
                     if ($pesanan->metode_pembayaran === 'Aktivasi Member Plus' || str_contains($pesanan->alamat_pengiriman, 'Aktivasi Borma Plus')) {
                         $pelanggan = $pesanan->pelanggan;
@@ -341,6 +331,8 @@ class PaymentController extends Controller
             if ($pesanan) {
                 $pesanan->update(['status_pesanan' => 'Menunggu']);
                 Log::info("Payment finish landed: Order {$orderId} status set to Menunggu locally.");
+
+                self::processPaymentAndStock($pesanan);
                 
                 // If membership, activate it immediately
                 if ($pesanan->metode_pembayaran === 'Aktivasi Member Plus' || str_contains($pesanan->alamat_pengiriman, 'Aktivasi Borma Plus')) {
@@ -364,5 +356,43 @@ class PaymentController extends Controller
         }
 
         return redirect()->route('pelanggan.dashboard')->with('success', 'Pembayaran berhasil! Terima kasih telah berbelanja di Borma.');
+    }
+
+    /**
+     * Helper to process payment and update stock and sales count idempotently.
+     */
+    public static function processPaymentAndStock($pesanan)
+    {
+        // Skip for membership activation
+        if ($pesanan->metode_pembayaran === 'Aktivasi Member Plus' || str_contains($pesanan->alamat_pengiriman, 'Aktivasi Borma Plus')) {
+            return;
+        }
+
+        // Check if already processed to prevent double stock reduction
+        $alreadyProcessed = \App\Models\PengirimanTracking::where('id_pesanan', $pesanan->id_pesanan)
+            ->where('keterangan', 'like', '%stok dikurangi%')
+            ->exists();
+
+        if ($alreadyProcessed) {
+            return;
+        }
+
+        // Reduce stock and increment sold count
+        foreach ($pesanan->details as $detail) {
+            \App\Models\ProdukCabang::where('id_produk', $detail->id_produk)
+                ->where('id_cabang', $pesanan->id_cabang)
+                ->decrement('jumlah_stok', $detail->jumlah);
+
+            \App\Models\ProdukCabang::where('id_produk', $detail->id_produk)
+                ->where('id_cabang', $pesanan->id_cabang)
+                ->increment('jumlah_terjual', $detail->jumlah);
+        }
+
+        // Record tracking
+        \App\Models\PengirimanTracking::create([
+            'id_pesanan' => $pesanan->id_pesanan,
+            'status' => $pesanan->status_pesanan,
+            'keterangan' => 'Pembayaran berhasil, stok dikurangi dan penjualan terhitung'
+        ]);
     }
 }

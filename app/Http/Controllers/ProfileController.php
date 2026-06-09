@@ -11,6 +11,19 @@ class ProfileController extends Controller
 {
     public function index()
     {
+        // Lazy auto-complete orders that have been 'diterima' for more than 24 hours
+        $expiredOrders = Pesanan::where('status_pesanan', 'diterima')
+            ->where('updated_at', '<=', now()->subHours(24))
+            ->get();
+        foreach ($expiredOrders as $ep) {
+            $ep->update(['status_pesanan' => 'selesai']);
+            \App\Models\PengirimanTracking::create([
+                'id_pesanan' => $ep->id_pesanan,
+                'status' => 'selesai',
+                'keterangan' => 'Pesanan otomatis diselesaikan oleh sistem setelah 24 jam'
+            ]);
+        }
+
         $user = Auth::user();
         $pelanggan = $user->pelanggan;
 
@@ -54,12 +67,6 @@ class ProfileController extends Controller
             
             $pesanan->status_pesanan = 'selesai';
             $pesanan->save();
-            
-            foreach ($pesanan->details as $detail) {
-                \App\Models\ProdukCabang::where('id_produk', $detail->id_produk)
-                    ->where('id_cabang', $pesanan->id_cabang)
-                    ->increment('jumlah_terjual', $detail->jumlah);
-            }
             
             \App\Models\PengirimanTracking::create([
                 'id_pesanan' => $id,

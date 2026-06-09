@@ -30,6 +30,21 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $idCabang  = $this->getIdCabang();
+
+        // Lazy auto-complete orders that have been 'diterima' for more than 24 hours
+        $expiredOrders = Pesanan::where('status_pesanan', 'diterima')
+            ->where('id_cabang', $idCabang)
+            ->where('updated_at', '<=', now()->subHours(24))
+            ->get();
+        foreach ($expiredOrders as $ep) {
+            $ep->update(['status_pesanan' => 'selesai']);
+            \App\Models\PengirimanTracking::create([
+                'id_pesanan' => $ep->id_pesanan,
+                'status' => 'selesai',
+                'keterangan' => 'Pesanan otomatis diselesaikan oleh sistem setelah 24 jam'
+            ]);
+        }
+
         $search    = $request->query('search');
         $status    = $request->query('status');
         $sort      = $request->query('sort', 'tanggal_pemesanan');
@@ -198,12 +213,6 @@ class OrderController extends Controller
 
         if ($pesanan->kurir) {
             $pesanan->kurir->update(['status_mengirim' => 'Tidak Mengirim']);
-        }
-
-        foreach ($pesanan->details as $detail) {
-            ProdukCabang::where('id_produk', $detail->id_produk)
-                ->where('id_cabang', $pesanan->id_cabang)
-                ->increment('jumlah_terjual', $detail->jumlah);
         }
 
         \App\Models\PengirimanTracking::create([

@@ -210,19 +210,6 @@
 
                     <!-- Dropdown -->
                     <div id="paymentDropdown" class="hidden mt-2 bg-white border border-neutral-200 rounded-xl shadow-lg overflow-hidden z-50 relative">
-                        <!-- COD -->
-                        <div class="payment-option flex items-center gap-3 px-4 py-3.5 cursor-pointer hover:bg-primary-50 transition-all border-b border-neutral-100" data-method="cod" onclick="selectPayment('cod')">
-                            <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center shrink-0">
-                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-sm font-bold text-neutral-800">COD (Bayar di Tempat)</p>
-                                <p class="text-[11px] text-neutral-400">Bayar saat barang diterima</p>
-                            </div>
-                            <div id="check-cod" class="hidden w-5 h-5 bg-primary-700 rounded-full flex items-center justify-center">
-                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                            </div>
-                        </div>
                         <!-- Transfer / Pembayaran Online -->
                         <div class="payment-option flex items-center gap-3 px-4 py-3.5 cursor-pointer hover:bg-primary-50 transition-all" data-method="transfer" onclick="selectPayment('transfer')">
                             <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center shrink-0">
@@ -266,10 +253,6 @@
 @endsection
 
 @push('scripts')
-<style>
-.dropdown-loading { position: relative; }
-.dropdown-loading::after { content: 'Memuat...'; position: absolute; right: 36px; top: 50%; transform: translateY(-50%); font-size: 11px; color: #a3a3a3; pointer-events: none; }
-</style>
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
 <script>
@@ -298,6 +281,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         loadAdditionalAddresses();
         initRegionDropdowns();
+        selectPayment('transfer');
     });
 
     function loadAdditionalAddresses(selectIdAfterLoad = null) {

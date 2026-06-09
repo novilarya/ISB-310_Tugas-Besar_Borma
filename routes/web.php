@@ -220,6 +220,14 @@ Route::get('/api/cabangs', function () {
     return response()->json($cabangs);
 })->name('api.cabangs');
 
+Route::post('/api/select-cabang', function (Request $request) {
+    $request->validate([
+        'id_cabang' => 'required|exists:cabang,id_cabang',
+    ]);
+    session(['selected_cabang_id' => $request->input('id_cabang')]);
+    return response()->json(['success' => true]);
+})->name('api.select-cabang');
+
 // Auth routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
