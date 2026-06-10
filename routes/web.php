@@ -70,6 +70,7 @@ Route::prefix('superadmin')->middleware(['auth', 'superadmin'])->name('superadmi
 
     Route::get('/promo', [PromoController::class, 'promo'])->name('promo');
     Route::post('/promo', [PromoController::class, 'storePromo'])->name('promo.store');
+    Route::get('/promo/{id}', [PromoController::class, 'show'])->name('promo.detail');
     Route::put('/promo/update/{id}', [PromoController::class, 'updatePromo'])->name('promo.update');
     Route::delete('/promo/delete/{id}', [PromoController::class, 'destroyPromo'])->name('promo.delete');
 
@@ -110,10 +111,12 @@ Route::prefix('superadmin')->middleware(['auth', 'superadmin'])->name('superadmi
     // Member
     Route::get('/member', [\App\Http\Controllers\AdminCabang\MemberController::class, 'index'])->name('admin-cabang.member');
     Route::post('/member/store', [\App\Http\Controllers\AdminCabang\MemberController::class, 'store'])->name('admin-cabang.member.store');
+    Route::get('/member/{id}', [\App\Http\Controllers\AdminCabang\MemberController::class, 'show'])->name('admin-cabang.member.detail');
 
     // Promo & Voucher
     Route::get('/promo', [\App\Http\Controllers\AdminCabang\PromoController::class, 'index'])->name('admin-cabang.promo');
     Route::post('/promo/store', [\App\Http\Controllers\AdminCabang\PromoController::class, 'store'])->name('admin-cabang.promo.store');
+    Route::get('/promo/{id}', [\App\Http\Controllers\AdminCabang\PromoController::class, 'show'])->name('admin-cabang.promo.detail');
     Route::put('/promo/update/{id}', [\App\Http\Controllers\AdminCabang\PromoController::class, 'update'])->name('admin-cabang.promo.update');
     Route::delete('/promo/delete/{id}', [\App\Http\Controllers\AdminCabang\PromoController::class, 'destroy'])->name('admin-cabang.promo.delete');
 

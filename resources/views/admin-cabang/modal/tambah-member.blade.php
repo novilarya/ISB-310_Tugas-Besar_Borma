@@ -37,6 +37,24 @@
                             <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Alamat <span class="text-danger">*</span></label>
                             <textarea name="alamat" rows="2" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" placeholder="Alamat lengkap pelanggan" required>{{ old('alamat') }}</textarea>
                         </div>
+                        <div class="md:col-span-4">
+                            <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Provinsi <span class="text-danger">*</span></label>
+                            <select name="provinsi" id="provinsiTambah" required class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all cursor-pointer">
+                                <option value="">Pilih Provinsi</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-4">
+                            <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Kabupaten/Kota <span class="text-danger">*</span></label>
+                            <select name="kota_kabupaten" id="kotaKabupatenTambah" required disabled class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                                <option value="">Pilih Kabupaten/Kota</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-4">
+                            <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Kecamatan <span class="text-danger">*</span></label>
+                            <select name="kecamatan" id="kecamatanTambah" required disabled class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                                <option value="">Pilih Kecamatan</option>
+                            </select>
+                        </div>
                         <div class="md:col-span-6">
                             <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Poin Awal</label>
                             <input type="number" name="poin_member" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" placeholder="0" value="{{ old('poin_member', 0) }}" min="0">
@@ -44,8 +62,8 @@
                         <div class="md:col-span-6 flex items-end">
                             <div class="flex items-center gap-3 py-2 w-full">
                                 <div class="form-check form-switch mb-0 flex items-center gap-2">
-                                    <input class="form-check-input h-5 w-10 cursor-pointer" type="checkbox" name="status_member" id="statusMemberTambah" value="1" {{ old('status_member') ? 'checked' : '' }} style="cursor: pointer;">
-                                    <label class="form-check-label text-sm font-medium text-slate-700 dark:text-white/80 mb-0 cursor-pointer" for="statusMemberTambah">Aktifkan sebagai Member</label>
+                                    <input class="form-check-input h-5 w-10 cursor-pointer" type="checkbox" name="status_member_plus" id="statusMemberTambah" value="1" {{ old('status_member_plus') ? 'checked' : '' }} style="cursor: pointer;">
+                                    <label class="form-check-label text-sm font-medium text-slate-700 dark:text-white/80 mb-0 cursor-pointer" for="statusMemberTambah">Aktifkan sebagai Member Plus</label>
                                 </div>
                             </div>
                         </div>
@@ -62,3 +80,101 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const provSelect = document.getElementById('provinsiTambah');
+    const kabSelect = document.getElementById('kotaKabupatenTambah');
+    const kecSelect = document.getElementById('kecamatanTambah');
+
+    function setDropdownLoading(selectEl, isLoading) {
+        if (isLoading) {
+            selectEl.classList.add('opacity-50');
+        } else {
+            selectEl.classList.remove('opacity-50');
+        }
+    }
+
+    // Load Provinces
+    setDropdownLoading(provSelect, true);
+    fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json')
+        .then(r => r.json())
+        .then(data => {
+            data.sort((a, b) => a.name.localeCompare(b.name));
+            data.forEach(prov => {
+                const opt = document.createElement('option');
+                opt.value = prov.name;
+                opt.textContent = prov.name;
+                opt.dataset.id = prov.id;
+                provSelect.appendChild(opt);
+            });
+            setDropdownLoading(provSelect, false);
+            provSelect.disabled = false;
+        })
+        .catch(() => {
+            setDropdownLoading(provSelect, false);
+            fallbackToTextInput(provSelect, 'provinsi');
+        });
+
+    provSelect.addEventListener('change', function() {
+        const selected = this.options[this.selectedIndex];
+        const provId = selected ? selected.dataset.id : null;
+        kabSelect.innerHTML = '<option value="">Pilih Kabupaten/Kota</option>';
+        kecSelect.innerHTML = '<option value="">Pilih Kecamatan</option>';
+        kabSelect.disabled = true;
+        kecSelect.disabled = true;
+        if (!provId) return;
+
+        setDropdownLoading(kabSelect, true);
+        fetch('https://www.emsifa.com/api-wilayah-indonesia/api/regencies/' + provId + '.json')
+            .then(r => r.json())
+            .then(data => {
+                data.sort((a, b) => a.name.localeCompare(b.name));
+                data.forEach(kota => {
+                    const opt = document.createElement('option');
+                    opt.value = kota.name;
+                    opt.textContent = kota.name;
+                    opt.dataset.id = kota.id;
+                    kabSelect.appendChild(opt);
+                });
+                setDropdownLoading(kabSelect, false);
+                kabSelect.disabled = false;
+            })
+            .catch(() => setDropdownLoading(kabSelect, false));
+    });
+
+    kabSelect.addEventListener('change', function() {
+        const selected = this.options[this.selectedIndex];
+        const kotaId = selected ? selected.dataset.id : null;
+        kecSelect.innerHTML = '<option value="">Pilih Kecamatan</option>';
+        kecSelect.disabled = true;
+        if (!kotaId) return;
+
+        setDropdownLoading(kecSelect, true);
+        fetch('https://www.emsifa.com/api-wilayah-indonesia/api/districts/' + kotaId + '.json')
+            .then(r => r.json())
+            .then(data => {
+                data.sort((a, b) => a.name.localeCompare(b.name));
+                data.forEach(kec => {
+                    const opt = document.createElement('option');
+                    opt.value = kec.name;
+                    opt.textContent = kec.name;
+                    kecSelect.appendChild(opt);
+                });
+                setDropdownLoading(kecSelect, false);
+                kecSelect.disabled = false;
+            })
+            .catch(() => setDropdownLoading(kecSelect, false));
+    });
+
+    function fallbackToTextInput(selectEl, name) {
+        const wrapper = selectEl.parentNode;
+        const input = document.createElement('input');
+        input.type = 'text'; input.name = name; input.id = selectEl.id;
+        input.required = true;
+        input.className = selectEl.className;
+        input.value = selectEl.value || '';
+        wrapper.replaceChild(input, selectEl);
+    }
+});
+</script>

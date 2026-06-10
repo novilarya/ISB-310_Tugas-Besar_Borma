@@ -80,9 +80,9 @@
                     <div class="bg-primary-50 rounded-xl p-3 sm:p-4 text-center border border-primary-100 hover:bg-primary-100 transition-colors">
                         <p class="text-[10px] text-primary-600 font-bold uppercase tracking-wider mb-1">Status Member</p>
                         <p class="font-heading font-extrabold text-sm sm:text-base text-primary-800 uppercase">
-                            {{ $pelanggan->status_member ? 'PLUS' : 'REGULER' }}
+                            {{ $pelanggan->status_member_plus ? 'MEMBER PLUS' : 'MEMBER' }}
                         </p>
-                        @if($pelanggan->status_member && $pelanggan->tanggal_berakhir_member_plus)
+                        @if($pelanggan->status_member_plus && $pelanggan->tanggal_berakhir_member_plus)
                             <p class="text-[9px] text-primary-500 font-bold mt-1 uppercase">Aktif s/d {{ \Carbon\Carbon::parse($pelanggan->tanggal_berakhir_member_plus)->format('d M Y') }}</p>
                         @endif
                     </div>
@@ -118,7 +118,9 @@
                         <span class="font-heading font-extrabold text-primary-800 text-xl">B</span>
                     </div>
                     <div>
-                        <p class="font-heading font-extrabold text-base text-white tracking-wider uppercase">Member Borma</p>
+                        <p class="font-heading font-extrabold text-base text-white tracking-wider uppercase">
+                            {{ $pelanggan->status_member_plus ? 'Member Borma Plus' : 'Member Borma' }}
+                        </p>
                         <p class="text-xs text-neutral-400 font-bold uppercase tracking-widest">Toserba Digital Card</p>
                     </div>
                 </div>
@@ -141,9 +143,9 @@
                     </div>
                     <div class="text-right">
                         <p class="text-xs text-neutral-400 uppercase tracking-wider mb-1">Status</p>
-                        <span class="inline-flex items-center gap-1.5 text-sm font-bold {{ $pelanggan->status_member ? 'text-green-400' : 'text-neutral-400' }}">
-                            <span class="w-2.5 h-2.5 rounded-full {{ $pelanggan->status_member ? 'bg-green-400 animate-pulse' : 'bg-neutral-500' }}"></span>
-                            {{ $pelanggan->status_member ? 'PLUS' : 'REGULER' }}
+                        <span class="inline-flex items-center gap-1.5 text-sm font-bold {{ $pelanggan->status_member_plus ? 'text-green-400' : 'text-neutral-400' }}">
+                            <span class="w-2.5 h-2.5 rounded-full {{ $pelanggan->status_member_plus ? 'bg-green-400 animate-pulse' : 'bg-neutral-500' }}"></span>
+                            {{ $pelanggan->status_member_plus ? 'MEMBER PLUS' : 'MEMBER' }}
                         </span>
                     </div>
                 </div>
@@ -152,7 +154,7 @@
     </div>
 
     <!-- Borma Plus Membership -->
-    @if(!$pelanggan->status_member)
+    @if(!$pelanggan->status_member_plus)
     <div class="mb-10">
         <div class="flex items-center justify-between mb-5">
             <div>

@@ -45,11 +45,12 @@ class OrderController extends Controller
             ]);
         }
 
-        $search    = $request->query('search');
-        $status    = $request->query('status');
-        $sort      = $request->query('sort', 'tanggal_pemesanan');
-        $direction = $request->query('direction', 'desc');
-        $date      = $request->query('date');
+        $search       = $request->query('search');
+        $status       = $request->query('status');
+        $driverFilter = $request->query('driver_filter');
+        $sort         = $request->query('sort', 'tanggal_pemesanan');
+        $direction    = $request->query('direction', 'desc');
+        $date         = $request->query('date');
 
         $query = Pesanan::query()
             ->with(['pelanggan.user', 'kurir.user', 'details.produk'])
@@ -66,6 +67,12 @@ class OrderController extends Controller
         $validStatus = ['Menunggu', 'Disiapkan', 'mencari_driver', 'diterima_driver', 'diambil', 'dalam_pengiriman', 'diterima', 'selesai', 'gagal', 'ditolak_driver'];
         if ($status && in_array($status, $validStatus)) {
             $query->where('status_pesanan', $status);
+        }
+
+        if ($driverFilter === 'ada') {
+            $query->whereNotNull('id_kurir');
+        } elseif ($driverFilter === 'tidak') {
+            $query->whereNull('id_kurir');
         }
 
         if ($date) {

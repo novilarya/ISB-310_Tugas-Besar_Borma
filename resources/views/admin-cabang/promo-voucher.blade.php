@@ -95,8 +95,6 @@
                         Nama Promo @if(request('sort')=='nama_voucher')<i class="bi bi-sort-{{ request('direction')=='asc'?'up':'down' }}"></i>@else<i class="bi bi-arrow-down-up text-muted" style="font-size:.7rem;"></i>@endif
                     </a>
                 </th>
-                <th>Kode Voucher</th>
-                <th>Pemicu Produk</th>
                 <th>
                     <a href="{{ request()->fullUrlWithQuery(['sort'=>'potongan_harga','direction'=>request('sort')=='potongan_harga'&&request('direction')=='asc'?'desc':'asc']) }}" class="text-primary-custom text-decoration-none">
                         Potongan @if(request('sort')=='potongan_harga')<i class="bi bi-sort-{{ request('direction')=='asc'?'up':'down' }}"></i>@else<i class="bi bi-arrow-down-up text-muted" style="font-size:.7rem;"></i>@endif
@@ -105,11 +103,6 @@
                 <th>
                     <a href="{{ request()->fullUrlWithQuery(['sort'=>'tanggal_berakhir','direction'=>request('sort')=='tanggal_berakhir'&&request('direction')=='asc'?'desc':'asc']) }}" class="text-primary-custom text-decoration-none">
                         Periode @if(request('sort')=='tanggal_berakhir')<i class="bi bi-sort-{{ request('direction')=='asc'?'up':'down' }}"></i>@else<i class="bi bi-arrow-down-up text-muted" style="font-size:.7rem;"></i>@endif
-                    </a>
-                </th>
-                <th>
-                    <a href="{{ request()->fullUrlWithQuery(['sort'=>'kuota_promo','direction'=>request('sort')=='kuota_promo'&&request('direction')=='asc'?'desc':'asc']) }}" class="text-primary-custom text-decoration-none">
-                        Kuota @if(request('sort')=='kuota_promo')<i class="bi bi-sort-{{ request('direction')=='asc'?'up':'down' }}"></i>@else<i class="bi bi-arrow-down-up text-muted" style="font-size:.7rem;"></i>@endif
                     </a>
                 </th>
                 <th>Status</th>
@@ -124,40 +117,21 @@
             @endphp
             <tr>
                 <td>
-                    <div style="font-weight:800;color:var(--borma-neutral);">{{ $promo->nama_voucher }}</div>
-                    @if($promo->id_produk_hadiah)
-                        <div class="text-muted" style="font-size:.75rem;"><i class="bi bi-gift-fill me-1 text-success"></i>Hadiah: {{ $promo->produkHadiah->nama_produk ?? '-' }}</div>
-                    @endif
-                </td>
-                <td>
+                    <div style="font-weight:800;">
+                        <a href="{{ route('admin-cabang.promo.detail', $promo->id_promo) }}" class="text-decoration-none" style="color: var(--borma-neutral); font-weight:800; transition: color 0.2s;" onmouseover="this.style.color='var(--borma-primary)'" onmouseout="this.style.color='var(--borma-neutral)'">
+                            {{ $promo->nama_voucher }}
+                        </a>
+                    </div>
                     @if($promo->kode_voucher)
-                        <span style="font-family:monospace;font-weight:800;background:rgba(51,17,108,.08);color:var(--borma-primary);padding:4px 10px;border-radius:6px;font-size:.82rem;letter-spacing:1px;">{{ $promo->kode_voucher }}</span>
-                    @else
-                        <span class="text-muted" style="font-size:.8rem;">— Tanpa kode —</span>
+                        <div class="text-muted" style="font-size:.75rem;"><i class="bi bi-tag-fill me-1"></i>{{ $promo->kode_voucher }}</div>
                     @endif
-                </td>
-                <td>
-                    <div style="font-weight:700;font-size:.85rem;">{{ $promo->produkPemicu->nama_produk ?? '-' }}</div>
-                    <div class="text-muted" style="font-size:.75rem;">Min. beli {{ $promo->kuantitas_pemicu }} pcs</div>
                 </td>
                 <td>
                     <div style="font-weight:800;color:var(--borma-tertiary);font-size:1rem;">Rp {{ number_format($promo->potongan_harga, 0, ',', '.') }}</div>
-                    @if($promo->min_transaksi > 0)
-                        <div class="text-muted" style="font-size:.72rem;">Min. transaksi Rp {{ number_format($promo->min_transaksi, 0, ',', '.') }}</div>
-                    @endif
                 </td>
                 <td>
                     <div style="font-size:.8rem;font-weight:700;">{{ $promo->tanggal_mulai->format('d M Y') }}</div>
                     <div class="text-muted" style="font-size:.75rem;">s/d {{ $promo->tanggal_berakhir->format('d M Y') }}</div>
-                    @if($st === 'aktif')
-                        <div class="{{ $sisa <= 3 ? 'text-danger' : 'text-muted' }}" style="font-size:.7rem;font-weight:800;margin-top:2px;">
-                            <i class="bi bi-clock"></i> {{ $sisa >= 0 ? $sisa . ' hari lagi' : 'Habis' }}
-                        </div>
-                    @endif
-                </td>
-                <td>
-                    <div style="font-weight:800;font-size:1rem;color:var(--borma-primary);">{{ number_format($promo->kuota_promo, 0, ',', '.') }}</div>
-                    <div class="text-muted" style="font-size:.72rem;"></div>
                 </td>
                 <td>
                     @if($st === 'aktif')
@@ -198,7 +172,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="8" class="text-center py-5 text-muted">
+                <td colspan="5" class="text-center py-5 text-muted">
                     <i class="bi bi-tags" style="font-size:3rem;opacity:.2;"></i>
                     <p class="mt-3 mb-0" style="font-weight:600;">Belum ada data promo.</p>
                 </td>

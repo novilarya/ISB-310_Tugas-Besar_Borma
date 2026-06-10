@@ -52,8 +52,8 @@
                     <thead>
                         <tr class="border-b border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/50 text-xs uppercase tracking-wider">
                             <th class="pb-3 font-medium px-2">Waktu</th>
-                            <th class="pb-3 font-medium px-2 text-right">Harga Reguler</th>
                             <th class="pb-3 font-medium px-2 text-right">Harga Member</th>
+                            <th class="pb-3 font-medium px-2 text-right">Harga Member Plus</th>
                             <th class="pb-3 font-medium px-2 text-right">Admin</th>
                         </tr>
                     </thead>
@@ -134,11 +134,11 @@
                     
                     <div class="grid grid-cols-2 gap-4">
                         <div class="bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-2xl">
-                            <p class="text-xs text-slate-400 dark:text-white/40 font-medium">Harga Reguler</p>
+                            <p class="text-xs text-slate-400 dark:text-white/40 font-medium">Harga Member</p>
                             <p class="text-lg font-bold text-slate-700 dark:text-white/80 mt-1">Rp {{ number_format($produkCabang->produk->harga_reguler, 0, ',', '.') }}</p>
                         </div>
                         <div class="bg-amber-500/5 dark:bg-borma-yellow/5 border border-amber-500/20 dark:border-borma-yellow/20 p-4 rounded-2xl">
-                            <p class="text-xs text-amber-600 dark:text-borma-yellow/60 font-medium">Harga Member</p>
+                            <p class="text-xs text-amber-600 dark:text-borma-yellow/60 font-medium">Harga Member Plus</p>
                             <p class="text-xl font-black text-amber-500 dark:text-borma-yellow mt-1">Rp {{ number_format($produkCabang->produk->harga_member, 0, ',', '.') }}</p>
                         </div>
                     </div>
@@ -227,11 +227,11 @@
             
             <div class="space-y-4">
                 <div>
-                    <span class="text-xs text-slate-400 dark:text-white/40 font-semibold">Harga Reguler</span>
+                    <span class="text-xs text-slate-400 dark:text-white/40 font-semibold">Harga Member</span>
                     <h3 class="text-xl font-bold text-slate-700 dark:text-white mt-0.5">Rp {{ number_format($produkCabang->produk->harga_reguler, 0, ',', '.') }}</h3>
                 </div>
                 <div>
-                    <span class="text-xs text-amber-500 font-semibold">Harga Member</span>
+                    <span class="text-xs text-amber-500 font-semibold">Harga Member Plus</span>
                     <h3 class="text-2xl font-black text-amber-500 dark:text-borma-yellow mt-0.5">Rp {{ number_format($produkCabang->produk->harga_member, 0, ',', '.') }}</h3>
                 </div>
                 
@@ -240,7 +240,7 @@
                 @endphp
                 <div class="pt-3 border-t border-dashed border-slate-200 dark:border-white/10">
                     <p class="text-xs text-slate-500 dark:text-white/50">
-                        Hemat Member: <strong class="text-emerald-600 dark:text-emerald-400">Rp {{ number_format($selisih, 0, ',', '.') }}</strong> ({{ round(($selisih / max(1, $produkCabang->produk->harga_reguler)) * 100, 1) }}% potongan)
+                        Hemat Member Plus: <strong class="text-emerald-600 dark:text-emerald-400">Rp {{ number_format($selisih, 0, ',', '.') }}</strong> ({{ round(($selisih / max(1, $produkCabang->produk->harga_reguler)) * 100, 1) }}% potongan)
                     </p>
                 </div>
             </div>

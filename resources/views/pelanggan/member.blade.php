@@ -31,7 +31,7 @@
     @endif
 
     {{-- Already a member --}}
-    @if($pelanggan && $pelanggan->status_member)
+    @if($pelanggan && $pelanggan->status_member_plus)
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
         {{-- Left: Member Info --}}
         <div class="lg:col-span-2 bg-primary-700 rounded-3xl p-8 sm:p-10 relative overflow-hidden text-white">
@@ -39,9 +39,9 @@
             <div class="absolute top-0 right-0 -mr-16 -mt-16 w-80 h-80 rounded-full bg-white/5 blur-3xl pointer-events-none"></div>
             <div class="absolute bottom-0 left-0 -ml-10 -mb-10 w-60 h-60 rounded-full bg-secondary-400/10 blur-2xl pointer-events-none"></div>
             <div class="relative z-10">
-                <div class="inline-flex px-3 py-1 bg-green-500 text-white text-[10px] font-bold rounded-full mb-6 uppercase tracking-wide">Member Aktif</div>
-                <h2 class="font-heading font-extrabold text-3xl sm:text-4xl mb-3 leading-tight uppercase tracking-tight">MEMBER<br><span class="text-secondary-400">DIGITAL</span></h2>
-                <p class="text-primary-100 text-sm mb-8 leading-relaxed max-w-sm">Selamat! Anda sudah terdaftar sebagai member Borma Toserba. Nikmati berbagai keuntungan member.</p>
+                <div class="inline-flex px-3 py-1 bg-green-500 text-white text-[10px] font-bold rounded-full mb-6 uppercase tracking-wide">Member Plus</div>
+                <h2 class="font-heading font-extrabold text-3xl sm:text-4xl mb-3 leading-tight uppercase tracking-tight">MEMBER<br><span class="text-secondary-400">PLUS</span></h2>
+                <p class="text-primary-100 text-sm mb-8 leading-relaxed max-w-sm">Selamat! Anda telah berlangganan aktif sebagai Member Plus Borma Toserba. Nikmati berbagai keuntungan premium.</p>
 
                 {{-- Benefits --}}
                 <div class="space-y-5 mb-8">
@@ -70,7 +70,7 @@
                     <div class="absolute top-0 right-0 w-32 h-32 bg-primary-700/30 rounded-full -mr-10 -mt-10 blur-xl"></div>
                     <div class="relative z-10">
                         <div class="flex items-center justify-between mb-4">
-                            <p class="font-heading font-extrabold text-sm text-white tracking-wider">MEMBER BORMA</p>
+                            <p class="font-heading font-extrabold text-sm text-white tracking-wider">MEMBER BORMA PLUS</p>
                             <div class="flex gap-1"><div class="w-4 h-4 bg-secondary-400 rounded-full opacity-80"></div><div class="w-4 h-4 bg-secondary-400 rounded-full opacity-40 -ml-2"></div></div>
                         </div>
                         <div class="bg-white/10 rounded-lg px-4 py-2 mb-4 inline-flex items-center gap-2">
@@ -95,18 +95,18 @@
         <div class="lg:col-span-3">
             <div class="bg-white rounded-3xl border border-neutral-200 shadow-sm p-8 sm:p-10">
                 <p class="text-[11px] font-bold text-primary-500 uppercase tracking-widest mb-2">Informasi Member</p>
-                <h3 class="font-heading font-extrabold text-2xl text-neutral-800 mb-8">DATA KEANGGOTAAN</h3>
+                <h3 class="font-heading font-extrabold text-2xl text-neutral-800 mb-8">DATA KEANGGOTAAN MEMBER PLUS</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div><p class="text-[11px] font-bold text-neutral-400 uppercase tracking-wider mb-1">Nama Lengkap</p><p class="font-semibold text-sm text-neutral-800">{{ $user->nama }}</p></div>
                     <div><p class="text-[11px] font-bold text-neutral-400 uppercase tracking-wider mb-1">No. WhatsApp</p><p class="font-semibold text-sm text-neutral-800">{{ $user->no_telepon }}</p></div>
                     <div><p class="text-[11px] font-bold text-neutral-400 uppercase tracking-wider mb-1">Email</p><p class="font-semibold text-sm text-neutral-800">{{ $user->email }}</p></div>
-                    <div><p class="text-[11px] font-bold text-neutral-400 uppercase tracking-wider mb-1">Status</p><p class="inline-flex items-center gap-1.5 text-sm font-bold text-green-600"><span class="w-2 h-2 bg-green-500 rounded-full"></span>Aktif</p></div>
+                    <div><p class="text-[11px] font-bold text-neutral-400 uppercase tracking-wider mb-1">Status</p><p class="inline-flex items-center gap-1.5 text-sm font-bold text-green-600"><span class="w-2 h-2 bg-green-500 rounded-full"></span>Member Plus</p></div>
                     <div class="sm:col-span-2"><p class="text-[11px] font-bold text-neutral-400 uppercase tracking-wider mb-1">Alamat</p><p class="font-semibold text-sm text-neutral-800">{{ $pelanggan->alamat ?? '-' }}, Kec. {{ $pelanggan->kecamatan ?? '-' }}, {{ $pelanggan->kota_kabupaten ?? '-' }}, {{ $pelanggan->provinsi ?? '-' }}</p></div>
                 </div>
                 <div class="mt-8 pt-6 border-t border-neutral-100">
                     <div class="flex items-center gap-3 p-4 bg-primary-50 rounded-xl">
                         <div class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center"><svg class="w-5 h-5 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
-                        <p class="text-xs text-primary-700">Member sejak <span class="font-bold">{{ $pelanggan->created_at->format('d M Y') }}</span>. Gunakan kartu member digital Anda saat berbelanja di seluruh cabang Borma.</p>
+                        <p class="text-xs text-primary-700">Member Plus sejak <span class="font-bold">{{ $pelanggan->created_at->format('d M Y') }}</span>. Gunakan kartu member digital Anda saat berbelanja di seluruh cabang Borma.</p>
                     </div>
                 </div>
             </div>
@@ -122,8 +122,8 @@
             <div class="absolute top-0 right-0 -mr-16 -mt-16 w-80 h-80 rounded-full bg-white/5 blur-3xl pointer-events-none"></div>
             <div class="absolute bottom-0 left-0 -ml-10 -mb-10 w-60 h-60 rounded-full bg-secondary-400/10 blur-2xl pointer-events-none"></div>
             <div class="relative z-10">
-                <h2 class="font-heading font-extrabold text-3xl sm:text-4xl mb-3 leading-tight uppercase tracking-tight">AKTIVASI<br><span class="text-secondary-400">MEMBER DIGITAL</span></h2>
-                <p class="text-primary-100 text-sm mb-8 leading-relaxed max-w-sm">Nikmati kemudahan berbelanja dengan identitas digital. Kumpulkan poin di setiap transaksi dan dapatkan harga khusus member di seluruh cabang Borma Toserba.</p>
+                <h2 class="font-heading font-extrabold text-3xl sm:text-4xl mb-3 leading-tight uppercase tracking-tight">UPGRADE KE<br><span class="text-secondary-400">MEMBER PLUS</span></h2>
+                <p class="text-primary-100 text-sm mb-8 leading-relaxed max-w-sm">Upgrade keanggotaan Anda menjadi Member Plus untuk menikmati harga super hemat (Harga Member Plus) dan keuntungan eksklusif lainnya.</p>
 
                 {{-- Benefits --}}
                 <div class="space-y-5 mb-8">
@@ -152,7 +152,7 @@
                     <div class="absolute top-0 right-0 w-32 h-32 bg-primary-700/30 rounded-full -mr-10 -mt-10 blur-xl"></div>
                     <div class="relative z-10">
                         <div class="flex items-center justify-between mb-4">
-                            <p class="font-heading font-extrabold text-sm text-white tracking-wider">MEMBER BORMA</p>
+                            <p class="font-heading font-extrabold text-sm text-white tracking-wider">MEMBER BORMA PLUS</p>
                             <div class="flex gap-1"><div class="w-4 h-4 bg-secondary-400 rounded-full opacity-80"></div><div class="w-4 h-4 bg-secondary-400 rounded-full opacity-40 -ml-2"></div></div>
                         </div>
                         <div class="bg-white/10 rounded-lg px-4 py-2 mb-4 inline-flex items-center gap-2">
@@ -227,7 +227,7 @@
                     <div class="space-y-4 mb-8">
                         <label class="flex items-start gap-3 cursor-pointer group">
                             <input type="checkbox" name="agree_terms" value="1" required class="mt-0.5 w-5 h-5 rounded border-neutral-300 text-primary-700 focus:ring-primary-500">
-                            <span class="text-xs text-neutral-600 leading-relaxed">Saya setuju dengan <a href="#" class="font-bold text-primary-600 underline hover:text-primary-800">Syarat & Ketentuan</a> keanggotaan Borma Toserba dan memberikan izin pengolahan data untuk keperluan layanan pelanggan.</span>
+                            <span class="text-xs text-neutral-600 leading-relaxed">Saya setuju dengan <a href="#" class="font-bold text-primary-600 underline hover:text-primary-800">Syarat & Ketentuan</a> keanggotaan Member Plus Borma Toserba dan memberikan izin pengolahan data untuk keperluan layanan pelanggan.</span>
                         </label>
                         <label class="flex items-start gap-3 cursor-pointer group">
                             <input type="checkbox" name="agree_promo" value="1" class="mt-0.5 w-5 h-5 rounded border-neutral-300 text-primary-700 focus:ring-primary-500">
@@ -236,7 +236,7 @@
                     </div>
 
                     <button type="submit" class="w-full bg-neutral-900 text-white font-bold text-sm py-4 px-6 rounded-xl hover:bg-primary-700 transition-all duration-300 flex items-center justify-between group shadow-md hover:shadow-lg">
-                        <span class="uppercase tracking-wider">Aktifkan Membership</span>
+                        <span class="uppercase tracking-wider">Aktifkan Member Plus</span>
                         <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </button>
                 </form>

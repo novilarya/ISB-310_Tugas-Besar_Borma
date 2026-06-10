@@ -105,9 +105,11 @@
                     <h6>{{ $pc->produk->nama_produk }}</h6>
                     <small class="text-muted">Stok: <strong class="{{ $pc->jumlah_stok < 20 ? 'text-danger' : '' }}">{{ $pc->jumlah_stok }}</strong> unit</small>
                 </div>
-                <div class="text-end d-flex flex-column align-items-end justify-content-center">
-                    <h4 class="text-primary-custom mb-0" style="font-weight: 800; font-family: var(--font-heading);">{{ number_format($pc->period_sales, 0, ',', '.') }}</h4>
-                    <span class="badge bg-light text-dark" style="font-size: 0.7rem; border: 1px solid #E5E7EB;">Terjual</span>
+                <div class="text-end d-flex align-items-center justify-content-center">
+                    <span class="badge-modern bg-green-100 text-green-800 d-inline-flex align-items-center gap-1 py-1.5 px-3" style="border-radius: 30px; font-weight: 800; font-size: 0.85rem;">
+                        <span style="font-size: 1.05rem;">{{ number_format($pc->period_sales, 0, ',', '.') }}</span>
+                        <span style="font-size: 0.72rem; opacity: 0.85; font-weight: 700; text-transform: none; letter-spacing: 0;">Terjual</span>
+                    </span>
                 </div>
             </div>
             @empty
@@ -119,7 +121,7 @@
     <div class="col-lg-6">
         <div class="analysis-card">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="analysis-card-title text-tertiary-custom m-0">
+                <div class="analysis-card-title m-0">
                     Produk Kurang Laku
                     <i class="bi bi-arrow-down-circle-fill text-tertiary-custom ms-3"></i>
                 </div>
@@ -136,9 +138,11 @@
                     <h6>{{ $pc->produk->nama_produk }}</h6>
                     <small class="text-muted">Stok: <strong class="{{ $pc->jumlah_stok < 20 ? 'text-danger' : '' }}">{{ $pc->jumlah_stok }}</strong> unit</small>
                 </div>
-                <div class="text-end d-flex flex-column align-items-end justify-content-center">
-                    <h4 class="text-tertiary-custom mb-0" style="font-weight: 800; font-family: var(--font-heading);">{{ number_format($pc->period_sales, 0, ',', '.') }}</h4>
-                    <span class="badge bg-light text-dark" style="font-size: 0.7rem; border: 1px solid #E5E7EB;">Terjual</span>
+                <div class="text-end d-flex align-items-center justify-content-center">
+                    <span class="badge-modern bg-tertiary-light text-tertiary-custom d-inline-flex align-items-center gap-1 py-1.5 px-3" style="border-radius: 30px; font-weight: 800; font-size: 0.85rem;">
+                        <span style="font-size: 1.05rem;">{{ number_format($pc->period_sales, 0, ',', '.') }}</span>
+                        <span style="font-size: 0.72rem; opacity: 0.85; font-weight: 700; text-transform: none; letter-spacing: 0;">Terjual</span>
+                    </span>
                 </div>
             </div>
             @empty
@@ -176,36 +180,38 @@
                 {{-- Kolom Kanan: Tabel Ringkasan + Stats --}}
                 <div class="col-lg-7">
                     <h6 class="kpi-title mb-3">Ringkasan per Kategori</h6>
-                    <table class="table" style="font-size:0.83rem; margin-bottom:0;">
-                        <thead>
-                            <tr style="background:rgba(0,0,0,0.02);">
-                                <th class="text-muted" style="font-weight:700; border-bottom:2px solid #E5E7EB;">Kategori</th>
-                                <th class="text-muted text-center" style="font-weight:700; border-bottom:2px solid #E5E7EB;">SKU</th>
-                                <th class="text-muted text-center" style="font-weight:700; border-bottom:2px solid #E5E7EB;">Total Stok</th>
-                                <th class="text-muted text-center" style="font-weight:700; border-bottom:2px solid #E5E7EB;">Terjual</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($distribusiKategori as $kategori => $data)
-                            <tr>
-                                <td style="font-weight:700; color:var(--borma-neutral);">{{ $kategori }}</td>
-                                <td class="text-center text-muted">{{ $data['jumlah_sku'] }} produk</td>
-                                <td class="text-center">
-                                    <strong class="{{ $data['total_stok'] < 20 ? 'text-danger' : 'text-success' }}">
-                                        {{ number_format($data['total_stok'], 0, ',', '.') }}
-                                    </strong>
-                                </td>
-                                <td class="text-center">
-                                    <span class="badge-modern badge-primary" style="font-size:0.72rem;">
-                                        {{ number_format($data['total_terjual'], 0, ',', '.') }}
-                                    </span>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr><td colspan="4" class="text-center text-muted py-3">Belum ada data.</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                    <div style="max-height: 240px; overflow-y: auto; padding-right: 4px;" class="pe-1">
+                        <table class="table" style="font-size:0.83rem; margin-bottom:0; border-collapse: separate; border-spacing: 0;">
+                            <thead class="sticky top-0 z-10">
+                                <tr class="bg-slate-50 dark:bg-[#180933]">
+                                    <th class="text-muted" style="font-weight:700; border-bottom:2px solid #E5E7EB; background: inherit; position: sticky; top: 0;">Kategori</th>
+                                    <th class="text-muted text-center" style="font-weight:700; border-bottom:2px solid #E5E7EB; background: inherit; position: sticky; top: 0;">SKU</th>
+                                    <th class="text-muted text-center" style="font-weight:700; border-bottom:2px solid #E5E7EB; background: inherit; position: sticky; top: 0;">Total Stok</th>
+                                    <th class="text-muted text-center" style="font-weight:700; border-bottom:2px solid #E5E7EB; background: inherit; position: sticky; top: 0;">Terjual</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($distribusiKategori as $kategori => $data)
+                                <tr>
+                                    <td style="font-weight:700; color:var(--borma-neutral);">{{ $kategori }}</td>
+                                    <td class="text-center text-muted">{{ $data['jumlah_sku'] }} produk</td>
+                                    <td class="text-center">
+                                        <strong class="{{ $data['total_stok'] < 20 ? 'text-danger' : 'text-success' }}">
+                                            {{ number_format($data['total_stok'], 0, ',', '.') }}
+                                        </strong>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge-modern badge-primary" style="font-size:0.72rem;">
+                                            {{ number_format($data['total_terjual'], 0, ',', '.') }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr><td colspan="4" class="text-center text-muted py-3">Belum ada data.</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
 
                     {{-- Footer Stats --}}
                     <div class="d-flex gap-4 mt-4 pt-3" style="border-top:1px dashed #E5E7EB;">
@@ -307,8 +313,8 @@
                             @endif
                         </a>
                     </th>
-                    <th>Harga Reguler</th>
                     <th>Harga Member</th>
+                    <th>Harga Member Plus</th>
                     <th>
                         <a href="{{ request()->fullUrlWithQuery(['sort' => 'jumlah_terjual', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="text-primary-custom text-decoration-none">
                             Terjual
@@ -429,6 +435,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 x: {
                     grid: { display: false },
                     ticks: {
+                        display: false,
                         font: { size: 11, weight: '700' },
                         color: textColor
                     }

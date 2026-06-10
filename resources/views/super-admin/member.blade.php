@@ -137,8 +137,8 @@
                         </td>
                         <td class="py-4 px-4 font-bold text-borma-purple dark:text-borma-yellow">{{ number_format($item->poin_member) }}</td>
                         <td class="py-4 px-4">
-                            <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border {{ $item->status_member ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20' : 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20' }}">
-                                {{ $item->status_member ? 'Aktif' : 'Tidak Aktif' }}
+                            <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border {{ $item->status_member_plus ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20' : 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20' }}">
+                                {{ $item->status_member_plus ? 'Member Plus' : 'Member' }}
                             </span>
                         </td>
                         <td class="py-4 px-4 text-right flex justify-end gap-2">

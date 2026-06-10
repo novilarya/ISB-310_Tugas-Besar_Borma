@@ -54,7 +54,7 @@ class GoogleAuthController extends Controller
 
                 Pelanggan::create([
                     'id_pengguna'    => $user->id_pengguna,
-                    'status_member'  => false,
+                    'status_member_plus' => false,
                     'poin_member'    => 0,
                     'provinsi'       => '-',
                     'kota_kabupaten' => '-',

@@ -64,12 +64,12 @@
     <div class="col-12 col-md-6 col-xl-6">
         <div class="glass-card h-100">
             <div class="d-flex justify-content-between align-items-start mb-4">
-                <div class="kpi-title">Member Aktif</div>
+                <div class="kpi-title">Member Plus</div>
                 <div class="icon-box bg-primary-light"><i class="bi bi-people"></i></div>
             </div>
             <div class="kpi-value">{{ number_format($totalCustomers, 0, ',', '.') }}</div>
             <div class="kpi-sub">
-                <span>Minggu ini: <strong class="text-success">+{{ $memberMingguIni }} Member</strong></span>
+                <span>Minggu ini: <strong class="text-success">+{{ $memberMingguIni }} Member Plus</strong></span>
                 <span>Top User: <strong>{{ $topMembers->first()->nama ?? '-' }}</strong></span>
             </div>
         </div>
@@ -201,7 +201,7 @@
             </div>
             <div class="row">
                 <div class="col-md-6 pe-4 border-end border-light">
-                    <p class="text-muted mb-4" class="list-title-sm">Top Spender Member</p>
+                    <p class="text-muted mb-4" class="list-title-sm">Top Spender Member Plus</p>
                     @forelse($topMembers as $index => $member)
                     <div class="list-item-modern">
                         <div class="icon-box {{ $index === 0 ? 'bg-secondary-light' : 'bg-primary-light' }} icon-box-rounded"><i class="bi bi-person"></i></div>
@@ -212,7 +212,7 @@
                         <div class="value">Rp {{ number_format($member->total_spent, 0, ',', '.') }}</div>
                     </div>
                     @empty
-                    <p class="text-muted small">Belum ada data transaksi member.</p>
+                    <p class="text-muted small">Belum ada data transaksi member plus.</p>
                     @endforelse
                 </div>
                 <div class="col-md-6 ps-4">

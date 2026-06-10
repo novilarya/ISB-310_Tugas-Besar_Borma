@@ -71,10 +71,12 @@ class CartController extends Controller
         if (isset($cart[$key])) {
             $cart[$key]['quantity'] += $qty;
         } else {
+            $user = Auth::user();
+            $isMemberPlus = $user && $user->pelanggan && $user->pelanggan->status_member_plus;
             $cart[$key] = [
                 'name' => $product['name'],
                 'category' => $product['cat'],
-                'price' => $product['sale'] > 0 ? $product['sale'] : $product['price'],
+                'price' => ($isMemberPlus && $product['sale'] > 0) ? $product['sale'] : $product['price'],
                 'original_price' => $product['price'],
                 'img' => $product['img'],
                 'quantity' => $qty,

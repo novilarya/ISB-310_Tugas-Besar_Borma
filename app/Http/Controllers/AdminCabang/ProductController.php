@@ -197,14 +197,14 @@ class ProductController extends Controller
                 $maxPotongan = $hargaReguler * 0.025;
                 if ($potongan < $minPotongan || $potongan > $maxPotongan) {
                     return back()->withErrors([
-                        'harga_member' => "Untuk harga reguler di bawah Rp 50.000, potongan harga member wajib berupa persentase 1% s/d 2,5% (potongan saat ini: Rp " . number_format($potongan, 0, ',', '.') . " atau sekitar " . round($potongan / $hargaReguler * 100, 2) . "%, range diperbolehkan: Rp " . number_format($minPotongan, 0, ',', '.') . " s/d Rp " . number_format($maxPotongan, 0, ',', '.') . ")."
+                        'harga_member' => "Untuk harga member di bawah Rp 50.000, potongan harga member plus wajib berupa persentase 1% s/d 2,5% (potongan saat ini: Rp " . number_format($potongan, 0, ',', '.') . " atau sekitar " . round($potongan / $hargaReguler * 100, 2) . "%, range diperbolehkan: Rp " . number_format($minPotongan, 0, ',', '.') . " s/d Rp " . number_format($maxPotongan, 0, ',', '.') . ")."
                     ])->withInput();
                 }
             } else {
                 // Potongan rupiah flat: range 1.000 - 2.500
                 if ($potongan < 1000 || $potongan > 2500) {
                     return back()->withErrors([
-                        'harga_member' => "Untuk harga reguler Rp 50.000 ke atas, potongan harga member wajib berkisar antara Rp 1.000 s/d Rp 2.500 (potongan saat ini: Rp " . number_format($potongan, 0, ',', '.') . ")."
+                        'harga_member' => "Untuk harga member Rp 50.000 ke atas, potongan harga member plus wajib berkisar antara Rp 1.000 s/d Rp 2.500 (potongan saat ini: Rp " . number_format($potongan, 0, ',', '.') . ")."
                     ])->withInput();
                 }
             }
@@ -297,14 +297,14 @@ class ProductController extends Controller
                 $maxPotongan = $newHarga * 0.025;
                 if ($potongan < $minPotongan || $potongan > $maxPotongan) {
                     return back()->withErrors([
-                        'harga_member' => "Untuk harga reguler di bawah Rp 50.000, potongan harga member wajib berupa persentase 1% s/d 2,5% (potongan saat ini: Rp " . number_format($potongan, 0, ',', '.') . " atau sekitar " . round($potongan / $newHarga * 100, 2) . "%, range diperbolehkan: Rp " . number_format($minPotongan, 0, ',', '.') . " s/d Rp " . number_format($maxPotongan, 0, ',', '.') . ")."
+                        'harga_member' => "Untuk harga member di bawah Rp 50.000, potongan harga member plus wajib berupa persentase 1% s/d 2,5% (potongan saat ini: Rp " . number_format($potongan, 0, ',', '.') . " atau sekitar " . round($potongan / $newHarga * 100, 2) . "%, range diperbolehkan: Rp " . number_format($minPotongan, 0, ',', '.') . " s/d Rp " . number_format($maxPotongan, 0, ',', '.') . ")."
                     ])->withInput();
                 }
             } else {
                 // Potongan rupiah flat: range 1.000 - 2.500
                 if ($potongan < 1000 || $potongan > 2500) {
                     return back()->withErrors([
-                        'harga_member' => "Untuk harga reguler Rp 50.000 ke atas, potongan harga member wajib berkisar antara Rp 1.000 s/d Rp 2.500 (potongan saat ini: Rp " . number_format($potongan, 0, ',', '.') . ")."
+                        'harga_member' => "Untuk harga member Rp 50.000 ke atas, potongan harga member plus wajib berkisar antara Rp 1.000 s/d Rp 2.500 (potongan saat ini: Rp " . number_format($potongan, 0, ',', '.') . ")."
                     ])->withInput();
                 }
             }
@@ -421,7 +421,7 @@ class ProductController extends Controller
 
         $callback = function() use ($produkCabangs) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['ID SKU Cabang', 'ID SKU Master', 'Nama Produk', 'Kategori', 'Harga Reguler', 'Harga Member', 'Stok', 'Terjual']);
+            fputcsv($file, ['ID SKU Cabang', 'ID SKU Master', 'Nama Produk', 'Kategori', 'Harga Member', 'Harga Member Plus', 'Stok', 'Terjual']);
 
             foreach ($produkCabangs as $pc) {
                 fputcsv($file, [

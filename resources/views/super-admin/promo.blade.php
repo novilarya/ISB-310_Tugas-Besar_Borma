@@ -102,11 +102,8 @@
                     <tr class="border-b border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/50 text-sm">
                         <th class="pb-4 font-medium px-4">Nama Promo</th>
                         <th class="pb-4 font-medium px-4">Cabang</th>
-                        <th class="pb-4 font-medium px-4">Kode Voucher</th>
-                        <th class="pb-4 font-medium px-4">Pemicu Produk</th>
                         <th class="pb-4 font-medium px-4">Potongan</th>
                         <th class="pb-4 font-medium px-4">Periode</th>
-                        <th class="pb-4 font-medium px-4">Kuota</th>
                         <th class="pb-4 font-medium px-4">Status</th>
                         <th class="pb-4 font-medium px-4 text-right">Aksi</th>
                     </tr>
@@ -119,10 +116,14 @@
                     @endphp
                     <tr class="border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
                         <td class="py-4 px-4">
-                            <div class="font-bold text-slate-800 dark:text-white">{{ $promo->nama_voucher }}</div>
-                            @if($promo->id_produk_hadiah)
-                                <div class="text-xs text-green-600 dark:text-green-400 mt-1 flex items-center gap-1">
-                                    <i class="fa-solid fa-gift"></i> Hadiah: {{ $promo->produkHadiah->nama_produk ?? '-' }}
+                            <div class="font-bold">
+                                <a href="{{ route('superadmin.promo.detail', $promo->id_promo) }}" class="text-slate-800 dark:text-white hover:text-borma-purple dark:hover:text-borma-yellow transition-colors font-bold text-decoration-none">
+                                    {{ $promo->nama_voucher }}
+                                </a>
+                            </div>
+                            @if($promo->kode_voucher)
+                                <div class="text-xs text-slate-500 dark:text-white/50 mt-1 flex items-center gap-1">
+                                    <i class="fa-solid fa-tag"></i> {{ $promo->kode_voucher }}
                                 </div>
                             @endif
                         </td>
@@ -134,35 +135,11 @@
                             @endif
                         </td>
                         <td class="py-4 px-4">
-                            @if($promo->kode_voucher)
-                                <span class="bg-purple-50 text-borma-purple dark:bg-borma-yellow/20 dark:text-borma-yellow font-mono font-bold px-2 py-1 rounded text-xs tracking-wider border border-purple-100 dark:border-borma-yellow/30">
-                                    {{ $promo->kode_voucher }}
-                                </span>
-                            @else
-                                <span class="text-slate-400 dark:text-white/40 text-xs">— Tanpa kode —</span>
-                            @endif
-                        </td>
-                        <td class="py-4 px-4">
-                            <div class="font-semibold text-slate-700 dark:text-white/80 line-clamp-1">{{ $promo->produkPemicu->nama_produk ?? '-' }}</div>
-                            <div class="text-xs text-slate-500 dark:text-white/50 mt-1">Min. beli {{ $promo->kuantitas_pemicu }} pcs</div>
-                        </td>
-                        <td class="py-4 px-4">
                             <div class="font-bold text-borma-purple dark:text-borma-yellow">Rp {{ number_format($promo->potongan_harga, 0, ',', '.') }}</div>
-                            @if($promo->min_transaksi > 0)
-                                <div class="text-xs text-slate-500 dark:text-white/50 mt-1">Min. transaksi Rp {{ number_format($promo->min_transaksi, 0, ',', '.') }}</div>
-                            @endif
                         </td>
                         <td class="py-4 px-4">
                             <div class="font-medium text-slate-700 dark:text-white/80">{{ $promo->tanggal_mulai->format('d M Y') }}</div>
                             <div class="text-xs text-slate-500 dark:text-white/50">s/d {{ $promo->tanggal_berakhir->format('d M Y') }}</div>
-                            @if($st === 'aktif')
-                                <div class="text-xs font-bold mt-1 {{ $sisa <= 3 ? 'text-red-500' : 'text-slate-500 dark:text-white/50' }}">
-                                    <i class="fa-regular fa-clock"></i> {{ $sisa >= 0 ? $sisa . ' hari lagi' : 'Habis' }}
-                                </div>
-                            @endif
-                        </td>
-                        <td class="py-4 px-4">
-                            <div class="font-bold text-slate-800 dark:text-white">{{ number_format($promo->kuota_promo, 0, ',', '.') }}</div>
                         </td>
                         <td class="py-4 px-4">
                             @if($st === 'aktif')
@@ -190,7 +167,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="py-12 text-center text-slate-500 dark:text-white/50">
+                        <td colspan="6" class="py-12 text-center text-slate-500 dark:text-white/50">
                             <i class="fa-solid fa-tags text-4xl mb-3 opacity-30"></i>
                             <p class="font-medium">Belum ada data promo.</p>
                         </td>

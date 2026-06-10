@@ -146,4 +146,10 @@ class PromoController extends Controller
 
         return redirect()->route('superadmin.promo')->with('success', 'Promo berhasil dihapus.');
     }
+
+    public function show($id)
+    {
+        $promo = \App\Models\Promo::with(['produkPemicu', 'produkHadiah', 'cabang'])->findOrFail($id);
+        return view('super-admin.promo-detail', compact('promo'));
+    }
 }

@@ -292,10 +292,10 @@ class PaymentController extends Controller
                                 $months = 3;
                             }
                             $pelanggan->update([
-                                'status_member' => 1,
+                                'status_member_plus' => 1,
                                 'tanggal_berakhir_member_plus' => now()->addMonths($months)->toDateString()
                             ]);
-                            Log::info("Pelanggan {$pelanggan->id_pelanggan} status_member updated to 1 and expiration set to {$months} months via Webhook");
+                            Log::info("Pelanggan {$pelanggan->id_pelanggan} status_member_plus updated to 1 and expiration set to {$months} months via Webhook");
                         }
                     }
                 } elseif ($transactionStatus == 'pending') {
@@ -345,10 +345,10 @@ class PaymentController extends Controller
                             $months = 3;
                         }
                         $pelanggan->update([
-                            'status_member' => 1,
+                            'status_member_plus' => 1,
                             'tanggal_berakhir_member_plus' => now()->addMonths($months)->toDateString()
                         ]);
-                        Log::info("Pelanggan {$pelanggan->id_pelanggan} membership set to 1 and expiration set to {$months} months locally.");
+                        Log::info("Pelanggan {$pelanggan->id_pelanggan} membership set to 1 (plus) and expiration set to {$months} months locally.");
                     }
                     return redirect()->route('pelanggan.profil')->with('success', 'Pembayaran berhasil! Status Anda telah berubah menjadi pelanggan Borma Plus.');
                 }

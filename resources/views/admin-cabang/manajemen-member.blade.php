@@ -27,12 +27,12 @@
     <div class="col-md-4">
         <div class="glass-card kpi-card-interactive hover-primary">
             <div class="d-flex justify-content-between align-items-start mb-3">
-                <div class="kpi-title text-primary-custom">Total Member Aktif</div>
+                <div class="kpi-title text-primary-custom">Total Member Plus</div>
                 <div class="icon-box bg-primary-light"><i class="bi bi-people-fill"></i></div>
             </div>
-            <div class="kpi-value" style="color: var(--borma-primary);">{{ number_format($totalMember, 0, ',', '.') }}</div>
+            <div class="kpi-value" style="color: var(--borma-primary);">{{ number_format($totalMemberPlus, 0, ',', '.') }}</div>
             <p class="text-muted mt-2 mb-0" style="font-size: 0.8rem; font-weight: 600;">
-                 Pelanggan berlangganan aktif
+                 Pelanggan berlangganan premium
             </p>
         </div>
     </div>
@@ -44,19 +44,19 @@
             </div>
             <div class="kpi-value">{{ number_format($totalPoin, 0, ',', '.') }}</div>
             <p class="text-muted mt-2 mb-0" style="font-size: 0.8rem; font-weight: 600;">
-              Total poin seluruh member
+               Total poin seluruh member
             </p>
         </div>
     </div>
     <div class="col-md-4">
         <div class="glass-card kpi-card-interactive hover-tertiary">
             <div class="d-flex justify-content-between align-items-start mb-3">
-                <div class="kpi-title text-tertiary-custom">Non Member</div>
+                <div class="kpi-title text-tertiary-custom">Total Member</div>
                 <div class="icon-box bg-tertiary-light"><i class="bi bi-person-dash-fill"></i></div>
             </div>
-            <div class="kpi-value" style="color: var(--borma-tertiary);">{{ number_format($totalNonMember, 0, ',', '.') }}</div>
+            <div class="kpi-value" style="color: var(--borma-tertiary);">{{ number_format($totalMember, 0, ',', '.') }}</div>
             <p class="text-muted mt-2 mb-0" style="font-size: 0.8rem; font-weight: 600;">
-               Pelanggan biasa
+               Semua pelanggan terdaftar
             </p>
         </div>
     </div>
@@ -75,8 +75,8 @@
             <div class="col-md-4">
                 <select name="status" class="form-select filter-select-lg w-100" onchange="this.form.submit()">
                     <option value="">Semua Status</option>
-                    <option value="member" {{ request('status') == 'member' ? 'selected' : '' }}>Member Aktif</option>
-                    <option value="non-member" {{ request('status') == 'non-member' ? 'selected' : '' }}>Non Member</option>
+                    <option value="member" {{ request('status') == 'member' ? 'selected' : '' }}>Member</option>
+                    <option value="member-plus" {{ request('status') == 'member-plus' ? 'selected' : '' }}>Member Plus</option>
                 </select>
             </div>
             <div class="col-md-1 pe-0 text-end">
@@ -100,8 +100,7 @@
                         @else <i class="bi bi-arrow-down-up text-muted" style="font-size:0.7rem;"></i> @endif
                     </a>
                 </th>
-                <th>Kontak</th>
-                <th>Alamat</th>
+
                 <th>
                     <a href="{{ request()->fullUrlWithQuery(['sort' => 'poin_member', 'direction' => request('sort') == 'poin_member' && request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="text-primary-custom text-decoration-none">
                         Poin
@@ -110,9 +109,9 @@
                     </a>
                 </th>
                 <th>
-                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'status_member', 'direction' => request('sort') == 'status_member' && request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="text-primary-custom text-decoration-none">
+                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'status_member_plus', 'direction' => request('sort') == 'status_member_plus' && request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="text-primary-custom text-decoration-none">
                         Status
-                        @if(request('sort') == 'status_member') <i class="bi bi-sort-{{ request('direction') == 'asc' ? 'up' : 'down' }}"></i>
+                        @if(request('sort') == 'status_member_plus') <i class="bi bi-sort-{{ request('direction') == 'asc' ? 'up' : 'down' }}"></i>
                         @else <i class="bi bi-arrow-down-up text-muted" style="font-size:0.7rem;"></i> @endif
                     </a>
                 </th>
@@ -134,31 +133,28 @@
                             <span style="color: var(--borma-secondary); font-weight:800; font-size:1rem;">{{ strtoupper(substr($member->user->nama ?? '?', 0, 1)) }}</span>
                         </div>
                         <div>
-                            <div style="font-weight:800; color: var(--borma-neutral);">{{ $member->user->nama ?? '-' }}</div>
+                            <div style="font-weight:800;">
+                                <a href="{{ route('admin-cabang.member.detail', $member->id_pelanggan) }}" class="text-decoration-none" style="color: var(--borma-neutral); font-weight:800; transition: color 0.2s;" onmouseover="this.style.color='var(--borma-primary)'" onmouseout="this.style.color='var(--borma-neutral)'">
+                                    {{ $member->user->nama ?? '-' }}
+                                </a>
+                            </div>
                             <div class="text-muted" style="font-size:0.78rem;">{{ $member->user->email ?? '-' }}</div>
                         </div>
                     </div>
                 </td>
-                <td>
-                    <div style="font-weight:700; font-size:0.85rem;">{{ $member->user->no_telepon ?? '-' }}</div>
-                </td>
-                <td>
-                    <div class="text-muted" style="font-size:0.83rem; max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="{{ $member->alamat }}">
-                        {{ $member->alamat ?? '-' }}
-                    </div>
-                </td>
+
                 <td>
                     <div style="font-weight:800; font-size:1rem; color: var(--borma-primary);">{{ number_format($member->poin_member, 0, ',', '.') }}</div>
                     <div class="text-muted" style="font-size:0.72rem; font-weight:600;"></div>
                 </td>
                 <td>
-                    @if($member->status_member)
+                    @if($member->status_member_plus)
                         <span class="status-badge-modern status-selesai">
-                            Member Aktif
+                            Member Plus
                         </span>
                     @else
-                        <span class="status-badge-modern status-pending">
-                            Non Member
+                        <span class="status-badge-modern status-proses">
+                            Member
                         </span>
                     @endif
                 </td>
@@ -168,7 +164,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="6" class="text-center py-5 text-muted">
+                <td colspan="4" class="text-center py-5 text-muted">
                     <i class="bi bi-people" style="font-size:3rem; opacity:0.2;"></i>
                     <p class="mt-3 mb-0" style="font-weight:600;">Belum ada data member.</p>
                     @if(request('search') || request('status'))

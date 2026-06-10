@@ -219,13 +219,13 @@
                 <div>
                     <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Status Member</p>
                     <div class="mt-1">
-                        @if($pesanan->pelanggan->status_member)
+                        @if($pesanan->pelanggan->status_member_plus)
                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300">
-                                <i class="fa-solid fa-star text-[10px]"></i> Member Aktif
+                                <i class="fa-solid fa-star text-[10px]"></i> Member Plus
                             </span>
                         @else
                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-white/60">
-                                Non-Member
+                                Member
                             </span>
                         @endif
                     </div>

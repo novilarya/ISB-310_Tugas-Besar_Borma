@@ -43,8 +43,8 @@ class DashboardController extends Controller
         $stokKritis  = $produkCabangs->where('jumlah_stok', '<', 20)->count();
 
         // ── Member ──────────────────────────────────────────────────────
-        $totalCustomers = Pelanggan::where('status_member', true)->count();
-        $memberMingguIni = Pelanggan::where('status_member', true)->where('created_at', '>=', $week)->count();
+        $totalCustomers = Pelanggan::where('status_member_plus', true)->count();
+        $memberMingguIni = Pelanggan::where('status_member_plus', true)->where('created_at', '>=', $week)->count();
 
         // ── Promo & Voucher ─────────────────────────────────────────────
         $todayStr  = now()->toDateString();
@@ -114,7 +114,7 @@ class DashboardController extends Controller
             ->join('pelanggan', 'pesanan.id_pelanggan', '=', 'pelanggan.id_pelanggan')
             ->join('pengguna', 'pelanggan.id_pengguna', '=', 'pengguna.id_pengguna')
             ->where('pesanan.id_cabang', $idCabang)
-            ->where('pelanggan.status_member', true)
+            ->where('pelanggan.status_member_plus', true)
             ->select('pengguna.nama', DB::raw('COUNT(pesanan.id_pesanan) as total_transaksi'), DB::raw('SUM(pesanan.total_tagihan) as total_spent'))
             ->groupBy('pengguna.id_pengguna', 'pengguna.nama')
             ->orderByDesc('total_spent')

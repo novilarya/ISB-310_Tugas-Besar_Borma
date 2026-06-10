@@ -61,7 +61,7 @@ class AuthFeatureTest extends TestCase
             'kota_kabupaten' => '-',
             'kecamatan' => '-',
             'alamat' => '-',
-            'status_member' => false,
+            'status_member_plus' => false,
             'poin_member' => 0
         ]);
 
@@ -108,7 +108,7 @@ class AuthFeatureTest extends TestCase
             'kota_kabupaten' => 'Bandung',
             'kecamatan' => 'Coblong',
             'alamat' => 'Jl. Dago',
-            'status_member' => false,
+            'status_member_plus' => false,
             'poin_member' => 0
         ]);
 
@@ -169,7 +169,7 @@ class AuthFeatureTest extends TestCase
             'kota_kabupaten' => 'Bandung',
             'kecamatan' => 'Coblong',
             'alamat' => 'Jl. Dago No. 10',
-            'status_member' => false,
+            'status_member_plus' => false,
             'poin_member' => 0
         ]);
 
@@ -205,9 +205,9 @@ class AuthFeatureTest extends TestCase
         $finishResponse->assertRedirect('/pelanggan/profil');
         $finishResponse->assertSessionHas('success', 'Pembayaran berhasil! Status Anda telah berubah menjadi pelanggan Borma Plus.');
 
-        // 3. Pastikan database pelanggan diperbarui dengan status_member = 1 dan durasi +2 bulan
+        // 3. Pastikan database pelanggan diperbarui dengan status_member_plus = 1 dan durasi +2 bulan
         $pelanggan->refresh();
-        $this->assertEquals(1, $pelanggan->status_member);
+        $this->assertEquals(1, $pelanggan->status_member_plus);
         $this->assertEquals(now()->addMonths(2)->toDateString(), $pelanggan->tanggal_berakhir_member_plus);
     }
 }

@@ -31,7 +31,10 @@ $productCabang = \App\Models\ProdukCabang::where('id_produk', $product->id_produ
 $stok = $productCabang ? $productCabang->jumlah_stok : 0;
 $terjual = $productCabang ? $productCabang->jumlah_terjual : 0;
 
-$sale = $product->harga_member < $product->harga_reguler ? $product->harga_member : 0;
+$user = auth()->user();
+$isMemberPlus = $user && $user->pelanggan && $user->pelanggan->status_member_plus;
+$hasMemberPlusPrice = $product->harga_member > 0 && $product->harga_member < $product->harga_reguler;
+$activePrice = ($isMemberPlus && $hasMemberPlusPrice) ? $product->harga_member : $product->harga_reguler;
 
 // Weight helper
 $weight = '500g';
@@ -70,9 +73,17 @@ $imgUrl = $product->gambar_produk ? asset('assets/products/'.$product->gambar_pr
         <div class="lg:col-span-4 space-y-4">
             <!-- Large Image Box -->
             <div class="relative bg-neutral-50 border border-neutral-200 rounded-2xl overflow-hidden aspect-square flex items-center justify-center shadow-sm">
-                @if($sale > 0)
+                @if($hasMemberPlusPrice)
                 <div class="absolute top-4 right-4 z-10">
-                    <span class="bg-tertiary-400 text-white text-[10px] font-extrabold px-2.5 py-1 rounded shadow-sm tracking-wider uppercase">Hemat {{ round((($product->harga_reguler - $sale)/$product->harga_reguler)*100) }}%</span>
+                    @php
+                        $percentSaved = round((($product->harga_reguler - $product->harga_member)/$product->harga_reguler)*105-5); // Ensure round percentage
+                        $percentSaved = round((($product->harga_reguler - $product->harga_member)/$product->harga_reguler)*100);
+                    @endphp
+                    @if($isMemberPlus)
+                        <span class="bg-green-500 text-white text-[10px] font-extrabold px-2.5 py-1 rounded shadow-sm tracking-wider uppercase">Member Plus Hemat {{ $percentSaved }}%</span>
+                    @else
+                        <span class="bg-amber-500 text-white text-[10px] font-extrabold px-2.5 py-1 rounded shadow-sm tracking-wider uppercase">Hemat {{ $percentSaved }}% Via Member Plus</span>
+                    @endif
                 </div>
                 @endif
                 @if($product->gambar_produk)
@@ -122,15 +133,53 @@ $imgUrl = $product->gambar_produk ? asset('assets/products/'.$product->gambar_pr
             </div>
 
             <!-- Price Section -->
-            <div class="py-4 border-y border-neutral-100">
-                @if($sale > 0)
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="text-sm text-neutral-400 line-through">Rp {{ number_format($product->harga_reguler,0,',','.') }}</span>
+            <div class="py-5 border-y border-neutral-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Harga Member (Standard) -->
+                <div class="p-4 rounded-2xl border transition-all duration-200 {{ !$isMemberPlus ? 'border-primary-200 bg-primary-50/40' : 'border-neutral-200 bg-neutral-50/50' }}">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="text-xs font-bold text-neutral-500 uppercase tracking-wide">Harga Member</span>
+                        @if(!$isMemberPlus)
+                            <span class="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase bg-primary-100 text-primary-700 px-2 py-0.5 rounded-md">
+                                <span class="w-1.5 h-1.5 rounded-full bg-primary-500 animate-pulse"></span>
+                                Aktif
+                            </span>
+                        @endif
+                    </div>
+                    <p class="font-heading font-extrabold text-2xl text-neutral-800">
+                        Rp {{ number_format($product->harga_reguler, 0, ',', '.') }}
+                    </p>
                 </div>
-                <h3 class="font-heading font-extrabold text-3xl text-primary-700">Rp {{ number_format($sale,0,',','.') }}</h3>
-                @else
-                <h3 class="font-heading font-extrabold text-3xl text-neutral-800">Rp {{ number_format($product->harga_reguler,0,',','.') }}</h3>
-                @endif
+
+                <!-- Harga Member Plus (Premium) -->
+                <div class="p-4 rounded-2xl border transition-all duration-200 relative overflow-hidden {{ $isMemberPlus ? 'border-amber-300 bg-amber-50/30' : 'border-neutral-200 bg-neutral-50/50' }}">
+                    @if($hasMemberPlusPrice)
+                        <div class="absolute -right-8 -top-8 w-16 h-16 bg-amber-400/10 rounded-full blur-xl"></div>
+                    @endif
+                    <div class="flex items-center justify-between mb-1.5 relative z-10">
+                        <span class="text-xs font-bold text-neutral-500 uppercase tracking-wide">Harga Member Plus</span>
+                        @if($isMemberPlus)
+                            <span class="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                Aktif
+                            </span>
+                        @elseif($hasMemberPlusPrice)
+                            @php
+                                $percentSaved = round((($product->harga_reguler - $product->harga_member) / $product->harga_reguler) * 100);
+                            @endphp
+                            <span class="text-[10px] font-extrabold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md">
+                                Hemat {{ $percentSaved }}%
+                            </span>
+                        @endif
+                    </div>
+                    <p class="font-heading font-extrabold text-2xl {{ $isMemberPlus ? 'text-amber-800' : 'text-neutral-800' }} relative z-10">
+                        Rp {{ number_format($product->harga_member > 0 ? $product->harga_member : $product->harga_reguler, 0, ',', '.') }}
+                    </p>
+                    @if(!$isMemberPlus && $hasMemberPlusPrice)
+                        <a href="{{ route('pelanggan.member') }}" class="text-[10px] text-amber-700 hover:text-amber-900 font-bold block mt-1 transition-colors relative z-10 hover:underline">
+                            Upgrade ke Member Plus untuk harga hemat &rarr;
+                        </a>
+                    @endif
+                </div>
             </div>
 
             <!-- Tabs Navigation -->
@@ -231,7 +280,7 @@ $imgUrl = $product->gambar_produk ? asset('assets/products/'.$product->gambar_pr
 @push('scripts')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <script>
-    const unitPrice = {{ $sale > 0 ? $sale : $product->harga_reguler }};
+    const unitPrice = {{ $activePrice }};
     const maxStok = {{ $stok }};
     const qtyInput = document.getElementById('qty-input');
     const subtotalPrice = document.getElementById('subtotal-price');

@@ -31,7 +31,7 @@ class ProfileController extends Controller
             // If user somehow doesn't have a pelanggan record, create a dummy one for UI purposes
             // Or redirect back with error. Let's create an empty one for the view.
             $pelanggan = new Pelanggan();
-            $pelanggan->status_member = 'REGULER';
+            $pelanggan->status_member_plus = false;
             $pelanggan->id_pelanggan = 'BRM-' . rand(1000, 9999) . '-' . rand(1000, 9999);
         }
 
@@ -155,7 +155,7 @@ class ProfileController extends Controller
         } else {
             Pelanggan::create([
                 'id_pengguna' => $user->id_pengguna,
-                'status_member' => false,
+                'status_member_plus' => false,
                 'poin_member' => 0,
                 'provinsi' => $request->provinsi,
                 'kota_kabupaten' => $request->kota_kabupaten,

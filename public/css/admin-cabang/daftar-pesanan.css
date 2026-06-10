@@ -46,3 +46,18 @@
 .confirm-item-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F3F4F6; font-size: 0.85rem; }
 .confirm-item-row:last-child { border-bottom: none; }
 .confirm-total { font-size: 1rem; font-weight: 800; color: #33116C; }
+
+/* ── Clickable Order ID hover styles ── */
+.order-link {
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s ease;
+}
+.order-link strong {
+    transition: color 0.2s ease;
+}
+.order-link:hover strong {
+    color: var(--borma-tertiary) !important;
+    text-decoration: underline;
+}
+

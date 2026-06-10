@@ -166,4 +166,17 @@ class PromoController extends Controller
         return redirect()->route('admin-cabang.promo')
             ->with('success', 'Promo "' . $nama . '" berhasil dihapus.');
     }
+
+    /**
+     * DETAIL — Tampilkan detail promo/voucher.
+     */
+    public function show($id)
+    {
+        $idCabang = $this->getIdCabang();
+        $promo = Promo::with(['produkPemicu', 'produkHadiah', 'cabang'])
+            ->where('id_cabang', $idCabang)
+            ->findOrFail($id);
+            
+        return view('admin-cabang.promo-detail', compact('promo'));
+    }
 }

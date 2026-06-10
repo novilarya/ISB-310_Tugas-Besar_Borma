@@ -44,7 +44,7 @@ class MemberController extends Controller
                 'regex:/[0-9@$!%*#?&_\-]/',
             ],
             'no_telepon' => 'required|string|max:15',
-            'status_member' => 'required|boolean',
+            'status_member_plus' => 'required|boolean',
             'poin_member' => 'required|integer|min:0',
             'provinsi' => 'nullable|string|max:100',
             'kota_kabupaten' => 'nullable|string|max:100',
@@ -63,7 +63,7 @@ class MemberController extends Controller
         }
 
         $member->update([
-            'status_member' => $request->status_member,
+            'status_member_plus' => $request->status_member_plus,
             'poin_member' => $request->poin_member,
             'provinsi' => $request->provinsi,
             'kota_kabupaten' => $request->kota_kabupaten,

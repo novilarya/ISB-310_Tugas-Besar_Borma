@@ -51,7 +51,7 @@
 {{-- ── FILTER BAR ──────────────────────────────────────────────────────── --}}
 <div class="mb-5">
     <div class="glass-card mb-4" style="padding: 16px 24px;">
-        <form action="{{ route('admin-cabang.pesanan') }}" method="GET" class="row g-3 w-100 align-items-center m-0">
+        <form id="filterForm" action="{{ route('admin-cabang.pesanan') }}" method="GET" class="row g-3 w-100 align-items-center m-0">
             <div class="col-md-4 ps-0">
                 <div class="search-input w-100">
                     <i class="bi bi-search"></i>
@@ -83,6 +83,21 @@
         </form>
     </div>
 
+    @php
+        $statusMap = [
+            'Menunggu'         => ['class'=>'status-pending',    'icon'=>'bi-clock',        'label'=>'Menunggu Konfirmasi'],
+            'Disiapkan'        => ['class'=>'status-siap',       'icon'=>'bi-box-seam',     'label'=>'Disiapkan'],
+            'mencari_driver'   => ['class'=>'status-cari-driver','icon'=>'bi-geo-alt-fill', 'label'=>'Mencari Kurir'],
+            'diterima_driver'  => ['class'=>'status-siap',       'icon'=>'bi-person-check', 'label'=>'Diterima Driver'],
+            'diambil'          => ['class'=>'status-siap',       'icon'=>'bi-box-seam',     'label'=>'Diambil Driver'],
+            'dalam_pengiriman' => ['class'=>'status-dikirim',    'icon'=>'bi-truck',        'label'=>'Dikirim'],
+            'diterima'         => ['class'=>'status-pending',    'icon'=>'bi-geo-alt',      'label'=>'Pesanan Tiba'],
+            'selesai'          => ['class'=>'status-selesai',    'icon'=>'bi-check-circle', 'label'=>'Selesai'],
+            'gagal'            => ['class'=>'status-pending',    'icon'=>'bi-exclamation-circle', 'label'=>'Gagal Kirim'],
+            'ditolak_driver'   => ['class'=>'status-pending',    'icon'=>'bi-x-circle',     'label'=>'Ditolak Driver'],
+        ];
+    @endphp
+
     {{-- ── TABEL PESANAN ─────────────────────────────────────────────── --}}
     <div class="table-produk">
         <table>
@@ -90,55 +105,52 @@
                 <tr>
                     <th>
                         <a href="{{ request()->fullUrlWithQuery(['sort'=>'id_pesanan','direction'=>request('direction')=='asc'?'desc':'asc']) }}" class="text-primary-custom text-decoration-none">
-                            Pesanan @if(request('sort')=='id_pesanan')<i class="bi bi-sort-{{ request('direction')=='asc'?'up':'down' }}"></i>@endif
+                            Pesanan
+                            @if(request('sort', 'tanggal_pemesanan')=='id_pesanan')
+                                <i class="bi bi-sort-{{ request('direction')=='asc'?'up':'down' }}"></i>
+                            @else
+                                <i class="bi bi-arrow-down-up text-muted" style="font-size: 0.7rem;"></i>
+                            @endif
                         </a>
                     </th>
-                    <th>
-                        <a href="{{ request()->fullUrlWithQuery(['sort'=>'tanggal_pemesanan','direction'=>request('direction')=='asc'?'desc':'asc']) }}" class="text-primary-custom text-decoration-none">
-                            Waktu @if(request('sort')=='tanggal_pemesanan')<i class="bi bi-sort-{{ request('direction')=='asc'?'up':'down' }}"></i>@endif
-                        </a>
-                    </th>
+                    <th>Tanggal</th>
+                    <th>Waktu</th>
                     <th>Pelanggan</th>
                     <th>
                         <a href="{{ request()->fullUrlWithQuery(['sort'=>'total_tagihan','direction'=>request('direction')=='asc'?'desc':'asc']) }}" class="text-primary-custom text-decoration-none">
-                            Tagihan @if(request('sort')=='total_tagihan')<i class="bi bi-sort-{{ request('direction')=='asc'?'up':'down' }}"></i>@endif
+                            Tagihan
+                            @if(request('sort', 'tanggal_pemesanan')=='total_tagihan')
+                                <i class="bi bi-sort-{{ request('direction')=='asc'?'up':'down' }}"></i>
+                            @else
+                                <i class="bi bi-arrow-down-up text-muted" style="font-size: 0.7rem;"></i>
+                            @endif
                         </a>
                     </th>
                     <th>Driver / Pengiriman</th>
                     <th>Status</th>
-                    <th style="min-width:160px;">Aksi</th>
+                    <th style="min-width:120px;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($pesanans as $pesanan)
                 @php
-                    $statusMap = [
-                        'Menunggu'         => ['class'=>'status-pending',    'icon'=>'bi-clock',        'label'=>'Menunggu Konfirmasi'],
-                        'Disiapkan'        => ['class'=>'status-siap',       'icon'=>'bi-box-seam',     'label'=>'Disiapkan'],
-                        'mencari_driver'   => ['class'=>'status-cari-driver','icon'=>'bi-geo-alt-fill', 'label'=>'Mencari Kurir'],
-                        'diterima_driver'  => ['class'=>'status-siap',       'icon'=>'bi-person-check', 'label'=>'Diterima Driver'],
-                        'diambil'          => ['class'=>'status-siap',       'icon'=>'bi-box-seam',     'label'=>'Diambil Driver'],
-                        'dalam_pengiriman' => ['class'=>'status-dikirim',    'icon'=>'bi-truck',        'label'=>'Dikirim'],
-                        'diterima'         => ['class'=>'status-pending',    'icon'=>'bi-geo-alt',      'label'=>'Pesanan Tiba'],
-                        'selesai'          => ['class'=>'status-selesai',    'icon'=>'bi-check-circle', 'label'=>'Selesai'],
-                        'gagal'            => ['class'=>'status-pending',    'icon'=>'bi-exclamation-circle', 'label'=>'Gagal Kirim'],
-                        'ditolak_driver'   => ['class'=>'status-pending',    'icon'=>'bi-x-circle',     'label'=>'Ditolak Driver'],
-                    ];
                     $st = $statusMap[$pesanan->status_pesanan] ?? ['class'=>'status-pending','icon'=>'bi-question','label'=>$pesanan->status_pesanan];
                     $oid = '#BRM-9' . str_pad($pesanan->id_pesanan, 3, '0', STR_PAD_LEFT);
                 @endphp
                 <tr>
                     {{-- ID --}}
                     <td>
-                        <a href="{{ route('admin-cabang.pesanan.show', $pesanan->id_pesanan) }}"
-                           style="font-weight:800;color:var(--borma-primary);font-family:var(--font-heading);letter-spacing:0.5px;text-decoration:none;">
-                            {{ $oid }}
+                        <a href="{{ route('admin-cabang.pesanan.show', $pesanan->id_pesanan) }}" class="order-link">
+                            <strong class="text-primary-custom">{{ $oid }}</strong>
                         </a>
+                    </td>
+                    {{-- Tanggal --}}
+                    <td>
+                        <div style="font-weight:700;">{{ \Carbon\Carbon::parse($pesanan->tanggal_pemesanan)->isToday() ? 'Hari ini' : \Carbon\Carbon::parse($pesanan->tanggal_pemesanan)->format('d M Y') }}</div>
                     </td>
                     {{-- Waktu --}}
                     <td>
-                        <div style="font-weight:700;">{{ \Carbon\Carbon::parse($pesanan->tanggal_pemesanan)->isToday() ? 'Hari ini' : \Carbon\Carbon::parse($pesanan->tanggal_pemesanan)->format('d M Y') }}</div>
-                        <div class="text-muted" style="font-size:0.78rem;">{{ \Carbon\Carbon::parse($pesanan->tanggal_pemesanan)->format('H:i') }} WIB</div>
+                        <div class="text-muted" style="font-weight:700; font-size:0.82rem;">{{ \Carbon\Carbon::parse($pesanan->tanggal_pemesanan)->format('H:i') }} WIB</div>
                     </td>
                     {{-- Pelanggan --}}
                     <td>
@@ -172,12 +184,6 @@
                     {{-- AKSI --}}
                     <td>
                         <div class="d-flex align-items-center gap-2 flex-wrap">
-
-                            {{-- 👁 Lihat Detail --}}
-                            <a href="{{ route('admin-cabang.pesanan.show', $pesanan->id_pesanan) }}"
-                               class="btn-nota" title="Lihat Detail">
-                                <i class="bi bi-eye" style="font-size:1rem;"></i>
-                            </a>
 
                             {{-- 🖨 Cetak Nota --}}
                             <a href="{{ route('admin-cabang.pesanan.nota', $pesanan->id_pesanan) }}"
@@ -223,11 +229,6 @@
                                         <i class="bi bi-check-circle me-1"></i>Selesaikan
                                     </button>
                                 </form>
-
-                            @elseif($pesanan->status_pesanan === 'selesai')
-                                <span class="text-success" style="font-size:0.78rem;font-weight:700;">
-                                    <i class="bi bi-check-circle-fill me-1"></i>Selesai
-                                </span>
                             @endif
 
                         </div>
@@ -235,7 +236,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="text-center py-5 text-muted">
+                    <td colspan="8" class="text-center py-5 text-muted">
                         <i class="bi bi-inbox" style="font-size:2.5rem;opacity:0.3;display:block;margin-bottom:8px;"></i>
                         Belum ada pesanan.
                     </td>

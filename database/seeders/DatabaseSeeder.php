@@ -66,7 +66,7 @@ class DatabaseSeeder extends Seeder
             [
                 'id_pelanggan' => 1,
                 'id_pengguna' => 4,
-                'status_member' => 1,
+                'status_member_plus' => 1,
                 'poin_member' => 100,
                 'provinsi' => 'Jawa Barat',
                 'kota_kabupaten' => 'Kota Bandung',
