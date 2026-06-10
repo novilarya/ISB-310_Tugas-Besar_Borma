@@ -720,6 +720,25 @@ class DatabaseSeeder extends Seeder
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ]
+        // ===== ANTREAN TUGAS FCFS (id_kurir = null, status = pending) =====
+
+        // FCFS 1
+        $fcfs1 = Pesanan::create([
+            'id_pelanggan' => $pelCustomer1->id_pelanggan,
+            'id_cabang' => $cabangPusat->id_cabang,
+            'id_kurir' => null,
+            'id_promo' => null,
+            'tanggal_pemesanan' => now()->subMinutes(55),
+            'total_belanja' => 500000,
+            'biaya_pengiriman' => 25000,
+            'diskon_voucher' => 0,
+            'total_tagihan' => 525000,
+            'metode_pembayaran' => 'transfer',
+            'alamat_pengiriman' => 'Jl. Gatot Subroto No. 123, Bandung',
+            'status_pesanan' => 'mencari_driver',
+            'estimasi_tiba' => now()->addHours(2),
+            'latitude' => -6.9215, 'longitude' => 107.6310,
+            'catatan_pengiriman' => 'Gedung utama, lantai 5. Hubungi customer sebelum tiba.',
         ]);
 
         // 13. Data Hak Akses Menu
@@ -741,5 +760,198 @@ class DatabaseSeeder extends Seeder
             ['id_pengguna' => 2, 'menu_key' => 'admincabang_laporan', 'akses' => true, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
             ['id_pengguna' => 2, 'menu_key' => 'admincabang_pengaturan', 'akses' => true, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
         ]);
+        // FCFS 2
+        $fcfs2 = Pesanan::create([
+            'id_pelanggan' => $pelCustomer2->id_pelanggan,
+            'id_cabang' => $cabangAntapani->id_cabang,
+            'id_kurir' => null,
+            'id_promo' => null,
+            'tanggal_pemesanan' => now()->subMinutes(48),
+            'total_belanja' => 200000,
+            'biaya_pengiriman' => 15000,
+            'diskon_voucher' => 0,
+            'total_tagihan' => 215000,
+            'metode_pembayaran' => 'cash',
+            'alamat_pengiriman' => 'Jl. Diponegoro No. 45, Bandung',
+            'status_pesanan' => 'mencari_driver',
+            'estimasi_tiba' => now()->addHours(1),
+            'latitude' => -6.9025, 'longitude' => 107.6186,
+            'catatan_pengiriman' => 'Toko dengan papan merah. Titip ke karyawan toko.',
+        ]);
+        PesananProduk::create(['id_pesanan' => $fcfs2->id_pesanan, 'id_produk' => $produk3->id_produk, 'jumlah' => 12, 'harga_satuan' => 16000, 'subtotal' => 192000]);
+        PesananProduk::create(['id_pesanan' => $fcfs2->id_pesanan, 'id_produk' => $produk5->id_produk, 'jumlah' => 1, 'harga_satuan' => 12000, 'subtotal' => 12000]);
+
+        // FCFS 3
+        $fcfs3 = Pesanan::create([
+            'id_pelanggan' => $pelCustomer3->id_pelanggan,
+            'id_cabang' => $cabangAntapani->id_cabang,
+            'id_kurir' => null,
+            'id_promo' => null,
+            'tanggal_pemesanan' => now()->subMinutes(42),
+            'total_belanja' => 850000,
+            'biaya_pengiriman' => 35000,
+            'diskon_voucher' => 50000,
+            'total_tagihan' => 835000,
+            'metode_pembayaran' => 'transfer',
+            'alamat_pengiriman' => 'Jl. Braga No. 10, Bandung',
+            'status_pesanan' => 'mencari_driver',
+            'estimasi_tiba' => now()->addHours(3),
+            'latitude' => -6.9175, 'longitude' => 107.6090,
+            'catatan_pengiriman' => 'Gunakan pintu samping. Cek ketersediaan barang sebelum pengiriman.',
+        ]);
+        PesananProduk::create(['id_pesanan' => $fcfs3->id_pesanan, 'id_produk' => $produk1->id_produk, 'jumlah' => 8, 'harga_satuan' => 75000, 'subtotal' => 600000]);
+        PesananProduk::create(['id_pesanan' => $fcfs3->id_pesanan, 'id_produk' => $produk4->id_produk, 'jumlah' => 10, 'harga_satuan' => 18000, 'subtotal' => 180000]);
+        PesananProduk::create(['id_pesanan' => $fcfs3->id_pesanan, 'id_produk' => $produk3->id_produk, 'jumlah' => 5, 'harga_satuan' => 16000, 'subtotal' => 80000]);
+
+        // FCFS 4
+        $fcfs4 = Pesanan::create([
+            'id_pelanggan' => $pelAndi->id_pelanggan,
+            'id_cabang' => $cabangPusat->id_cabang,
+            'id_kurir' => null,
+            'id_promo' => null,
+            'tanggal_pemesanan' => now()->subMinutes(36),
+            'total_belanja' => 375000,
+            'biaya_pengiriman' => 20000,
+            'diskon_voucher' => 0,
+            'total_tagihan' => 395000,
+            'metode_pembayaran' => 'transfer',
+            'alamat_pengiriman' => 'Jl. Pahlawan No. 1, Bandung',
+            'status_pesanan' => 'mencari_driver',
+            'estimasi_tiba' => now()->addHours(2),
+            'latitude' => -6.9100, 'longitude' => 107.6250,
+            'catatan_pengiriman' => 'Rumah cat putih pagar hijau, ketuk pintu depan.',
+        ]);
+        PesananProduk::create(['id_pesanan' => $fcfs4->id_pesanan, 'id_produk' => $produk1->id_produk, 'jumlah' => 3, 'harga_satuan' => 75000, 'subtotal' => 225000]);
+        PesananProduk::create(['id_pesanan' => $fcfs4->id_pesanan, 'id_produk' => $produk2->id_produk, 'jumlah' => 2, 'harga_satuan' => 35000, 'subtotal' => 70000]);
+        PesananProduk::create(['id_pesanan' => $fcfs4->id_pesanan, 'id_produk' => $produk4->id_produk, 'jumlah' => 5, 'harga_satuan' => 18000, 'subtotal' => 90000]);
+
+        // FCFS 5
+        $fcfs5 = Pesanan::create([
+            'id_pelanggan' => $pelSiti->id_pelanggan,
+            'id_cabang' => $cabangBelumadd->id_cabang,
+            'id_kurir' => null,
+            'id_promo' => null,
+            'tanggal_pemesanan' => now()->subMinutes(30),
+            'total_belanja' => 128000,
+            'biaya_pengiriman' => 10000,
+            'diskon_voucher' => 0,
+            'total_tagihan' => 138000,
+            'metode_pembayaran' => 'cash',
+            'alamat_pengiriman' => 'Jl. Sukajadi No. 2, Bandung',
+            'status_pesanan' => 'mencari_driver',
+            'estimasi_tiba' => now()->addMinutes(90),
+            'latitude' => -6.8833, 'longitude' => 107.6033,
+            'catatan_pengiriman' => 'Kios sebelah warung nasi. Hubungi dulu via telepon.',
+        ]);
+        PesananProduk::create(['id_pesanan' => $fcfs5->id_pesanan, 'id_produk' => $produk3->id_produk, 'jumlah' => 8, 'harga_satuan' => 16000, 'subtotal' => 128000]);
+
+        // FCFS 6
+        $fcfs6 = Pesanan::create([
+            'id_pelanggan' => $pelBudiA->id_pelanggan,
+            'id_cabang' => $cabangAntapani->id_cabang,
+            'id_kurir' => null,
+            'id_promo' => null,
+            'tanggal_pemesanan' => now()->subMinutes(25),
+            'total_belanja' => 660000,
+            'biaya_pengiriman' => 30000,
+            'diskon_voucher' => 0,
+            'total_tagihan' => 690000,
+            'metode_pembayaran' => 'transfer',
+            'alamat_pengiriman' => 'Jl. Pasteur No. 123, Sukajadi, Bandung',
+            'status_pesanan' => 'mencari_driver',
+            'estimasi_tiba' => now()->addHours(2),
+            'latitude' => -6.8936, 'longitude' => 107.5965,
+            'catatan_pengiriman' => 'Komplek perumahan blok C-12. Masuk dari gerbang utara.',
+        ]);
+        PesananProduk::create(['id_pesanan' => $fcfs6->id_pesanan, 'id_produk' => $produk1->id_produk, 'jumlah' => 6, 'harga_satuan' => 75000, 'subtotal' => 450000]);
+        PesananProduk::create(['id_pesanan' => $fcfs6->id_pesanan, 'id_produk' => $produk2->id_produk, 'jumlah' => 4, 'harga_satuan' => 35000, 'subtotal' => 140000]);
+        PesananProduk::create(['id_pesanan' => $fcfs6->id_pesanan, 'id_produk' => $produk5->id_produk, 'jumlah' => 6, 'harga_satuan' => 12000, 'subtotal' => 72000]);
+
+        // FCFS 7
+        $fcfs7 = Pesanan::create([
+            'id_pelanggan' => $pelCustomer1->id_pelanggan,
+            'id_cabang' => $cabangBelumadd->id_cabang,
+            'id_kurir' => null,
+            'id_promo' => null,
+            'tanggal_pemesanan' => now()->subMinutes(20),
+            'total_belanja' => 270000,
+            'biaya_pengiriman' => 18000,
+            'diskon_voucher' => 0,
+            'total_tagihan' => 288000,
+            'metode_pembayaran' => 'cash',
+            'alamat_pengiriman' => 'Jl. Merdeka 45, Bandung',
+            'status_pesanan' => 'mencari_driver',
+            'estimasi_tiba' => now()->addMinutes(75),
+            'latitude' => -6.9175, 'longitude' => 107.6191,
+            'catatan_pengiriman' => 'Lantai 3 apartemen, unit 305. Lift dari lobi utama.',
+        ]);
+        PesananProduk::create(['id_pesanan' => $fcfs7->id_pesanan, 'id_produk' => $produk4->id_produk, 'jumlah' => 15, 'harga_satuan' => 18000, 'subtotal' => 270000]);
+
+        // FCFS 8
+        $fcfs8 = Pesanan::create([
+            'id_pelanggan' => $pelCustomer3->id_pelanggan,
+            'id_cabang' => $cabangPusat->id_cabang,
+            'id_kurir' => null,
+            'id_promo' => null,
+            'tanggal_pemesanan' => now()->subMinutes(15),
+            'total_belanja' => 432000,
+            'biaya_pengiriman' => 22000,
+            'diskon_voucher' => 20000,
+            'total_tagihan' => 434000,
+            'metode_pembayaran' => 'transfer',
+            'alamat_pengiriman' => 'Jl. Ahmad Yani 234, Bandung',
+            'status_pesanan' => 'mencari_driver',
+            'estimasi_tiba' => now()->addHours(2),
+            'latitude' => -6.9300, 'longitude' => 107.6350,
+            'catatan_pengiriman' => 'Belakang Masjid Al-Falah, gang kecil masuk 50m.',
+        ]);
+        PesananProduk::create(['id_pesanan' => $fcfs8->id_pesanan, 'id_produk' => $produk1->id_produk, 'jumlah' => 4, 'harga_satuan' => 75000, 'subtotal' => 300000]);
+        PesananProduk::create(['id_pesanan' => $fcfs8->id_pesanan, 'id_produk' => $produk3->id_produk, 'jumlah' => 4, 'harga_satuan' => 16000, 'subtotal' => 64000]);
+        PesananProduk::create(['id_pesanan' => $fcfs8->id_pesanan, 'id_produk' => $produk5->id_produk, 'jumlah' => 3, 'harga_satuan' => 12000, 'subtotal' => 36000]);
+
+        // FCFS 9
+        $fcfs9 = Pesanan::create([
+            'id_pelanggan' => $pelAndi->id_pelanggan,
+            'id_cabang' => $cabangAntapani->id_cabang,
+            'id_kurir' => null,
+            'id_promo' => null,
+            'tanggal_pemesanan' => now()->subMinutes(10),
+            'total_belanja' => 156000,
+            'biaya_pengiriman' => 12000,
+            'diskon_voucher' => 0,
+            'total_tagihan' => 168000,
+            'metode_pembayaran' => 'cash',
+            'alamat_pengiriman' => 'Jl. Pahlawan No. 1, Bandung',
+            'status_pesanan' => 'mencari_driver',
+            'estimasi_tiba' => now()->addMinutes(60),
+            'latitude' => -6.9100, 'longitude' => 107.6250,
+            'catatan_pengiriman' => 'Pesanan kedua hari ini. Taruh di teras samping.',
+        ]);
+        PesananProduk::create(['id_pesanan' => $fcfs9->id_pesanan, 'id_produk' => $produk2->id_produk, 'jumlah' => 2, 'harga_satuan' => 35000, 'subtotal' => 70000]);
+        PesananProduk::create(['id_pesanan' => $fcfs9->id_pesanan, 'id_produk' => $produk4->id_produk, 'jumlah' => 3, 'harga_satuan' => 18000, 'subtotal' => 54000]);
+        PesananProduk::create(['id_pesanan' => $fcfs9->id_pesanan, 'id_produk' => $produk5->id_produk, 'jumlah' => 3, 'harga_satuan' => 12000, 'subtotal' => 36000]);
+
+        // FCFS 10
+        $fcfs10 = Pesanan::create([
+            'id_pelanggan' => $pelSiti->id_pelanggan,
+            'id_cabang' => $cabangPusat->id_cabang,
+            'id_kurir' => null,
+            'id_promo' => null,
+            'tanggal_pemesanan' => now()->subMinutes(3),
+            'total_belanja' => 1050000,
+            'biaya_pengiriman' => 40000,
+            'diskon_voucher' => 100000,
+            'total_tagihan' => 990000,
+            'metode_pembayaran' => 'transfer',
+            'alamat_pengiriman' => 'Jl. Sukajadi No. 2, Bandung',
+            'status_pesanan' => 'mencari_driver',
+            'estimasi_tiba' => now()->addHours(3),
+            'latitude' => -6.8833, 'longitude' => 107.6033,
+            'catatan_pengiriman' => 'Pesanan besar, pastikan kendaraan cukup. Hubungi 30 menit sebelum tiba.',
+        ]);
+        PesananProduk::create(['id_pesanan' => $fcfs10->id_pesanan, 'id_produk' => $produk1->id_produk, 'jumlah' => 10, 'harga_satuan' => 75000, 'subtotal' => 750000]);
+        PesananProduk::create(['id_pesanan' => $fcfs10->id_pesanan, 'id_produk' => $produk2->id_produk, 'jumlah' => 5, 'harga_satuan' => 35000, 'subtotal' => 175000]);
+        PesananProduk::create(['id_pesanan' => $fcfs10->id_pesanan, 'id_produk' => $produk3->id_produk, 'jumlah' => 3, 'harga_satuan' => 16000, 'subtotal' => 48000]);
+        PesananProduk::create(['id_pesanan' => $fcfs10->id_pesanan, 'id_produk' => $produk4->id_produk, 'jumlah' => 5, 'harga_satuan' => 18000, 'subtotal' => 90000]);
     }
 }

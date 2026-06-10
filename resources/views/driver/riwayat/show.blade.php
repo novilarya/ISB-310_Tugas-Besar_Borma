@@ -168,10 +168,10 @@
 </div>
 
 {{-- ===== BUKTI PENGIRIMAN ===== --}}
-@if($pesanan->bukti_pengiriman)
+@if($pesanan->buktiPengiriman)
 <div class="section-card fade-up delay-7">
     <h2 class="section-title">Bukti Pengiriman</h2>
-    <img src="{{ asset('storage/' . $pesanan->bukti_pengiriman) }}" alt="Bukti Pengiriman" class="bukti-photo">
+    <img src="{{ asset('storage/' . $pesanan->buktiPengiriman->foto_bukti) }}" alt="Bukti Pengiriman" class="bukti-photo">
 </div>
 @endif
 

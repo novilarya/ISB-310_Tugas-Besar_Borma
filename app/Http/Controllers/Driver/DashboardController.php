@@ -41,7 +41,7 @@ class DashboardController extends Controller
 
         // Tugas yang sudah dikonfirmasi dan sedang aktif
         $tugasAktif = Pesanan::where('id_kurir', $kurir->id_kurir)
-            ->whereIn('status_pesanan', ['mencari_driver', 'diterima_driver', 'diambil', 'dalam_pengiriman'])
+            ->whereIn('status_pesanan', ['diterima_driver', 'diambil', 'dalam_pengiriman'])
             ->count();
 
         // Selesai hari ini
@@ -50,17 +50,19 @@ class DashboardController extends Controller
             ->whereDate('updated_at', today())
             ->count();
 
-        // Tugas berikutnya: ambil tugas aktif yang sudah diklaim driver ini
+        // Tugas berikutnya: tugas yang sedang dihandle driver (aktif)
+        // Menampilkan yang sedang berjalan agar tidak hilang saat reload
         $tugasBerikutnya = Pesanan::where('id_kurir', $kurir->id_kurir)
             ->whereIn('status_pesanan', ['diterima_driver', 'diambil', 'dalam_pengiriman'])
             ->with(['cabang', 'pelanggan.user'])
+            ->orderByRaw("FIELD(status_pesanan, 'diterima_driver', 'diambil', 'dalam_pengiriman')")
             ->orderBy('created_at', 'asc')
             ->first();
 
         // Antrian tugas pengiriman: pesanan yang belum diassign ke kurir manapun (multi-driver FCFS) dan sesuai cabang kurir
         $antrianTugas = Pesanan::whereNull('id_kurir')
             ->where('status_pesanan', 'mencari_driver')
-            ->where('id_cabang', $kurir->id_cabang)
+            ->where('id_cabang', $kurir->id_cabang ?? 0)
             ->with(['cabang', 'pelanggan.user'])
             ->orderBy('created_at', 'asc')
             ->get();
