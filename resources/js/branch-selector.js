@@ -64,7 +64,7 @@ async function processLocationRecommendation(lat, lng) {
             
             // Hook up confirm button
             document.getElementById('btn-confirm-recommend').onclick = function() {
-                saveSelectedCabang(nearest.id);
+                saveSelectedCabang(nearest.id, nearest.distance);
             };
             
             // Show recommendation modal
@@ -235,7 +235,7 @@ async function updateModalSelectorMapWithUserLocation(lat, lng, accuracy) {
                         <p class="font-extrabold text-[13px] m-0 mb-1 text-primary-700">${b.nama}</p>
                         <p class="text-[11px] text-neutral-500 m-0 mb-1">${b.alamat}</p>
                         <p class="text-[11px] font-bold text-primary-500 m-0 mb-2">Jarak: ${formatDistanceText(b.distance)}</p>
-                        <button onclick="saveSelectedCabang(${b.id})" class="bg-primary-700 text-white font-bold text-[11px] py-1.5 px-3 rounded-lg cursor-pointer w-full border-none">Belanja di Sini</button>
+                        <button onclick="saveSelectedCabang(${b.id}, ${b.distance})" class="bg-primary-700 text-white font-bold text-[11px] py-1.5 px-3 rounded-lg cursor-pointer w-full border-none">Belanja di Sini</button>
                     </div>
                 `);
             }
@@ -292,7 +292,7 @@ function renderSidebarList(branches) {
                 </div>
             </div>
             <div class="shrink-0">
-                <button onclick="saveSelectedCabang(${b.id})" 
+                <button onclick="saveSelectedCabang(${b.id}, ${b.distance})" 
                         class="py-1.5 px-3.5 text-[11px] leading-none inline-flex items-center justify-center gap-1 font-extrabold rounded-full transition-all duration-300 cursor-pointer select-none ${
                             isSelected 
                                 ? 'bg-primary-700 text-white border border-transparent shadow-sm group-hover:bg-primary-800' 
@@ -353,8 +353,25 @@ window.detectLocationInModal = function() {
     }
 };
 
-window.saveSelectedCabang = function(cabangId) {
+window.saveSelectedCabang = function(cabangId, distance = null) {
+    if (selectedCabangId && selectedCabangId != cabangId) {
+        if (!confirm("Apakah Anda yakin ingin mengganti cabang belanja?")) {
+            return;
+        }
+    }
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    
+    let finalDistance = distance;
+    if (finalDistance === null) {
+        const marker = globalBranchMarkers[cabangId];
+        if (marker) {
+            const pos = marker.getLatLng();
+            const lat = detectedLat || -6.917464;
+            const lng = detectedLng || 107.619123;
+            finalDistance = getHaversineDistance(lat, lng, pos.lat, pos.lng);
+        }
+    }
+    
     fetch('/api/select-cabang', {
         method: 'POST',
         headers: {
@@ -362,7 +379,10 @@ window.saveSelectedCabang = function(cabangId) {
             'X-CSRF-TOKEN': csrfToken,
             'Accept': 'application/json'
         },
-        body: JSON.stringify({ id_cabang: cabangId })
+        body: JSON.stringify({ 
+            id_cabang: cabangId,
+            distance: finalDistance
+        })
     })
     .then(r => r.json())
     .then(data => {

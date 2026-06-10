@@ -38,9 +38,9 @@ class MemberController extends Controller
         }
 
         // Filter status member
-        if ($status === 'member-plus') {
+        if ($status === 'member') {
             $query->where('status_member_plus', true);
-        } elseif ($status === 'member') {
+        } elseif ($status === 'non-member') {
             $query->where('status_member_plus', false);
         }
 
@@ -59,9 +59,9 @@ class MemberController extends Controller
         }
 
         // KPI summary — dihitung sebelum paginasi
-        $totalMemberPlus = (clone $query)->where('status_member_plus', true)->count();
-        $totalMember     = (clone $query)->where('status_member_plus', false)->count();
-        $totalPoin       = (clone $query)->sum('poin_member');
+        $totalMember    = (clone $query)->where('status_member_plus', true)->count();
+        $totalNonMember = (clone $query)->where('status_member_plus', false)->count();
+        $totalPoin      = (clone $query)->sum('poin_member');
 
         $members = $query->paginate(7)->withQueryString();
 

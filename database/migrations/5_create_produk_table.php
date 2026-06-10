@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('deskripsi');
             $table->decimal('harga_reguler', 15, 2);
             $table->decimal('harga_member', 15, 2);
+            $table->decimal('harga_member_plus', 15, 2)->nullable();
             $table->string('gambar_produk');
             $table->timestamps();
         });

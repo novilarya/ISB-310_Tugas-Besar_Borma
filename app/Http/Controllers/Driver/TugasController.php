@@ -7,7 +7,6 @@ use App\Models\Kurir;
 use App\Models\Pesanan;
 use App\Models\PenolakanPengiriman;
 use App\Models\PengirimanTracking;
-use App\Models\BuktiPengiriman;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -49,7 +48,6 @@ class TugasController extends Controller
             'cabang',
             'details.produk',
             'pengirimanTracking',
-            'buktiPengiriman',
             'kurir',
         ])->findOrFail($id);
 
@@ -265,30 +263,20 @@ class TugasController extends Controller
                 $file = $request->file('foto_bukti');
                 $path = $file->store('bukti_pengiriman', 'public');
 
-                BuktiPengiriman::updateOrCreate(
-                    ['id_pesanan' => $id],
-                    [
-                        'foto_bukti'     => $path,
-                        'nama_penerima'  => $request->nama_penerima,
-                        'catatan_driver' => $request->catatan_driver,
-                    ]
-                );
+                $pesanan->bukti_pengiriman = $path;
+                $pesanan->nama_penerima = $request->nama_penerima;
+                $pesanan->catatan_driver = $request->catatan_driver;
 
                 if (!in_array($pesanan->status_pesanan, ['diterima', 'gagal'])) {
                     $pesanan->status_pesanan = 'diterima';
-                    $pesanan->save();
-
-                    PengirimanTracking::create([
-                        'id_pesanan' => $id,
-                        'status'     => 'diterima',
-                        'keterangan' => 'Pesanan diterima customer dengan bukti foto',
-                    ]);
                 }
+                
+                $pesanan->save();
 
                 PengirimanTracking::create([
                     'id_pesanan' => $id,
-                    'status' => 'diterima',
-                    'keterangan' => 'Pesanan diterima customer dengan bukti foto'
+                    'status'     => 'diterima',
+                    'keterangan' => 'Pesanan diterima customer dengan bukti foto',
                 ]);
 
                 return response()->json([

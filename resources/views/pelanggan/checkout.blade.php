@@ -122,31 +122,158 @@
                 </div>
             </div>
 
+            <!-- Cabang Borma Pengirim -->
+            <div class="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+                    <div>
+                        <h3 class="font-heading font-extrabold text-lg text-neutral-800 mb-1">Cabang Borma Pengirim</h3>
+                        <p class="text-neutral-500 font-medium text-sm">Pesanan Anda akan dikirim dari cabang Borma terpilih berdasarkan jarak terdekat.</p>
+                    </div>
+                </div>
+
+                @if($selectedCabang)
+                    <div class="border border-neutral-200 bg-white rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-4 min-w-0">
+                            <div class="w-12 h-12 bg-primary-50 border border-primary-100 text-primary-700 rounded-xl flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                            </div>
+                            <div class="min-w-0">
+                                <h4 class="font-bold text-sm text-neutral-800 mb-0.5 truncate">{{ $selectedCabang->nama_cabang }}</h4>
+                                <p class="text-xs text-neutral-500 mb-1 truncate">{{ $selectedCabang->alamat_cabang }}</p>
+                                <div class="flex items-center gap-2">
+                                    <span class="inline-flex items-center text-[10px] font-bold text-primary-700 bg-primary-50 border border-primary-200/50 px-2 py-0.5 rounded-full shrink-0">
+                                        Jarak: {{ $distance > 0 ? number_format($distance, 1, ',', '.') . ' km' : 'Mendeteksi...' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <div class="border border-dashed border-red-200 bg-red-50/50 rounded-2xl p-6 text-center flex flex-col items-center justify-center gap-4">
+                        <div class="w-12 h-12 bg-red-100 text-red-700 rounded-full flex items-center justify-center shadow-inner">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-red-800 mb-1">Lokasi & Cabang Borma Belum Ditentukan</h4>
+                            <p class="text-xs text-red-600 max-w-md mx-auto">Untuk menentukan ongkos kirim secara akurat, Anda harus mendeteksi lokasi dan memilih cabang Borma pengirim terlebih dahulu.</p>
+                        </div>
+                        <button onclick="openBranchSelectorModal()" class="bg-primary-700 hover:bg-primary-600 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all shadow-md hover:shadow-lg active:scale-95 duration-200 cursor-pointer flex items-center gap-1.5 mx-auto">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            Deteksi Lokasi & Pilih Cabang
+                        </button>
+                    </div>
+                @endif
+            </div>
+
             <!-- Metode Pengiriman -->
             <div class="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6">
                 <h3 class="font-heading font-extrabold text-lg text-neutral-800 mb-5">Metode Pengiriman</h3>
-                <div class="border-2 border-primary-700 bg-primary-50 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-primary-700 text-white rounded-xl flex items-center justify-center shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                @if($selectedCabang)
+                    <div class="border-2 border-primary-700 bg-primary-50 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-primary-700 text-white rounded-xl flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-neutral-800 mb-0.5">Delivery Internal Borma</h4>
+                                <p class="text-xs text-neutral-500">
+                                    Estimasi tiba dalam 45 Menit (Khusus Area Bandung)
+                                    @if($distance > 0)
+                                        &bull; Jarak: {{ number_format($distance, 1, ',', '.') }} km
+                                    @endif
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <h4 class="font-bold text-sm text-neutral-800 mb-0.5">Delivery Internal Borma</h4>
-                            <p class="text-xs text-neutral-500">Estimasi tiba dalam 2-4 jam (Khusus Area Bandung)</p>
-                        </div>
+                        <span class="font-extrabold text-base text-primary-700 shrink-0">Rp {{ number_format($shippingCost, 0, ',', '.') }}</span>
                     </div>
-                    <span class="font-extrabold text-base text-primary-700 shrink-0">Rp 15.000</span>
-                </div>
+                @else
+                    <div class="border border-neutral-200 rounded-2xl p-5 text-center text-neutral-400 py-8">
+                        <p class="text-sm font-medium">Metode pengiriman akan aktif setelah Anda mendeteksi lokasi dan memilih cabang Borma.</p>
+                    </div>
+                @endif
             </div>
 
-            <!-- Voucher -->
+            <!-- Voucher Promo -->
             <div class="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6">
-                <h3 class="font-heading font-extrabold text-lg text-neutral-800 mb-5">Punya Voucher?</h3>
-                <div class="flex items-center gap-3">
-                    <input type="text" placeholder="Masukkan kode voucher" class="flex-1 bg-neutral-50 border border-neutral-200 rounded-xl py-3 px-4 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition-all">
-                    <button class="bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-bold px-6 py-3 rounded-xl transition-colors shadow-sm uppercase tracking-wide shrink-0">
-                        Gunakan
-                    </button>
+                <div class="mb-4">
+                    <h3 class="font-heading font-extrabold text-lg text-neutral-800 mb-1">Voucher Promo Borma</h3>
+                    <p class="text-neutral-500 font-medium text-xs">Gunakan voucher belanja Borma untuk mendapatkan potongan harga spesial.</p>
+                </div>
+                <!-- Voucher Dropdown Selection -->
+                <div class="relative">
+                    <div id="voucherToggle" class="w-full flex items-center justify-between bg-neutral-50 border border-neutral-200 rounded-xl py-3.5 px-4 cursor-pointer hover:border-primary-400 hover:bg-primary-50 transition-all group" onclick="toggleVoucherDropdown()">
+                        <div class="flex items-center gap-3">
+                            <div id="voucherIcon" class="w-8 h-8 rounded-lg bg-neutral-200 flex items-center justify-center shrink-0 transition-colors">
+                                <svg class="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path></svg>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Voucher Borma</p>
+                                <p id="selectedVoucherLabel" class="text-sm font-bold text-neutral-800">Gunakan Voucher</p>
+                            </div>
+                        </div>
+                        <svg id="voucherChevron" class="w-5 h-5 text-neutral-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+
+                    <!-- Dropdown Options -->
+                    <div id="voucherDropdown" class="hidden relative w-full mt-2 bg-white border border-neutral-200 rounded-xl shadow-lg overflow-hidden z-50 max-h-60 overflow-y-auto">
+                        <!-- Option: No Voucher -->
+                        <div class="voucher-option flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-primary-50 transition-all border-b border-neutral-100" onclick="selectVoucher(null)">
+                            <div class="flex-1">
+                                <p class="text-sm font-bold text-neutral-700">Tidak Menggunakan Voucher</p>
+                            </div>
+                            <div id="check-voucher-none" class="w-5 h-5 bg-primary-700 rounded-full flex items-center justify-center">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                        </div>
+
+                        @foreach($vouchers as $voucher)
+                        @php
+                            // Check if this voucher should be visible based on trigger product in the cart
+                            if ($voucher->id_produk_pemicu) {
+                                $cartItem = collect($cart)->first(function($item) use ($voucher) {
+                                    return isset($item['id_produk']) && $item['id_produk'] == $voucher->id_produk_pemicu;
+                                });
+                                if (!$cartItem || $cartItem['quantity'] < $voucher->kuantitas_pemicu) {
+                                    continue; // Hide voucher if trigger product requirements are not met
+                                }
+                            }
+
+                            $triggerText = '';
+                            if ($voucher->id_produk_pemicu) {
+                                $pemicu = $voucher->produkPemicu;
+                                if ($pemicu) {
+                                    $triggerText = "Syarat: Beli Min. " . $voucher->kuantitas_pemicu . " " . $pemicu->nama_produk;
+                                }
+                            }
+                            $minTrxText = $voucher->id_produk_pemicu ? '' : "Min. Belanja Rp " . number_format($voucher->min_transaksi, 0, ',', '.');
+                        @endphp
+                        <div class="voucher-option flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-primary-50 transition-all border-b border-neutral-100" 
+                             data-voucher-id="{{ $voucher->id_promo }}" 
+                             onclick="selectVoucher({{ json_encode($voucher) }})">
+                            <div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path></svg>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-bold text-neutral-800">{{ $voucher->nama_voucher }}</p>
+                                <p class="text-[10px] font-semibold text-primary-700 mt-0.5 uppercase tracking-wide bg-primary-50 border border-primary-200 px-1.5 py-0.5 rounded inline-block">{{ $voucher->kode_voucher }}</p>
+                                <p class="text-[10px] text-neutral-400 mt-1">
+                                    @if($minTrxText)
+                                        {{ $minTrxText }}
+                                    @endif
+                                    @if($minTrxText && $triggerText)
+                                        &bull;
+                                    @endif
+                                    @if($triggerText)
+                                        {{ $triggerText }}
+                                    @endif
+                                </p>
+                            </div>
+                            <div id="check-voucher-{{ $voucher->id_promo }}" class="hidden w-5 h-5 bg-primary-700 rounded-full flex items-center justify-center">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
 
@@ -172,26 +299,21 @@
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-sm font-medium text-neutral-500">Ongkos Kirim</span>
-                        <span class="font-bold text-sm text-neutral-800">Rp 15.000</span>
+                        <span class="font-bold text-sm text-neutral-800">
+                            @if($selectedCabang)
+                                Rp {{ number_format($shippingCost, 0, ',', '.') }}
+                            @else
+                                —
+                            @endif
+                        </span>
+                    </div>
+                    <div id="voucher-discount-row" class="hidden flex justify-between items-center text-green-700">
+                        <span class="text-sm font-medium">Diskon Voucher</span>
+                        <span class="font-bold text-sm" id="voucher-discount-amount">-Rp 0</span>
                     </div>
                 </div>
 
-                <!-- Gift -->
-                <div class="bg-secondary-50 rounded-xl p-4 mb-5 border border-secondary-100">
-                    <div class="flex items-center gap-2 mb-3">
-                        <svg class="w-4 h-4 text-secondary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path></svg>
-                        <span class="text-[10px] font-bold text-neutral-800 uppercase tracking-wider">Hadiah Gratis</span>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-white rounded-lg border border-neutral-200 flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                        </div>
-                        <div>
-                            <p class="font-bold text-xs text-neutral-800">Borma Eco Tote Bag</p>
-                            <p class="text-[10px] text-neutral-400">Edisi Terbatas</p>
-                        </div>
-                    </div>
-                </div>
+
 
                 <!-- Metode Pembayaran -->
                 <div class="mb-5">
@@ -229,13 +351,25 @@
                 <div class="border-t border-neutral-200 pt-5 mb-6">
                     <div class="flex justify-between items-end">
                         <span class="text-sm font-bold text-neutral-800">Total Bayar</span>
-                        <span class="font-heading font-extrabold text-2xl text-primary-700">Rp {{ number_format($subtotal + 15000,0,',','.') }}</span>
+                        <span id="total-payment-amount" class="font-heading font-extrabold text-2xl text-primary-700 font-sans">
+                            @if($selectedCabang)
+                                Rp {{ number_format($subtotal + $shippingCost,0,',','.') }}
+                            @else
+                                Rp {{ number_format($subtotal,0,',','.') }}
+                            @endif
+                        </span>
                     </div>
                 </div>
 
-                <button id="btnBayar" onclick="processPayment()" disabled class="w-full py-3.5 bg-neutral-300 text-neutral-500 text-sm font-bold rounded-xl transition-all shadow-md mb-3 cursor-not-allowed">
-                    Pilih Metode Pembayaran
-                </button>
+                @if($selectedCabang)
+                    <button id="btnBayar" onclick="processPayment()" disabled class="w-full py-3.5 bg-neutral-300 text-neutral-500 text-sm font-bold rounded-xl transition-all shadow-md mb-3 cursor-not-allowed">
+                        Pilih Metode Pembayaran
+                    </button>
+                @else
+                    <button id="btnBayar" disabled class="w-full py-3.5 bg-neutral-300 text-neutral-500 text-sm font-bold rounded-xl transition-all shadow-md mb-3 cursor-not-allowed">
+                        Pilih Cabang Pengirim
+                    </button>
+                @endif
                 <p class="text-center text-[10px] text-neutral-400">*Harga sudah termasuk PPN 11%</p>
 
                 <!-- Loading overlay -->
@@ -257,6 +391,8 @@
 <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
 <script>
     let selectedPaymentMethod = null;
+    let selectedVoucherId = null;
+    let appliedDiscount = 0;
     let selectedAddressType = 'utama'; // default selection
     let addressMode = 'add'; // 'add' or 'edit'
     let additionalAddresses = [];
@@ -281,7 +417,10 @@
     document.addEventListener('DOMContentLoaded', function() {
         loadAdditionalAddresses();
         initRegionDropdowns();
-        selectPayment('transfer');
+        const selectedCabangId = '{{ session('selected_cabang_id', '') }}';
+        if (selectedCabangId) {
+            selectPayment('transfer');
+        }
     });
 
     function loadAdditionalAddresses(selectIdAfterLoad = null) {
@@ -616,6 +755,11 @@
     }
 
     function togglePaymentDropdown() {
+        const selectedCabangId = '{{ session('selected_cabang_id', '') }}';
+        if (!selectedCabangId) {
+            alert('Silakan pilih cabang Borma pengirim terlebih dahulu dengan mendeteksi lokasi Anda.');
+            return;
+        }
         const dropdown = document.getElementById('paymentDropdown');
         const chevron = document.getElementById('paymentChevron');
         dropdown.classList.toggle('hidden');
@@ -623,13 +767,22 @@
     }
 
     function selectPayment(method) {
+        const selectedCabangId = '{{ session('selected_cabang_id', '') }}';
+        if (!selectedCabangId) {
+            alert('Silakan pilih cabang Borma pengirim terlebih dahulu dengan mendeteksi lokasi Anda.');
+            return;
+        }
         selectedPaymentMethod = method;
         const labels = { cod: 'COD (Bayar di Tempat)', transfer: 'Transfer / Pembayaran Online' };
 
         document.getElementById('selectedPaymentLabel').textContent = labels[method];
 
         // Update checkmarks
-        document.querySelectorAll('[id^="check-"]').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('[id^="check-"]').forEach(el => {
+            if (!el.id.startsWith('check-voucher')) {
+                el.classList.add('hidden');
+            }
+        });
         const checkEl = document.getElementById('check-' + method);
         if (checkEl) checkEl.classList.remove('hidden');
 
@@ -649,7 +802,97 @@
         toggle.classList.add('bg-primary-50', 'border-primary-400');
     }
 
+    function toggleVoucherDropdown() {
+        const selectedCabangId = '{{ session('selected_cabang_id', '') }}';
+        if (!selectedCabangId) {
+            alert('Silakan pilih cabang Borma pengirim terlebih dahulu dengan mendeteksi lokasi Anda.');
+            return;
+        }
+        const dropdown = document.getElementById('voucherDropdown');
+        const chevron = document.getElementById('voucherChevron');
+        dropdown.classList.toggle('hidden');
+        chevron.style.transform = dropdown.classList.contains('hidden') ? '' : 'rotate(180deg)';
+    }
+
+    function selectVoucher(voucher) {
+        const subtotal = {{ $subtotal }};
+        const cart = @json(array_values($cart));
+
+        if (voucher === null) {
+            selectedVoucherId = null;
+            appliedDiscount = 0;
+            document.getElementById('selectedVoucherLabel').textContent = 'Gunakan Voucher';
+            document.getElementById('voucher-discount-row').classList.add('hidden');
+            
+            document.querySelectorAll('[id^="check-voucher-"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById('check-voucher-none').classList.remove('hidden');
+
+            document.getElementById('voucherDropdown').classList.add('hidden');
+            document.getElementById('voucherChevron').style.transform = '';
+            
+            const toggle = document.getElementById('voucherToggle');
+            toggle.classList.remove('bg-primary-50', 'border-primary-400');
+            toggle.classList.add('bg-neutral-50', 'border-neutral-200');
+
+            updateTotalDisplay();
+            return;
+        }
+
+        if (!voucher.id_produk_pemicu && subtotal < voucher.min_transaksi) {
+            alert(`Minimal transaksi untuk menggunakan voucher ini adalah Rp ${voucher.min_transaksi.toLocaleString('id-ID')}`);
+            selectVoucher(null);
+            return;
+        }
+
+        if (voucher.id_produk_pemicu) {
+            const triggerProduct = cart.find(item => item.id_produk == voucher.id_produk_pemicu);
+            if (!triggerProduct || triggerProduct.quantity < voucher.kuantitas_pemicu) {
+                alert(`Voucher ini memerlukan pembelian minimal ${voucher.kuantitas_pemicu} pcs produk pemicu.`);
+                selectVoucher(null);
+                return;
+            }
+        }
+
+        selectedVoucherId = voucher.id_promo;
+        appliedDiscount = parseInt(voucher.potongan_harga) || 0;
+        
+        document.getElementById('selectedVoucherLabel').textContent = voucher.nama_voucher;
+        
+        if (appliedDiscount > 0) {
+            document.getElementById('voucher-discount-row').classList.remove('hidden');
+            document.getElementById('voucher-discount-amount').textContent = `-Rp ${appliedDiscount.toLocaleString('id-ID')}`;
+        } else {
+            document.getElementById('voucher-discount-row').classList.add('hidden');
+        }
+
+        document.querySelectorAll('[id^="check-voucher-"]').forEach(el => el.classList.add('hidden'));
+        const checkEl = document.getElementById('check-voucher-' + voucher.id_promo);
+        if (checkEl) checkEl.classList.remove('hidden');
+        document.getElementById('check-voucher-none').classList.add('hidden');
+
+        document.getElementById('voucherDropdown').classList.add('hidden');
+        document.getElementById('voucherChevron').style.transform = '';
+
+        const toggle = document.getElementById('voucherToggle');
+        toggle.classList.remove('bg-neutral-50', 'border-neutral-200');
+        toggle.classList.add('bg-primary-50', 'border-primary-400');
+
+        updateTotalDisplay();
+    }
+
+    function updateTotalDisplay() {
+        const subtotal = {{ $subtotal }};
+        const shipping = {{ $shippingCost }};
+        const netTotal = subtotal + shipping - appliedDiscount;
+        document.getElementById('total-payment-amount').textContent = `Rp ${netTotal.toLocaleString('id-ID')}`;
+    }
+
     function processPayment() {
+        const selectedCabangId = '{{ session('selected_cabang_id', '') }}';
+        if (!selectedCabangId) {
+            alert('Silakan pilih cabang Borma pengirim terlebih dahulu dengan mendeteksi lokasi Anda.');
+            return;
+        }
         if (!selectedPaymentMethod) {
             alert('Silakan pilih metode pembayaran terlebih dahulu.');
             return;
@@ -669,11 +912,13 @@
             },
             body: JSON.stringify({
                 payment_method: selectedPaymentMethod,
-                total: {{ $subtotal + 15000 }},
+                total: {{ $subtotal }} + {{ $shippingCost }} - appliedDiscount,
                 customer_name: '{{ auth()->user()->nama ?? "Guest" }}',
                 customer_email: '{{ auth()->user()->email ?? "guest@borma.com" }}',
                 customer_phone: '{{ auth()->user()->no_telepon ?? "0000000000" }}',
-                shipping_address: getSelectedAddressString()
+                shipping_address: getSelectedAddressString(),
+                id_promo: selectedVoucherId,
+                diskon_voucher: appliedDiscount
             }),
         })
         .then(res => res.json())
@@ -754,6 +999,13 @@
         if (toggle && dropdown && !toggle.contains(e.target) && !dropdown.contains(e.target)) {
             dropdown.classList.add('hidden');
             document.getElementById('paymentChevron').style.transform = '';
+        }
+
+        const vToggle = document.getElementById('voucherToggle');
+        const vDropdown = document.getElementById('voucherDropdown');
+        if (vToggle && vDropdown && !vToggle.contains(e.target) && !vDropdown.contains(e.target)) {
+            vDropdown.classList.add('hidden');
+            document.getElementById('voucherChevron').style.transform = '';
         }
     });
 </script>

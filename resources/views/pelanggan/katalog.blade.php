@@ -70,7 +70,7 @@ $productCount = $filtered->count();
             $product = $productCabang->produk;
             $sale = $product->harga_member < $product->harga_reguler ? $product->harga_member : 0;
         @endphp
-        <a href="{{ route('pelanggan.produk.detail', ['slug' => Str::slug($product->nama_produk)]) }}" class="product-card bg-white rounded-2xl border border-neutral-200 shadow-sm hover:shadow-md hover:border-primary-300 transition-all duration-300 group flex flex-col overflow-hidden no-underline" data-name="{{ strtolower($product->nama_produk) }}">
+        <a href="{{ route('pelanggan.produk.detail', ['slug' => Str::slug($product->nama_produk)]) }}" class="product-card bg-white rounded-2xl border border-neutral-200 shadow-sm hover:shadow-md hover:border-primary-300 transition-all duration-300 group flex flex-col overflow-hidden no-underline" data-name="{{ strtolower($product->nama_produk) }}" data-price="{{ $sale > 0 ? $sale : $product->harga_reguler }}">
             <div class="relative bg-neutral-50 flex items-center justify-center border-b border-neutral-100 overflow-hidden aspect-square">
                 @if($sale > 0)
                 <div class="absolute top-3 right-3 z-10">
@@ -128,24 +128,66 @@ $productCount = $filtered->count();
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // === Search filter ===
+    // === Filtering System (Search & Price) ===
     const searchInput = document.getElementById('sidebar-search');
+    const minPriceInput = document.getElementById('price-min-input');
+    const maxPriceInput = document.getElementById('price-max-input');
     const grid = document.getElementById('product-grid');
     const noResults = document.getElementById('no-results');
-    if (searchInput && grid) {
-        searchInput.addEventListener('input', function() {
-            const query = this.value.toLowerCase().trim();
-            const cards = grid.querySelectorAll('.product-card');
-            let visibleCount = 0;
-            cards.forEach(card => {
-                const name = card.getAttribute('data-name') || '';
-                const match = !query || name.includes(query);
-                card.style.display = match ? '' : 'none';
-                if (match) visibleCount++;
-            });
-            if (noResults) {
-                if (visibleCount === 0 && query) { noResults.classList.remove('hidden'); grid.appendChild(noResults); }
-                else { noResults.classList.add('hidden'); }
+
+    function applyFilters() {
+        if (!grid) return;
+        const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const minVal = minPriceInput ? minPriceInput.value.trim() : '';
+        const maxVal = maxPriceInput ? maxPriceInput.value.trim() : '';
+
+        const minPrice = minVal !== '' ? parseFloat(minVal) : null;
+        const maxPrice = maxVal !== '' ? parseFloat(maxVal) : null;
+
+        const cards = grid.querySelectorAll('.product-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const name = card.getAttribute('data-name') || '';
+            const price = parseFloat(card.getAttribute('data-price') || '0');
+
+            const matchSearch = !query || name.includes(query);
+            const matchMin = minPrice === null || isNaN(minPrice) || price >= minPrice;
+            const matchMax = maxPrice === null || isNaN(maxPrice) || price <= maxPrice;
+
+            const match = matchSearch && matchMin && matchMax;
+            card.style.display = match ? '' : 'none';
+            if (match) visibleCount++;
+        });
+
+        if (noResults) {
+            if (visibleCount === 0) {
+                noResults.classList.remove('hidden');
+                if (!noResults.parentNode || noResults.parentNode !== grid) {
+                    grid.appendChild(noResults);
+                }
+            } else {
+                noResults.classList.add('hidden');
+            }
+        }
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', applyFilters);
+    }
+    if (minPriceInput) {
+        minPriceInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                applyFilters();
+            }
+        });
+    }
+    if (maxPriceInput) {
+        maxPriceInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                applyFilters();
             }
         });
     }

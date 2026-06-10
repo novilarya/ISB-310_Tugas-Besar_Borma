@@ -181,6 +181,10 @@ Route::get('/pelanggan/profil', [\App\Http\Controllers\ProfileController::class,
     ->middleware('auth')
     ->name('pelanggan.profil');
 
+Route::get('/pelanggan/pesanan', [\App\Http\Controllers\ProfileController::class, 'pesananList'])
+    ->middleware('auth')
+    ->name('pelanggan.pesanan.index');
+
 Route::get('/pelanggan/profil/edit', [\App\Http\Controllers\ProfileController::class, 'edit'])
     ->middleware('auth')
     ->name('pelanggan.profil.edit');
@@ -225,8 +229,20 @@ Route::get('/api/cabangs', function () {
 Route::post('/api/select-cabang', function (Request $request) {
     $request->validate([
         'id_cabang' => 'required|exists:cabang,id_cabang',
+        'distance' => 'nullable|numeric',
     ]);
-    session(['selected_cabang_id' => $request->input('id_cabang')]);
+    
+    $oldCabangId = session('selected_cabang_id');
+    $newCabangId = $request->input('id_cabang');
+    
+    if ($oldCabangId != $newCabangId) {
+        session()->forget('cart');
+    }
+    
+    session(['selected_cabang_id' => $newCabangId]);
+    if ($request->has('distance')) {
+        session(['selected_cabang_distance' => (float)$request->input('distance')]);
+    }
     return response()->json(['success' => true]);
 })->name('api.select-cabang');
 
