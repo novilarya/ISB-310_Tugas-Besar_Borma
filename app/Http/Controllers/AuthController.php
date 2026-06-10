@@ -288,7 +288,7 @@ class AuthController extends Controller
 
                 Pelanggan::create([
                     'id_pengguna' => $user->id_pengguna,
-                    'status_member' => false,
+                    'status_member_plus' => false,
                     'poin_member' => 0,
                     'provinsi' => $regData['provinsi'],
                     'kota_kabupaten' => $regData['kota_kabupaten'],

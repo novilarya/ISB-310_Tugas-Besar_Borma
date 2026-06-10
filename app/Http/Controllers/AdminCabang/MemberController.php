@@ -33,13 +33,13 @@ class MemberController extends Controller
 
         // Filter status member
         if ($status === 'member') {
-            $query->where('status_member', true);
+            $query->where('status_member_plus', true);
         } elseif ($status === 'non-member') {
-            $query->where('status_member', false);
+            $query->where('status_member_plus', false);
         }
 
         // Sorting
-        $allowedDirectLocalSort = ['poin_member', 'created_at', 'status_member'];
+        $allowedDirectLocalSort = ['poin_member', 'created_at', 'status_member_plus'];
         if (in_array($sort, $allowedDirectLocalSort)) {
             $query->orderBy($sort, $direction);
         } elseif ($sort === 'nama') {
@@ -53,8 +53,8 @@ class MemberController extends Controller
         }
 
         // KPI summary — dihitung sebelum paginasi
-        $totalMember    = (clone $query)->where('status_member', true)->count();
-        $totalNonMember = (clone $query)->where('status_member', false)->count();
+        $totalMember    = (clone $query)->where('status_member_plus', true)->count();
+        $totalNonMember = (clone $query)->where('status_member_plus', false)->count();
         $totalPoin      = (clone $query)->sum('poin_member');
 
         $members = $query->paginate(7)->withQueryString();
@@ -91,7 +91,7 @@ class MemberController extends Controller
 
         Pelanggan::create([
             'id_pengguna'       => $user->id_pengguna,
-            'status_member' => $request->boolean('status_member'),
+            'status_member_plus' => $request->boolean('status_member') || $request->boolean('status_member_plus'),
             'poin_member'   => $request->poin_member ?? 0,
             'alamat'        => $request->alamat,
         ]);

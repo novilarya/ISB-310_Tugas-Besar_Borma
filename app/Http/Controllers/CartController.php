@@ -195,10 +195,48 @@ class CartController extends Controller
         $totalItems = collect($cart)->sum('quantity');
         $subtotal = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
 
+        // Add id_produk to cart items for promo matching
+        $productNames = array_column($cart, 'name');
+        $dbProducts = \App\Models\Produk::whereIn('nama_produk', $productNames)->get()->keyBy('nama_produk');
+
+        foreach ($cart as $key => &$item) {
+            if (isset($dbProducts[$item['name']])) {
+                $item['id_produk'] = $dbProducts[$item['name']]->id_produk;
+            } else {
+                $item['id_produk'] = null;
+            }
+        }
+        unset($item);
+
+        // Fetch active promos/vouchers
+        $vouchers = \App\Models\Promo::query()
+            ->where('tanggal_mulai', '<=', now()->toDateString())
+            ->where('tanggal_berakhir', '>=', now()->toDateString())
+            ->get();
+
         // Get additional addresses from database
         $alamatTambahan = $pelanggan ? $pelanggan->alamatTambahan()->orderBy('created_at', 'desc')->first() : null;
 
-        return view('pelanggan.checkout', compact('cart', 'categories', 'totalItems', 'subtotal', 'alamatTambahan'));
+        // Fetch selected cabang
+        $selectedCabangId = session('selected_cabang_id');
+        $selectedCabang = null;
+        if ($selectedCabangId) {
+            $selectedCabang = \App\Models\Cabang::find($selectedCabangId);
+        }
+
+        // Calculate dynamic shipping cost based on selected branch distance
+        $distance = session('selected_cabang_distance');
+        $shippingCost = 0;
+        if ($selectedCabang) {
+            $distance = $distance ?? 0;
+            $shippingCost = 15000;
+            if ($distance > 5) {
+                $additionalDistance = ceil($distance - 5);
+                $shippingCost = 15000 + ($additionalDistance * 1000);
+            }
+        }
+
+        return view('pelanggan.checkout', compact('cart', 'categories', 'totalItems', 'subtotal', 'alamatTambahan', 'vouchers', 'shippingCost', 'distance', 'selectedCabang'));
     }
 
     /**

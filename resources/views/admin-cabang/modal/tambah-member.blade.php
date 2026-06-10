@@ -44,7 +44,7 @@
                         <div class="md:col-span-6 flex items-end">
                             <div class="flex items-center gap-3 py-2 w-full">
                                 <div class="form-check form-switch mb-0 flex items-center gap-2">
-                                    <input class="form-check-input h-5 w-10 cursor-pointer" type="checkbox" name="status_member" id="statusMemberTambah" value="1" {{ old('status_member') ? 'checked' : '' }} style="cursor: pointer;">
+                                    <input class="form-check-input h-5 w-10 cursor-pointer" type="checkbox" name="status_member_plus" id="statusMemberTambah" value="1" {{ old('status_member_plus') ? 'checked' : '' }} style="cursor: pointer;">
                                     <label class="form-check-label text-sm font-medium text-slate-700 dark:text-white/80 mb-0 cursor-pointer" for="statusMemberTambah">Aktifkan sebagai Member</label>
                                 </div>
                             </div>

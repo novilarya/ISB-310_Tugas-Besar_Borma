@@ -84,9 +84,9 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Status Akun</label>
-                        <select name="status_member" required class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all">
-                            <option value="1" {{ old('status_member', $member->status_member) ? 'selected' : '' }}>Aktif</option>
-                            <option value="0" {{ !old('status_member', $member->status_member) ? 'selected' : '' }}>Tidak Aktif</option>
+                        <select name="status_member_plus" required class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all">
+                            <option value="1" {{ old('status_member_plus', $member->status_member_plus) ? 'selected' : '' }}>Aktif</option>
+                            <option value="0" {{ !old('status_member_plus', $member->status_member_plus) ? 'selected' : '' }}>Tidak Aktif</option>
                         </select>
                     </div>
                 </div>

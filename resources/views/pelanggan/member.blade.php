@@ -31,7 +31,7 @@
     @endif
 
     {{-- Already a member --}}
-    @if($pelanggan && $pelanggan->status_member)
+    @if($pelanggan && $pelanggan->status_member_plus)
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
         {{-- Left: Member Info --}}
         <div class="lg:col-span-2 bg-primary-700 rounded-3xl p-8 sm:p-10 relative overflow-hidden text-white">

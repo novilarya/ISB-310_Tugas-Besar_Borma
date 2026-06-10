@@ -56,7 +56,7 @@ class MemberController extends Controller
         if ($pelanggan) {
             // Update existing record
             $pelanggan->update([
-                'status_member' => 1,
+                'status_member_plus' => 1,
                 'provinsi' => $request->provinsi,
                 'kota_kabupaten' => $request->kota_kabupaten,
                 'kecamatan' => $request->kecamatan,
@@ -66,7 +66,7 @@ class MemberController extends Controller
             // Create new pelanggan record
             Pelanggan::create([
                 'id_pengguna' => $user->id_pengguna,
-                'status_member' => 1,
+                'status_member_plus' => 1,
                 'poin_member' => 0,
                 'provinsi' => $request->provinsi,
                 'kota_kabupaten' => $request->kota_kabupaten,

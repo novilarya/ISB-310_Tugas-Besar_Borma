@@ -66,7 +66,7 @@ class DatabaseSeeder extends Seeder
             [
                 'id_pelanggan' => 1,
                 'id_pengguna' => 4,
-                'status_member' => 1,
+                'status_member_plus' => 1,
                 'poin_member' => 100,
                 'provinsi' => 'Jawa Barat',
                 'kota_kabupaten' => 'Kota Bandung',
@@ -424,6 +424,7 @@ class DatabaseSeeder extends Seeder
                 'deskripsi' => $op['deskripsi'],
                 'harga_reguler' => $op['harga_reguler'],
                 'harga_member' => $op['harga_member'],
+                'harga_member_plus' => round($op['harga_member'] * 0.95),
                 'gambar_produk' => '', // Hilangkan gambar produk
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
@@ -431,13 +432,15 @@ class DatabaseSeeder extends Seeder
         }
 
         foreach ($catalogProducts as $cp) {
+            $memberPrice = $cp['sale'] > 0 ? $cp['sale'] : $cp['price'];
             $productsToInsert[] = [
                 'id_produk' => $nextId++,
                 'nama_produk' => $cp['name'],
                 'kategori' => $cp['cat'],
                 'deskripsi' => $cp['name'] . ' berkualitas dari Borma.',
                 'harga_reguler' => $cp['price'],
-                'harga_member' => $cp['sale'] > 0 ? $cp['sale'] : $cp['price'],
+                'harga_member' => $memberPrice,
+                'harga_member_plus' => round($memberPrice * 0.95),
                 'gambar_produk' => '', // Hilangkan gambar produk
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),

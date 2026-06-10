@@ -110,9 +110,9 @@
                     </a>
                 </th>
                 <th>
-                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'status_member', 'direction' => request('sort') == 'status_member' && request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="text-primary-custom text-decoration-none">
+                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'status_member_plus', 'direction' => request('sort') == 'status_member_plus' && request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="text-primary-custom text-decoration-none">
                         Status
-                        @if(request('sort') == 'status_member') <i class="bi bi-sort-{{ request('direction') == 'asc' ? 'up' : 'down' }}"></i>
+                        @if(request('sort') == 'status_member_plus') <i class="bi bi-sort-{{ request('direction') == 'asc' ? 'up' : 'down' }}"></i>
                         @else <i class="bi bi-arrow-down-up text-muted" style="font-size:0.7rem;"></i> @endif
                     </a>
                 </th>
@@ -152,7 +152,7 @@
                     <div class="text-muted" style="font-size:0.72rem; font-weight:600;"></div>
                 </td>
                 <td>
-                    @if($member->status_member)
+                    @if($member->status_member_plus)
                         <span class="status-badge-modern status-selesai">
                             Member Aktif
                         </span>
