@@ -111,3 +111,24 @@
     color: var(--borma-neutral);
     text-align: right;
 }
+
+/* ===== Custom Overrides (Disabled/Readonly & Dark Mode) ===== */
+.setting-input[readonly], .setting-input:disabled {
+    background: #F3F4F6 !important;
+    color: #9CA3AF !important;
+    cursor: not-allowed;
+    border-color: #E5E7EB !important;
+}
+.dark .setting-input {
+    background: #251448 !important;
+    color: #f8fafc !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+.dark .setting-input[readonly], .dark .setting-input:disabled {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+.dark .setting-field-label {
+    color: #cbd5e1 !important;
+}

@@ -123,7 +123,6 @@ Route::prefix('superadmin')->middleware(['auth', 'superadmin'])->name('superadmi
 
     // Pengaturan
     Route::get('/pengaturan', [\App\Http\Controllers\AdminCabang\SettingController::class, 'index'])->name('admin-cabang.pengaturan');
-    Route::post('/pengaturan/profil',     [\App\Http\Controllers\AdminCabang\SettingController::class, 'updateProfil'])->name('admin-cabang.pengaturan.profil');
     Route::post('/pengaturan/cabang',     [\App\Http\Controllers\AdminCabang\SettingController::class, 'updateCabang'])->name('admin-cabang.pengaturan.cabang');
     Route::post('/pengaturan/password',   [\App\Http\Controllers\AdminCabang\SettingController::class, 'updatePassword'])->name('admin-cabang.pengaturan.password');
     Route::post('/pengaturan/notifikasi', [\App\Http\Controllers\AdminCabang\SettingController::class, 'updateNotifikasi'])->name('admin-cabang.pengaturan.notifikasi');

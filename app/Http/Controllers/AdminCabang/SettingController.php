@@ -26,33 +26,6 @@ class SettingController extends Controller
         return view('admin-cabang.pengaturan', compact('admin', 'cabang'));
     }
 
-    public function updateProfil(Request $request)
-    {
-        $request->validate([
-            'nama_lengkap'   => 'required|string|max:100',
-            'nama_tampilan'  => 'nullable|string|max:50',
-            'email'          => 'required|email|max:100',
-            'telepon'        => 'nullable|string|max:20',
-            'jabatan'        => 'nullable|string|max:100',
-            'bio'            => 'nullable|string|max:255',
-        ]);
-
-        $admin = $this->getAdmin();
-        if($admin) {
-            $admin->nama = $request->nama_lengkap;
-            $admin->email = $request->email;
-            $admin->no_telepon = $request->telepon;
-            
-            $settings = $admin->settings ?? [];
-            $settings['nama_tampilan'] = $request->nama_tampilan;
-            $settings['jabatan'] = $request->jabatan;
-            $settings['bio'] = $request->bio;
-            $admin->settings = $settings;
-            $admin->save();
-        }
-
-        return back()->with('success', 'Profil akun berhasil diperbarui.');
-    }
 
     public function updateCabang(Request $request)
     {
