@@ -70,6 +70,7 @@ class DatabaseSeeder extends Seeder
                 'id_pengguna' => 4,
                 'member_id' => '1000 0003 1676',
                 'status_member_plus' => 1,
+                'member_id' => str_pad(4 * 7919 + 100000000000, 12, '0', STR_PAD_LEFT),
                 'poin_member' => 100,
                 'provinsi' => 'Jawa Barat',
                 'kota_kabupaten' => 'Kota Bandung',

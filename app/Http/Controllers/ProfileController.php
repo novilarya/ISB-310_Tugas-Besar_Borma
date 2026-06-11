@@ -37,6 +37,8 @@ class ProfileController extends Controller
         $pesanans = [];
         if ($pelanggan->id_pelanggan) {
             $pesanans = Pesanan::query()->where('id_pelanggan', $pelanggan->id_pelanggan)
+                ->where('metode_pembayaran', '!=', 'Aktivasi Member Plus')
+                ->where('alamat_pengiriman', 'not like', '%Aktivasi Borma Plus%')
                 ->with(['details.produk', 'cabang'])
                 ->withCount('details')
                 ->orderBy('tanggal_pemesanan', 'desc')
@@ -174,6 +176,8 @@ class ProfileController extends Controller
 
         $query = Pesanan::query()
             ->where('id_pelanggan', $pelanggan->id_pelanggan)
+            ->where('metode_pembayaran', '!=', 'Aktivasi Member Plus')
+            ->where('alamat_pengiriman', 'not like', '%Aktivasi Borma Plus%')
             ->with(['details.produk', 'cabang'])
             ->orderBy('tanggal_pemesanan', 'desc');
 

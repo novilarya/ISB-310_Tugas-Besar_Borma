@@ -29,7 +29,11 @@
                                     <td>
                                         <h3 style="margin: 0 0 6px 0; color: #33116C; font-size: 16px; font-weight: 800;">Halo, {{ $pesanan->pelanggan->user->nama ?? 'Pelanggan Setia Borma' }}!</h3>
                                         <p style="margin: 0; color: #4B5563; font-size: 13px; line-height: 1.6; font-weight: 500;">
-                                            Pesanan Anda telah kami konfirmasi! Tim kami di cabang <strong>{{ $pesanan->cabang->nama_cabang ?? 'Borma Toserba' }}</strong> sedang menyiapkan produk-produk pilihan Anda untuk segera dikirimkan.
+                                            @if($pesanan->metode_pembayaran === 'Aktivasi Member Plus' || str_contains($pesanan->alamat_pengiriman, 'Aktivasi Borma Plus'))
+                                                Aktivasi membership Borma Plus Anda telah berhasil dan aktif. Terima kasih telah berlangganan layanan premium kami!
+                                            @else
+                                                Pesanan Anda telah kami konfirmasi! Tim kami di cabang <strong>{{ $pesanan->cabang->nama_cabang ?? 'Borma Toserba' }}</strong> sedang menyiapkan produk-produk pilihan Anda untuk segera dikirimkan.
+                                            @endif
                                         </p>
                                     </td>
                                 </tr>
@@ -66,17 +70,20 @@
                                         <span style="font-size: 13px; font-weight: 700; color: #111827; display: block; margin-top: 2px;">{{ $pesanan->pelanggan->user->no_telepon ?? '-' }}</span>
                                     </td>
                                 </tr>
+                                @if(!($pesanan->metode_pembayaran === 'Aktivasi Member Plus' || str_contains($pesanan->alamat_pengiriman, 'Aktivasi Borma Plus')))
                                 <tr>
                                     <td colspan="2" style="padding-top: 12px;">
                                         <span style="font-size: 11px; font-weight: 700; color: #6B7280; display: block;">Alamat Pengiriman:</span>
                                         <span style="font-size: 13px; font-weight: 700; color: #374151; display: block; margin-top: 4px; line-height: 1.5; background-color: #F9FAFB; padding: 10px; border-radius: 8px; border: 1px solid #F3F4F6;">{{ $pesanan->alamat_pengiriman }}</span>
                                     </td>
                                 </tr>
+                                @endif
                             </table>
                         </td>
                     </tr>
 
                     <!-- CTA Action Button to Print/Save PDF -->
+                    @if(!($pesanan->metode_pembayaran === 'Aktivasi Member Plus' || str_contains($pesanan->alamat_pengiriman, 'Aktivasi Borma Plus')))
                     <tr>
                         <td align="center" style="padding: 0 24px 20px 24px;">
                             <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -90,6 +97,7 @@
                             </table>
                         </td>
                     </tr>
+                    @endif
 
                     <!-- Items Table -->
                     <tr>
@@ -122,10 +130,12 @@
                                     <td style="padding: 6px 0; font-size: 13px; font-weight: 600; color: #6B7280;">Subtotal Belanja</td>
                                     <td align="right" style="padding: 6px 0; font-size: 13px; font-weight: 700; color: #111827;">Rp {{ number_format($pesanan->total_belanja, 0, ',', '.') }}</td>
                                 </tr>
+                                @if($pesanan->biaya_pengiriman > 0)
                                 <tr>
                                     <td style="padding: 6px 0; font-size: 13px; font-weight: 600; color: #6B7280;">Ongkos Kirim</td>
                                     <td align="right" style="padding: 6px 0; font-size: 13px; font-weight: 700; color: #111827;">Rp {{ number_format($pesanan->biaya_pengiriman, 0, ',', '.') }}</td>
                                 </tr>
+                                @endif
                                 @if($pesanan->diskon_voucher > 0)
                                     <tr>
                                         <td style="padding: 6px 0; font-size: 13px; font-weight: 600; color: #E53E3E;">Diskon Voucher</td>
