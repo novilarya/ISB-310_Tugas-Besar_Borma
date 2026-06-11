@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('pelanggan', function (Blueprint $table) {
             $table->id('id_pelanggan');
             $table->foreignId('id_pengguna')->constrained('pengguna', 'id_pengguna')->onDelete('cascade');
+            $table->string('member_id')->unique();
             $table->boolean('status_member_plus')->default(false);
             $table->integer('poin_member')->default(0);
             $table->date('tanggal_berakhir_member_plus')->nullable();

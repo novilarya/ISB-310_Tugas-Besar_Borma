@@ -16,29 +16,23 @@ class MemberController extends Controller
     public function index(Request $request)
     {
         $search    = $request->query('search');
-        $status    = $request->query('status');   // 'member' | 'member-plus'
+        $status    = $request->query('status');   // 'member' | 'non-member'
         $sort      = $request->query('sort', 'created_at');
         $direction = $request->query('direction', 'desc');
 
         $query = Pelanggan::query()->with('user');
 
-        // Filter nama, email, no_telepon, alamat, atau lokasi
+        // Filter nama atau email
         if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->whereHas('user', function ($sub) use ($search) {
-                    $sub->where('nama', 'like', '%' . $search . '%')
-                        ->orWhere('email', 'like', '%' . $search . '%')
-                        ->orWhere('no_telepon', 'like', '%' . $search . '%');
-                })
-                ->orWhere('alamat', 'like', '%' . $search . '%')
-                ->orWhere('kecamatan', 'like', '%' . $search . '%')
-                ->orWhere('kota_kabupaten', 'like', '%' . $search . '%')
-                ->orWhere('provinsi', 'like', '%' . $search . '%');
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('nama', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%')
+                  ->orWhere('no_telepon', 'like', '%' . $search . '%');
             });
         }
 
         // Filter status member
-        if ($status === 'member-plus') {
+        if ($status === 'member_plus') {
             $query->where('status_member_plus', true);
         } elseif ($status === 'member') {
             $query->where('status_member_plus', false);
@@ -60,7 +54,7 @@ class MemberController extends Controller
 
         // KPI summary — dihitung sebelum paginasi
         $totalMemberPlus = (clone $query)->where('status_member_plus', true)->count();
-        $totalMember     = (clone $query)->where('status_member_plus', false)->count();
+        $totalMember     = (clone $query)->count();
         $totalPoin       = (clone $query)->sum('poin_member');
 
         $members = $query->paginate(7)->withQueryString();
@@ -80,9 +74,9 @@ class MemberController extends Controller
             'email'          => 'required|email|unique:pengguna,email',
             'no_telepon'     => 'required|string|max:20',
             'alamat'         => 'required|string',
-            'kecamatan'      => 'required|string|max:255',
-            'kota_kabupaten' => 'required|string|max:255',
             'provinsi'       => 'required|string|max:255',
+            'kota_kabupaten' => 'required|string|max:255',
+            'kecamatan'      => 'required|string|max:255',
             'poin_member'    => 'nullable|integer|min:0',
             'password'       => 'required|string|min:6',
         ], [
@@ -102,10 +96,10 @@ class MemberController extends Controller
             'id_pengguna'        => $user->id_pengguna,
             'status_member_plus' => $request->boolean('status_member_plus'),
             'poin_member'        => $request->poin_member ?? 0,
-            'alamat'             => $request->alamat,
-            'kecamatan'          => $request->kecamatan,
-            'kota_kabupaten'     => $request->kota_kabupaten,
             'provinsi'           => $request->provinsi,
+            'kota_kabupaten'     => $request->kota_kabupaten,
+            'kecamatan'          => $request->kecamatan,
+            'alamat'             => $request->alamat,
         ]);
 
         return redirect()->route('admin-cabang.member')
@@ -113,14 +107,14 @@ class MemberController extends Controller
     }
 
     /**
-     * DETAIL — Tampilkan detail pelanggan beserta riwayat pesanan.
+     * DETAIL — Tampilkan detail pelanggan.
      */
     public function show($id)
     {
         $member = Pelanggan::with(['user', 'riwayatPesanan' => function($query) {
             $query->orderBy('tanggal_pemesanan', 'desc');
         }, 'riwayatPesanan.details.produk', 'riwayatPesanan.cabang'])->findOrFail($id);
-        
+
         return view('admin-cabang.member-detail', compact('member'));
     }
 }

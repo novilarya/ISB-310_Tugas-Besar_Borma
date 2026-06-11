@@ -71,8 +71,8 @@ class DetailPagesTest extends TestCase
             'nama_produk' => 'Pemicu Produk A',
             'kategori' => 'Makanan',
             'deskripsi' => 'Deskripsi produk pemicu',
-            'harga_reguler' => 10000,
-            'harga_member' => 9000,
+            'harga_member' => 10000,
+            'harga_member_plus' => 9000,
             'gambar_produk' => 'default.jpg'
         ]);
         $this->promo = \App\Models\Promo::create([
@@ -127,5 +127,42 @@ class DetailPagesTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Detail Promo: ' . $this->promo->nama_voucher);
+    }
+
+    /**
+     * Test cart pricing based on Member Plus status.
+     */
+    public function test_cart_pricing_based_on_member_plus_status()
+    {
+        // 1. As regular user (status_member_plus = false)
+        $this->pelanggan->status_member_plus = false;
+        $this->pelanggan->save();
+
+        $response = $this->actingAs($this->memberUser)
+            ->post(route('cart.add'), [
+                'product_name' => 'Pemicu Produk A',
+                'quantity' => 1
+            ]);
+
+        $response->assertStatus(200);
+        $this->assertEquals(10000, session('cart')[md5('Pemicu Produk A')]['price']);
+
+        // Clear session cart
+        session()->forget('cart');
+
+        // 2. As Member Plus user (status_member_plus = true)
+        $this->pelanggan->status_member_plus = true;
+        $this->pelanggan->save();
+        $this->memberUser->refresh();
+        $this->memberUser->unsetRelation('pelanggan');
+
+        $response = $this->actingAs($this->memberUser)
+            ->post(route('cart.add'), [
+                'product_name' => 'Pemicu Produk A',
+                'quantity' => 1
+            ]);
+
+        $response->assertStatus(200);
+        $this->assertEquals(9000, session('cart')[md5('Pemicu Produk A')]['price']);
     }
 }

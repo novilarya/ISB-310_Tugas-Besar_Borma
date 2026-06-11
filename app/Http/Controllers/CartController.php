@@ -24,11 +24,11 @@ class CartController extends Controller
 
         return \App\Models\Produk::all()->map(function($p) use ($catKeys) {
             $catKey = $catKeys[$p->kategori] ?? 'sembako';
-            $sale = $p->harga_member < $p->harga_reguler ? $p->harga_member : 0;
+            $sale = $p->harga_member_plus < $p->harga_member ? $p->harga_member_plus : 0;
             return [
                 'name' => $p->nama_produk,
                 'cat' => $catKey,
-                'price' => $p->harga_reguler,
+                'price' => $p->harga_member,
                 'sale' => $sale,
                 'img' => $p->gambar_produk ?: '',
             ];
@@ -47,6 +47,45 @@ class CartController extends Controller
             'kebutuhan-rumah' => 'Kebutuhan Rumah',
             'perawatan-diri' => 'Perawatan Diri',
         ];
+    }
+
+    /**
+     * Refresh prices inside the cart based on user membership type (regular vs member plus)
+     */
+    private function refreshCartPrices(&$cart)
+    {
+        $user = auth()->user();
+        $isMemberPlus = $user && $user->pelanggan && $user->pelanggan->status_member_plus;
+
+        $products = \App\Models\Produk::all()->keyBy('nama_produk');
+
+        $updated = false;
+        foreach ($cart as $key => $item) {
+            $productName = $item['name'] ?? null;
+            if ($productName && isset($products[$productName])) {
+                $product = $products[$productName];
+                $correctPrice = $isMemberPlus ? $product->harga_member_plus : $product->harga_member;
+                
+                if (!isset($cart[$key]['price']) || $cart[$key]['price'] != $correctPrice) {
+                    $cart[$key]['price'] = $correctPrice;
+                    $updated = true;
+                }
+                
+                if (!isset($cart[$key]['original_price']) || $cart[$key]['original_price'] != $product->harga_member) {
+                    $cart[$key]['original_price'] = $product->harga_member;
+                    $updated = true;
+                }
+
+                if (!isset($cart[$key]['img']) || $cart[$key]['img'] != ($product->gambar_produk ?: '')) {
+                    $cart[$key]['img'] = $product->gambar_produk ?: '';
+                    $updated = true;
+                }
+            }
+        }
+
+        if ($updated) {
+            session()->put('cart', $cart);
+        }
     }
 
     /**
@@ -71,7 +110,7 @@ class CartController extends Controller
         if (isset($cart[$key])) {
             $cart[$key]['quantity'] += $qty;
         } else {
-            $user = Auth::user();
+            $user = auth()->user();
             $isMemberPlus = $user && $user->pelanggan && $user->pelanggan->status_member_plus;
             $cart[$key] = [
                 'name' => $product['name'],
@@ -83,6 +122,7 @@ class CartController extends Controller
             ];
         }
 
+        $this->refreshCartPrices($cart);
         session()->put('cart', $cart);
 
         $totalItems = collect($cart)->sum('quantity');
@@ -117,6 +157,7 @@ class CartController extends Controller
             }
         }
 
+        $this->refreshCartPrices($cart);
         session()->put('cart', $cart);
 
         return response()->json([
@@ -138,6 +179,7 @@ class CartController extends Controller
             unset($cart[$key]);
         }
 
+        $this->refreshCartPrices($cart);
         session()->put('cart', $cart);
 
         return response()->json([
@@ -153,6 +195,7 @@ class CartController extends Controller
     public function index()
     {
         $cart = session()->get('cart', []);
+        $this->refreshCartPrices($cart);
         $categories = $this->getCategoryLabels();
         return view('pelanggan.keranjang', compact('cart', 'categories'));
     }
@@ -173,6 +216,7 @@ class CartController extends Controller
     public function checkout()
     {
         $cart = session()->get('cart', []);
+        $this->refreshCartPrices($cart);
         if (empty($cart)) {
             return redirect()->route('pelanggan.keranjang')->with('error', 'Keranjang masih kosong.');
         }

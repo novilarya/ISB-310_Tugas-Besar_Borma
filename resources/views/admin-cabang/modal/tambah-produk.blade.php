@@ -40,11 +40,11 @@
                 </div>
                 <div class="md:col-span-4">
                     <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Harga Member <span class="text-danger">*</span></label>
-                    <input type="number" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" name="harga_reguler" required placeholder="0" id="tambahHargaReguler">
+                    <input type="number" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" name="harga_member" required placeholder="0" id="tambahHargaMember">
                 </div>
                 <div class="md:col-span-4">
                     <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Harga Member Plus</label>
-                    <input type="number" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" name="harga_member" placeholder="Otomatis" id="tambahHargaMember">
+                    <input type="number" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" name="harga_member_plus" placeholder="Otomatis" id="tambahHargaMemberPlus">
                     <div class="text-xs text-slate-400 dark:text-white/40 mt-1">Kosongkan = otomatis dipotong 2% (<50rb) atau Rp 2.000 (&ge;50rb) dari Harga Member</div>
                 </div>
                 <div class="md:col-span-4">

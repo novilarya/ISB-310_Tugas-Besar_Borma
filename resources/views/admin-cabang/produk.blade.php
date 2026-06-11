@@ -337,8 +337,8 @@
                     </td>
                     <td>{{ $pc->produk->kategori }}</td>
                     <td><strong class="{{ $pc->jumlah_stok < 20 ? 'text-danger' : '' }}">{{ $pc->jumlah_stok }}</strong> <span class="text-muted">Unit</span></td>
-                    <td class="text-muted">Rp {{ number_format($pc->produk->harga_reguler, 0, ',', '.') }}</td>
-                    <td><strong class="harga-member">Rp {{ number_format($pc->produk->harga_member, 0, ',', '.') }}</strong></td>
+                    <td class="text-muted">Rp {{ number_format($pc->produk->harga_member, 0, ',', '.') }}</td>
+                    <td><strong class="harga-member">Rp {{ number_format($pc->produk->harga_member_plus, 0, ',', '.') }}</strong></td>
                     <td><strong class="text-muted">{{ number_format($pc->jumlah_terjual, 0, ',', '.') }}</strong> <span class="text-muted" style="font-size: 0.7rem;">Pcs</span></td>
                     <td class="action-icons">
                         <a href="{{ route('admin-cabang.produk.detail', ['id' => $pc->id_produk_cabang]) }}"><i class="bi bi-pencil-square" title="Edit"></i></a>

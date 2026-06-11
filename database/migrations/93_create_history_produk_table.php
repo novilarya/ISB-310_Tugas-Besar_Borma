@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('history_produk', function (Blueprint $table) {
             $table->id('id_history');
             $table->unsignedBigInteger('id_produk');
-            $table->decimal('harga_reguler_lama', 10, 2)->nullable();
-            $table->decimal('harga_reguler_baru', 10, 2);
             $table->decimal('harga_member_lama', 10, 2)->nullable();
             $table->decimal('harga_member_baru', 10, 2);
+            $table->decimal('harga_member_plus_lama', 10, 2)->nullable();
+            $table->decimal('harga_member_plus_baru', 10, 2);
             $table->foreignId('id_admin_cabang')->constrained('admin_cabang', 'id_admin_cabang')->onDelete('cascade');
             $table->timestamps();
         });

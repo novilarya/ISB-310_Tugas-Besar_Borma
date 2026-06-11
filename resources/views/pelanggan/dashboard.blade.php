@@ -10,6 +10,7 @@
         if (session()->has('selected_cabang_id')) {
             $selectedCabang = \App\Models\Cabang::find(session('selected_cabang_id'));
         }
+        $isMemberPlus = auth()->user() && auth()->user()->pelanggan && auth()->user()->pelanggan->status_member_plus;
     @endphp
 
     @if($selectedCabang)
@@ -260,14 +261,20 @@
             @foreach($filteredUnggulan as $productCabang)
             @php
                 $product = $productCabang->produk;
-                $sale = $product->harga_member < $product->harga_reguler ? $product->harga_member : 0;
             @endphp
             <a href="{{ route('pelanggan.produk.detail', ['slug' => Str::slug($product->nama_produk)]) }}" class="product-card bg-white rounded-2xl border border-neutral-200 shadow-sm hover:shadow-md hover:border-primary-300 transition-all duration-300 group flex flex-col overflow-hidden no-underline" data-name="{{ strtolower($product->nama_produk) }}">
                 <div class="relative bg-neutral-50 flex items-center justify-center border-b border-neutral-100 overflow-hidden" style="aspect-ratio:1/1;">
-                    @if($sale > 0)
-                    <div class="absolute top-3 right-3 z-10">
-                        <span class="bg-tertiary-400 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm tracking-wider">HEMAT {{ round((($product->harga_reguler - $sale) / $product->harga_reguler) * 100) }}%</span>
-                    </div>
+                    @if($product->harga_member_plus < $product->harga_member)
+                        @php
+                            $percentSaved = round((($product->harga_member - $product->harga_member_plus) / $product->harga_member) * 100);
+                        @endphp
+                        <div class="absolute top-3 right-3 z-10">
+                            @if($isMemberPlus)
+                                <span class="bg-emerald-600 text-white text-[9px] font-extrabold px-2 py-1 rounded shadow-sm tracking-wider uppercase">Member Plus Hemat {{ $percentSaved }}%</span>
+                            @else
+                                <span class="bg-amber-500 text-white text-[9px] font-extrabold px-2 py-1 rounded shadow-sm tracking-wider uppercase">Hemat {{ $percentSaved }}% via Member Plus</span>
+                            @endif
+                        </div>
                     @endif
                     @if($product->gambar_produk)
                     <img src="{{ asset('assets/products/'.$product->gambar_produk) }}" alt="{{ $product->nama_produk }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
@@ -282,22 +289,29 @@
                     @endif
                 </div>
                 <div class="p-4 flex flex-col flex-1">
-                    <p class="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">{{ $product->kategori }}</p>
                     <h4 class="font-bold text-sm text-neutral-800 mb-2 leading-tight group-hover:text-primary-700 transition-colors line-clamp-2">{{ $product->nama_produk }}</h4>
-                    <div class="mt-auto space-y-2">
-                        @if($sale > 0)
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs text-neutral-400 line-through">Rp {{ number_format($product->harga_reguler,0,',','.') }}</span>
-                        </div>
-                        <div class="flex items-end justify-between">
-                            <span class="font-extrabold text-lg text-primary-700">Rp {{ number_format($sale,0,',','.') }}</span>
-                            <button class="btn-add-cart w-8 h-8 bg-primary-50 hover:bg-primary-700 rounded-lg flex items-center justify-center text-primary-700 hover:text-white transition-colors" data-product="{{ $product->nama_produk }}"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg></button>
-                        </div>
+                    <div class="mt-auto">
+                        @if($isMemberPlus)
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="font-extrabold text-lg text-amber-600">Rp {{ number_format($product->harga_member_plus,0,',','.') }}</span>
+                                <span class="text-xs text-neutral-400 line-through">Rp {{ number_format($product->harga_member,0,',','.') }}</span>
+                            </div>
+                            <div class="flex items-center justify-between mt-1">
+                                <span class="text-[9px] font-extrabold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded tracking-wide uppercase">Member Plus</span>
+                                <button class="btn-add-cart w-8 h-8 bg-amber-50 hover:bg-amber-600 rounded-lg flex items-center justify-center text-amber-600 hover:text-white transition-colors" data-product="{{ $product->nama_produk }}"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg></button>
+                            </div>
                         @else
-                        <div class="flex items-end justify-between">
-                            <span class="font-extrabold text-lg text-neutral-800">Rp {{ number_format($product->harga_reguler,0,',','.') }}</span>
-                            <button class="btn-add-cart w-8 h-8 bg-primary-50 hover:bg-primary-700 rounded-lg flex items-center justify-center text-primary-700 hover:text-white transition-colors" data-product="{{ $product->nama_produk }}"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg></button>
-                        </div>
+                            <div class="flex items-end justify-between">
+                                <div>
+                                    <span class="font-extrabold text-lg text-neutral-800 block">Rp {{ number_format($product->harga_member,0,',','.') }}</span>
+                                    @if($product->harga_member_plus < $product->harga_member)
+                                        <span class="text-[10px] text-amber-600 font-bold block mt-0.5">
+                                            Member Plus: <span class="font-extrabold">Rp {{ number_format($product->harga_member_plus, 0, ',', '.') }}</span>
+                                        </span>
+                                    @endif
+                                </div>
+                                <button class="btn-add-cart w-8 h-8 bg-primary-50 hover:bg-primary-700 rounded-lg flex items-center justify-center text-primary-700 hover:text-white transition-colors" data-product="{{ $product->nama_produk }}"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg></button>
+                            </div>
                         @endif
                     </div>
                 </div>

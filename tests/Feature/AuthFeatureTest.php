@@ -210,4 +210,75 @@ class AuthFeatureTest extends TestCase
         $this->assertEquals(1, $pelanggan->status_member_plus);
         $this->assertEquals(now()->addMonths(2)->toDateString(), $pelanggan->tanggal_berakhir_member_plus);
     }
+
+    /**
+     * Test that the cart prices update automatically when a member upgrades to member plus.
+     */
+    public function test_cart_prices_update_automatically_on_status_change()
+    {
+        // 1. Create a product in database
+        $product = \App\Models\Produk::create([
+            'nama_produk' => 'Beras Pandan Wangi',
+            'kategori' => 'Sembako & Bahan Pokok',
+            'deskripsi' => 'Beras kualitas premium',
+            'harga_member' => 15000,
+            'harga_member_plus' => 12000,
+            'gambar_produk' => 'beras.jpg'
+        ]);
+
+        // 2. Create customer user (regular member)
+        $user = \App\Models\User::create([
+            'nama' => 'John Doe',
+            'email' => 'john_' . uniqid() . '@gmail.com',
+            'password' => bcrypt('password123'),
+            'role' => 'Pelanggan',
+            'no_telepon' => '081234567890'
+        ]);
+
+        $pelanggan = \App\Models\Pelanggan::create([
+            'id_pengguna' => $user->id_pengguna,
+            'provinsi' => 'Jawa Barat',
+            'kota_kabupaten' => 'Bandung',
+            'kecamatan' => 'Coblong',
+            'alamat' => 'Dago',
+            'status_member_plus' => false,
+            'poin_member' => 0
+        ]);
+
+        // 3. Add item to cart with member price (15000)
+        $cartKey = md5($product->nama_produk);
+        $cart = [
+            $cartKey => [
+                'name' => $product->nama_produk,
+                'category' => 'sembako',
+                'price' => 15000,
+                'original_price' => 15000,
+                'img' => 'beras.jpg',
+                'quantity' => 1
+            ]
+        ];
+
+        // Access the cart page as regular member. The price should remain 15000.
+        $response = $this->actingAs($user)
+            ->withSession(['cart' => $cart])
+            ->get('/pelanggan/keranjang');
+
+        $response->assertStatus(200);
+        $responseCart = session()->get('cart');
+        $this->assertEquals(15000, $responseCart[$cartKey]['price']);
+
+        // 4. Upgrade user to member plus
+        $pelanggan->status_member_plus = true;
+        $pelanggan->save();
+        $user->refresh();
+
+        // 5. Access the cart page as member plus. The price should automatically update to 12000!
+        $responsePlus = $this->actingAs($user)
+            ->withSession(['cart' => $cart]) // Use the original regular cart
+            ->get('/pelanggan/keranjang');
+
+        $responsePlus->assertStatus(200);
+        $responseCartPlus = session()->get('cart');
+        $this->assertEquals(12000, $responseCartPlus[$cartKey]['price']);
+    }
 }

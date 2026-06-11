@@ -110,6 +110,7 @@
                 <thead>
                     <tr class="border-b border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/50 text-sm">
                         <th class="pb-4 font-medium px-4 sort-header">Nama</th>
+                        <th class="pb-4 font-medium px-4 sort-header">ID Member</th>
                         <th class="pb-4 font-medium px-4 sort-header">Email</th>
                         <th class="pb-4 font-medium px-4 sort-header">No Telepon</th>
                         <th class="pb-4 font-medium px-4 sort-header">Alamat</th>
@@ -122,6 +123,7 @@
                     @forelse($members as $item)
                     <tr class="border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors sortable-row">
                         <td class="py-4 px-4 font-bold text-slate-800 dark:text-white">{{ $item->user->nama ?? '-' }}</td>
+                        <td class="py-4 px-4 font-mono font-semibold text-slate-600 dark:text-white/80" style="font-size: 0.85rem;">{{ $item->member_id ?? '-' }}</td>
                         <td class="py-4 px-4 text-slate-600 dark:text-white/80">{{ $item->user->email ?? '-' }}</td>
                         <td class="py-4 px-4 text-slate-600 dark:text-white/80">{{ $item->user->no_telepon ?? '-' }}</td>
                         <td class="py-4 px-4 text-slate-600 dark:text-white/80">
@@ -156,7 +158,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="py-8 text-center text-slate-500 dark:text-white/50">Belum ada data member.</td>
+                        <td colspan="8" class="py-8 text-center text-slate-500 dark:text-white/50">Belum ada data member.</td>
                     </tr>
                     @endforelse
                 </tbody>

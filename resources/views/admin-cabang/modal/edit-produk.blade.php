@@ -41,11 +41,11 @@
                 </div>
                 <div class="md:col-span-4">
                     <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Harga Member <span class="text-danger">*</span></label>
-                    <input type="number" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" name="harga_reguler" required value="{{ $produkCabang->produk->harga_reguler }}" id="editHargaReguler">
+                    <input type="number" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" name="harga_member" required value="{{ $produkCabang->produk->harga_member }}" id="editHargaMember">
                 </div>
                 <div class="md:col-span-4">
                     <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Harga Member Plus</label>
-                    <input type="number" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" name="harga_member" value="{{ $produkCabang->produk->harga_member }}" id="editHargaMember">
+                    <input type="number" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" name="harga_member_plus" value="{{ $produkCabang->produk->harga_member_plus }}" id="editHargaMemberPlus">
                     <div class="text-xs text-slate-400 dark:text-white/40 mt-1">Kosongkan = otomatis dipotong 2% (<50rb) atau Rp 2.000 (&ge;50rb) dari Harga Member</div>
                 </div>
                 <div class="md:col-span-4">

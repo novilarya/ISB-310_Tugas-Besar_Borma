@@ -27,6 +27,18 @@
     <div class="xl:col-span-1 bg-white dark:bg-white/5 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none rounded-3xl p-6 h-fit">
         <h5 class="font-bold text-lg text-slate-800 dark:text-white mb-6 border-b border-slate-200 dark:border-white/10 pb-4">Profil Member</h5>
         
+        <div class="mb-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl p-3 flex items-center justify-between">
+            <div>
+                <span class="text-xs text-slate-400 dark:text-white/40 font-semibold block">ID Member</span>
+                <span class="font-mono font-bold text-slate-800 dark:text-white text-sm block mt-0.5">{{ $member->member_id ?? '-' }}</span>
+            </div>
+            @if($member->member_id)
+            <button type="button" onclick="navigator.clipboard.writeText('{{ $member->member_id }}'); alert('ID Member berhasil disalin!');" class="text-xs text-borma-purple dark:text-borma-yellow hover:underline font-semibold flex items-center gap-1">
+                <i class="fa-regular fa-copy"></i> Salin
+            </button>
+            @endif
+        </div>
+        
         <form action="{{ route('superadmin.member.update', $member->id_pelanggan) }}" method="POST">
             @csrf
             @method('PUT')

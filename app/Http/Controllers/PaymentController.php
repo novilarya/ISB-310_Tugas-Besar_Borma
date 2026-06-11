@@ -120,8 +120,8 @@ class PaymentController extends Controller
                         'nama_produk' => $paketLabel,
                         'kategori' => 'Membership',
                         'deskripsi' => 'Aktivasi Member Premium Borma Plus - ' . $paketLabel,
-                        'harga_reguler' => $total,
                         'harga_member' => $total,
+                        'harga_member_plus' => $total,
                         'gambar_produk' => 'default.jpg'
                     ]);
                 }
@@ -142,8 +142,8 @@ class PaymentController extends Controller
                             'nama_produk' => $item['name'],
                             'kategori' => $item['category'] ?? 'Bahan Pokok',
                             'deskripsi' => $item['name'] . ' berkualitas dari Borma',
-                            'harga_reguler' => $item['price'],
                             'harga_member' => $item['price'],
+                            'harga_member_plus' => $item['price'],
                             'gambar_produk' => $item['img'] ?? 'default.jpg'
                         ]);
                     }

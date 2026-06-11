@@ -64,7 +64,7 @@
                         <span class="text-xs text-slate-400 dark:text-white/40 font-semibold block">Cabang Berlaku</span>
                         <div class="mt-1 font-bold text-slate-800 dark:text-white text-sm">
                             @if($promo->id_cabang && $promo->cabang)
-                                <i class="fa-solid fa-store text-borma-purple dark:text-borma-yellow mr-1.5" style="color: var(--borma-primary) !important;"></i> {{ $promo->cabang->nama_cabang }}
+                                <i class="text-borma-purple dark:text-borma-yellow mr-1.5" style="color: var(--borma-primary) !important;"></i> {{ $promo->cabang->nama_cabang }}
                             @else
                                 <span class="bg-light text-primary font-bold px-2.5 py-1 rounded text-xs uppercase border" style="border-radius: 6px;">
                                     <i class="fa-solid fa-globe mr-1"></i> Seluruh Cabang (Promo Global)
@@ -78,7 +78,7 @@
                     <div>
                         <span class="text-xs text-slate-400 dark:text-white/40 font-semibold block">Masa Berlaku</span>
                         <div class="mt-1 text-sm font-bold text-slate-800 dark:text-white">
-                            <i class="fa-regular fa-calendar text-slate-400 mr-1.5"></i>
+                            <i class="text-slate-400 "></i>
                             {{ $promo->tanggal_mulai->format('d F Y') }} — {{ $promo->tanggal_berakhir->format('d F Y') }}
                         </div>
                         @if($status === 'aktif')
@@ -91,8 +91,8 @@
 
                     <div>
                         <span class="text-xs text-slate-400 dark:text-white/40 font-semibold block">Total Kuota Promo</span>
-                        <div class="mt-1 text-sm font-extrabold text-slate-800 dark:text-white flex items-center gap-2">
-                            <i class="fa-solid fa-chart-pie text-slate-400"></i>
+                        <div class="mt-1 text-sm font-extrabold text-slate-800 dark:text-white flex items-center">
+                            <i class="text-slate-400"></i>
                             <span>{{ number_format($promo->kuota_promo, 0, ',', '.') }} Penggunaan</span>
                         </div>
                     </div>
@@ -170,7 +170,7 @@
                             <h6 class="text-sm font-bold text-slate-800 dark:text-white mt-0.5">{{ $promo->produkHadiah->nama_produk }}</h6>
                             <p class="text-xs text-slate-500 dark:text-white/40 mt-0.5">Jumlah: <span class="font-bold">{{ $promo->kuantitas_hadiah }} unit</span></p>
                         @else
-                            <h6 class="text-sm font-bold text-slate-500 dark:text-white/40 mt-0.5" style="opacity: 0.6;">— Tidak Ada Hadiah Barang —</h6>
+                            <h6 class="text-sm font-bold text-slate-500 dark:text-white/40 mt-0.5" style="opacity: 0.6;">Tidak Ada Hadiah Barang</h6>
                         @endif
                     </div>
                 </div>
@@ -178,7 +178,7 @@
                 <!-- Maks. Potongan Promo -->
                 <div class="flex items-center gap-4 pt-3 border-t border-slate-100 dark:border-white/10" style="border-color: rgba(0,0,0,0.06) !important;">
                     <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center text-borma-purple dark:text-borma-yellow shrink-0" style="color: var(--borma-primary) !important;">
-                        <i class="fa-solid fa-arrow-up-right-dots text-lg"></i>
+                        <i class="fa-solid fa-ticket text-lg"></i>
                     </div>
                     <div>
                         <span class="text-xs text-slate-400 dark:text-white/40 block">Maks. Potongan Promo</span>

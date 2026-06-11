@@ -12,7 +12,7 @@ $categories = [
 $activeCategory = request('kategori', '');
 @endphp
 <aside class="w-64 shrink-0 hidden lg:block">
-    <div class="sticky top-24 bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm">
+    <div class="sticky top-24 bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm max-h-[calc(100vh-120px)] overflow-y-auto overscroll-contain sidebar-filter-container">
         <div class="mb-6">
             <h2 class="font-heading font-extrabold text-lg text-primary-700 uppercase tracking-wide">Filter Produk</h2>
             <p class="text-[10px] font-bold text-neutral-400 mt-1 uppercase tracking-wider">Sesuai Pencarian Anda</p>
@@ -57,27 +57,18 @@ $activeCategory = request('kategori', '');
             <!-- Harga -->
             <div>
                 <h3 class="text-[11px] font-bold text-neutral-500 uppercase tracking-widest mb-3">Harga</h3>
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between text-xs font-semibold text-neutral-600">
-                        <span id="price-min-label">Rp 0</span>
-                        <span id="price-max-label">Rp 5.000.000</span>
-                    </div>
-                    <div class="price-slider-container relative h-2">
-                        <div class="absolute inset-0 bg-neutral-200 rounded-full"></div>
-                        <div id="price-track" class="absolute top-0 h-full bg-primary-500 rounded-full" style="left: 0%; width: 100%;"></div>
-                        <input type="range" id="price-range-min" min="0" max="5000000" step="50000" value="0" class="price-slider absolute w-full h-2 top-0 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-3 [&::-webkit-slider-thumb]:border-primary-600 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-110 [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-3 [&::-moz-range-thumb]:border-primary-600 [&::-moz-range-thumb]:shadow-md [&::-moz-range-thumb]:cursor-pointer">
-                        <input type="range" id="price-range-max" min="0" max="5000000" step="50000" value="5000000" class="price-slider absolute w-full h-2 top-0 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-3 [&::-webkit-slider-thumb]:border-primary-600 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-110 [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-3 [&::-moz-range-thumb]:border-primary-600 [&::-moz-range-thumb]:shadow-md [&::-moz-range-thumb]:cursor-pointer">
-                    </div>
+                <div class="space-y-3">
                     <div class="grid grid-cols-2 gap-2">
-                        <div class="bg-neutral-50 border border-neutral-200 rounded-lg px-3 py-2 text-center">
-                            <p class="text-[9px] font-bold text-neutral-400 uppercase tracking-wider mb-0.5">Min</p>
-                            <p id="price-min-value" class="text-xs font-bold text-neutral-700">Rp 0</p>
+                        <div class="bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2.5 transition-all focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-100">
+                            <label for="price-min-input" class="block text-[9px] font-bold text-neutral-400 uppercase tracking-wider mb-1">Min (Rp)</label>
+                            <input type="number" id="price-min-input" placeholder="0" class="w-full bg-transparent border-0 p-0 text-xs font-extrabold text-neutral-800 focus:ring-0 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                         </div>
-                        <div class="bg-neutral-50 border border-neutral-200 rounded-lg px-3 py-2 text-center">
-                            <p class="text-[9px] font-bold text-neutral-400 uppercase tracking-wider mb-0.5">Max</p>
-                            <p id="price-max-value" class="text-xs font-bold text-neutral-700">Rp 5.000.000</p>
+                        <div class="bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2.5 transition-all focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-100">
+                            <label for="price-max-input" class="block text-[9px] font-bold text-neutral-400 uppercase tracking-wider mb-1">Max (Rp)</label>
+                            <input type="number" id="price-max-input" placeholder="5.000.000" class="w-full bg-transparent border-0 p-0 text-xs font-extrabold text-neutral-800 focus:ring-0 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                         </div>
                     </div>
+                    <p class="text-[9px] text-neutral-400 font-semibold italic text-center">Tekan <span class="font-bold not-italic bg-neutral-200 text-neutral-700 px-1 py-0.5 rounded text-[9px]">Enter</span> untuk memfilter</p>
                 </div>
             </div>
 
@@ -87,10 +78,10 @@ $activeCategory = request('kategori', '');
             <div>
                 <h3 class="text-[11px] font-bold text-neutral-500 uppercase tracking-widest mb-3">Urutkan</h3>
                 <div class="relative group">
-                    <select class="w-full bg-white border border-neutral-300 rounded-xl text-sm font-semibold text-neutral-700 py-3 pl-4 pr-10 appearance-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors outline-none cursor-pointer group-hover:border-neutral-400">
-                        <option>TERBARU</option>
-                        <option>HARGA TERTINGGI</option>
-                        <option>HARGA TERENDAH</option>
+                    <select id="sidebar-sort" class="w-full bg-white border border-neutral-300 rounded-xl text-sm font-semibold text-neutral-700 py-3 pl-4 pr-10 appearance-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors outline-none cursor-pointer group-hover:border-neutral-400">
+                        <option value="terbaru">TERBARU</option>
+                        <option value="harga-tertinggi">HARGA TERTINGGI</option>
+                        <option value="harga-terendah">HARGA TERENDAH</option>
                     </select>
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-neutral-500">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -100,48 +91,3 @@ $activeCategory = request('kategori', '');
         </div>
     </div>
 </aside>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const minSlider = document.getElementById('price-range-min');
-    const maxSlider = document.getElementById('price-range-max');
-    const track = document.getElementById('price-track');
-    const minLabel = document.getElementById('price-min-label');
-    const maxLabel = document.getElementById('price-max-label');
-    const minValue = document.getElementById('price-min-value');
-    const maxValue = document.getElementById('price-max-value');
-
-    if (!minSlider || !maxSlider) return;
-
-    function formatRupiah(value) {
-        return 'Rp ' + parseInt(value).toLocaleString('id-ID');
-    }
-
-    function updateSlider() {
-        let min = parseInt(minSlider.value);
-        let max = parseInt(maxSlider.value);
-
-        if (min > max) {
-            [minSlider.value, maxSlider.value] = [max, min];
-            min = parseInt(minSlider.value);
-            max = parseInt(maxSlider.value);
-        }
-
-        const total = 5000000;
-        const leftPercent = (min / total) * 100;
-        const rightPercent = ((total - max) / total) * 100;
-
-        track.style.left = leftPercent + '%';
-        track.style.width = (100 - leftPercent - rightPercent) + '%';
-
-        minLabel.textContent = formatRupiah(min);
-        maxLabel.textContent = formatRupiah(max);
-        minValue.textContent = formatRupiah(min);
-        maxValue.textContent = formatRupiah(max);
-    }
-
-    minSlider.addEventListener('input', updateSlider);
-    maxSlider.addEventListener('input', updateSlider);
-    updateSlider();
-});
-</script>

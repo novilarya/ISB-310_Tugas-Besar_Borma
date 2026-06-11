@@ -519,3 +519,24 @@ h1, h2, h3, h4, h5, h6 {
 .blob-orange-light {
     background: rgba(235,59,2,0.1);
 }
+
+/* Sidebar Filter Container Custom Scrollbar */
+.sidebar-filter-container::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.sidebar-filter-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+.sidebar-filter-container::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1; /* neutral-300 */
+    border-radius: 20px;
+}
+.sidebar-filter-container::-webkit-scrollbar-thumb:hover {
+    background-color: #94a3b8; /* neutral-400 */
+}
+.sidebar-filter-container {
+    -ms-overflow-style: auto;  /* IE and Edge */
+    scrollbar-width: thin;  /* Firefox */
+    scrollbar-color: #cbd5e1 transparent;
+}

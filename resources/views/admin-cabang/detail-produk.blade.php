@@ -64,10 +64,10 @@
                                 {{ \Carbon\Carbon::parse($riwayat->created_at)->format('d M Y, H:i') }} WIB
                             </td>
                             <td class="py-3 px-2 text-right font-bold text-slate-800 dark:text-white">
-                                Rp {{ number_format($riwayat->harga_reguler_baru, 0, ',', '.') }}
+                                Rp {{ number_format($riwayat->harga_member_baru, 0, ',', '.') }}
                             </td>
                             <td class="py-3 px-2 text-right font-bold text-amber-500">
-                                Rp {{ number_format($riwayat->harga_member_baru, 0, ',', '.') }}
+                                Rp {{ number_format($riwayat->harga_member_plus_baru, 0, ',', '.') }}
                             </td>
                             <td class="py-3 px-2 text-right text-slate-500 dark:text-white/60">
                                 <span class="inline-flex items-center gap-1.5 justify-end w-full">
@@ -135,11 +135,11 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div class="bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-2xl">
                             <p class="text-xs text-slate-400 dark:text-white/40 font-medium">Harga Member</p>
-                            <p class="text-lg font-bold text-slate-700 dark:text-white/80 mt-1">Rp {{ number_format($produkCabang->produk->harga_reguler, 0, ',', '.') }}</p>
+                            <p class="text-lg font-bold text-slate-700 dark:text-white/80 mt-1">Rp {{ number_format($produkCabang->produk->harga_member, 0, ',', '.') }}</p>
                         </div>
                         <div class="bg-amber-500/5 dark:bg-borma-yellow/5 border border-amber-500/20 dark:border-borma-yellow/20 p-4 rounded-2xl">
                             <p class="text-xs text-amber-600 dark:text-borma-yellow/60 font-medium">Harga Member Plus</p>
-                            <p class="text-xl font-black text-amber-500 dark:text-borma-yellow mt-1">Rp {{ number_format($produkCabang->produk->harga_member, 0, ',', '.') }}</p>
+                            <p class="text-xl font-black text-amber-500 dark:text-borma-yellow mt-1">Rp {{ number_format($produkCabang->produk->harga_member_plus, 0, ',', '.') }}</p>
                         </div>
                     </div>
                 </div>
@@ -228,19 +228,19 @@
             <div class="space-y-4">
                 <div>
                     <span class="text-xs text-slate-400 dark:text-white/40 font-semibold">Harga Member</span>
-                    <h3 class="text-xl font-bold text-slate-700 dark:text-white mt-0.5">Rp {{ number_format($produkCabang->produk->harga_reguler, 0, ',', '.') }}</h3>
+                    <h3 class="text-xl font-bold text-slate-700 dark:text-white mt-0.5">Rp {{ number_format($produkCabang->produk->harga_member, 0, ',', '.') }}</h3>
                 </div>
                 <div>
                     <span class="text-xs text-amber-500 font-semibold">Harga Member Plus</span>
-                    <h3 class="text-2xl font-black text-amber-500 dark:text-borma-yellow mt-0.5">Rp {{ number_format($produkCabang->produk->harga_member, 0, ',', '.') }}</h3>
+                    <h3 class="text-2xl font-black text-amber-500 dark:text-borma-yellow mt-0.5">Rp {{ number_format($produkCabang->produk->harga_member_plus, 0, ',', '.') }}</h3>
                 </div>
                 
                 @php
-                    $selisih = $produkCabang->produk->harga_reguler - $produkCabang->produk->harga_member;
+                    $selisih = $produkCabang->produk->harga_member - $produkCabang->produk->harga_member_plus;
                 @endphp
                 <div class="pt-3 border-t border-dashed border-slate-200 dark:border-white/10">
                     <p class="text-xs text-slate-500 dark:text-white/50">
-                        Hemat Member Plus: <strong class="text-emerald-600 dark:text-emerald-400">Rp {{ number_format($selisih, 0, ',', '.') }}</strong> ({{ round(($selisih / max(1, $produkCabang->produk->harga_reguler)) * 100, 1) }}% potongan)
+                        Hemat Member Plus: <strong class="text-emerald-600 dark:text-emerald-400">Rp {{ number_format($selisih, 0, ',', '.') }}</strong> ({{ round(($selisih / max(1, $produkCabang->produk->harga_member)) * 100, 1) }}% potongan)
                     </p>
                 </div>
             </div>

@@ -8,7 +8,7 @@ class Produk extends Model
 {
     protected $table = 'produk';
     protected $primaryKey = 'id_produk';
-    protected $fillable = ['nama_produk', 'kategori', 'deskripsi', 'harga_reguler', 'harga_member', 'gambar_produk'];
+    protected $fillable = ['nama_produk', 'kategori', 'deskripsi', 'harga_member', 'harga_member_plus', 'gambar_produk'];
 
     public function inventarisCabang() {
         return $this->hasMany(ProdukCabang::class, 'id_produk', 'id_produk');

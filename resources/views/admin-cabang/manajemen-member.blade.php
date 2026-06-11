@@ -100,7 +100,9 @@
                         @else <i class="bi bi-arrow-down-up text-muted" style="font-size:0.7rem;"></i> @endif
                     </a>
                 </th>
-
+                <th>
+                    ID Member
+                </th>
                 <th>
                     <a href="{{ request()->fullUrlWithQuery(['sort' => 'poin_member', 'direction' => request('sort') == 'poin_member' && request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="text-primary-custom text-decoration-none">
                         Poin
@@ -142,7 +144,9 @@
                         </div>
                     </div>
                 </td>
-
+                <td>
+                    <span class="font-monospace text-neutral-600 font-bold" style="font-size:0.85rem;">{{ $member->member_id ?? '-' }}</span>
+                </td>
                 <td>
                     <div style="font-weight:800; font-size:1rem; color: var(--borma-primary);">{{ number_format($member->poin_member, 0, ',', '.') }}</div>
                     <div class="text-muted" style="font-size:0.72rem; font-weight:600;"></div>
@@ -164,7 +168,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="4" class="text-center py-5 text-muted">
+                <td colspan="5" class="text-center py-5 text-muted">
                     <i class="bi bi-people" style="font-size:3rem; opacity:0.2;"></i>
                     <p class="mt-3 mb-0" style="font-weight:600;">Belum ada data member.</p>
                     @if(request('search') || request('status'))

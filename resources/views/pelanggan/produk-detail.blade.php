@@ -33,8 +33,8 @@ $terjual = $productCabang ? $productCabang->jumlah_terjual : 0;
 
 $user = auth()->user();
 $isMemberPlus = $user && $user->pelanggan && $user->pelanggan->status_member_plus;
-$hasMemberPlusPrice = $product->harga_member > 0 && $product->harga_member < $product->harga_reguler;
-$activePrice = ($isMemberPlus && $hasMemberPlusPrice) ? $product->harga_member : $product->harga_reguler;
+$hasMemberPlusPrice = $product->harga_member_plus > 0 && $product->harga_member_plus < $product->harga_member;
+$activePrice = ($isMemberPlus && $hasMemberPlusPrice) ? $product->harga_member_plus : $product->harga_member;
 
 // Weight helper
 $weight = '500g';
@@ -76,8 +76,7 @@ $imgUrl = $product->gambar_produk ? asset('assets/products/'.$product->gambar_pr
                 @if($hasMemberPlusPrice)
                 <div class="absolute top-4 right-4 z-10">
                     @php
-                        $percentSaved = round((($product->harga_reguler - $product->harga_member)/$product->harga_reguler)*105-5); // Ensure round percentage
-                        $percentSaved = round((($product->harga_reguler - $product->harga_member)/$product->harga_reguler)*100);
+                        $percentSaved = round((($product->harga_member - $product->harga_member_plus)/$product->harga_member)*100);
                     @endphp
                     @if($isMemberPlus)
                         <span class="bg-green-500 text-white text-[10px] font-extrabold px-2.5 py-1 rounded shadow-sm tracking-wider uppercase">Member Plus Hemat {{ $percentSaved }}%</span>
@@ -146,7 +145,7 @@ $imgUrl = $product->gambar_produk ? asset('assets/products/'.$product->gambar_pr
                         @endif
                     </div>
                     <p class="font-heading font-extrabold text-2xl text-neutral-800">
-                        Rp {{ number_format($product->harga_reguler, 0, ',', '.') }}
+                        Rp {{ number_format($product->harga_member, 0, ',', '.') }}
                     </p>
                 </div>
 
@@ -164,7 +163,7 @@ $imgUrl = $product->gambar_produk ? asset('assets/products/'.$product->gambar_pr
                             </span>
                         @elseif($hasMemberPlusPrice)
                             @php
-                                $percentSaved = round((($product->harga_reguler - $product->harga_member) / $product->harga_reguler) * 100);
+                                $percentSaved = round((($product->harga_member - $product->harga_member_plus) / $product->harga_member) * 100);
                             @endphp
                             <span class="text-[10px] font-extrabold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md">
                                 Hemat {{ $percentSaved }}%
@@ -172,10 +171,10 @@ $imgUrl = $product->gambar_produk ? asset('assets/products/'.$product->gambar_pr
                         @endif
                     </div>
                     <p class="font-heading font-extrabold text-2xl {{ $isMemberPlus ? 'text-amber-800' : 'text-neutral-800' }} relative z-10">
-                        Rp {{ number_format($product->harga_member > 0 ? $product->harga_member : $product->harga_reguler, 0, ',', '.') }}
+                        Rp {{ number_format($product->harga_member_plus > 0 ? $product->harga_member_plus : $product->harga_member, 0, ',', '.') }}
                     </p>
                     @if(!$isMemberPlus && $hasMemberPlusPrice)
-                        <a href="{{ route('pelanggan.member') }}" class="text-[10px] text-amber-700 hover:text-amber-900 font-bold block mt-1 transition-colors relative z-10 hover:underline">
+                        <a href="{{ route('pelanggan.member') }}#borma-plus-membership" class="text-[10px] text-amber-700 hover:text-amber-900 font-bold block mt-1 transition-colors relative z-10 hover:underline">
                             Upgrade ke Member Plus untuk harga hemat &rarr;
                         </a>
                     @endif

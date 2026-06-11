@@ -90,7 +90,7 @@
                         <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
                         <p class="text-[10px] text-primary-200 font-bold uppercase tracking-wider mb-1 relative z-10">ID Digital</p>
                         <p class="font-heading font-extrabold text-sm sm:text-[15px] text-white tracking-widest relative z-10 group-hover/id:scale-105 transition-transform">
-                            {{ $memberId }}
+                            {{ $pelanggan->member_id ?? '0000 0000 0000' }}
                         </p>
                     </div>
                 </div>
@@ -130,7 +130,7 @@
                         <div class="w-[3px] bg-white/90 rounded-full" style="height:{{ rand(18, 36) }}px"></div>
                         @endfor
                     </div>
-                    <p class="text-sm text-white/70 font-mono tracking-wider">{{ $memberId }}</p>
+                    <p class="text-sm text-white/70 font-mono tracking-wider">{{ $pelanggan->member_id ?? '0000 0000 0000' }}</p>
                 </div>
                 <div class="flex items-end justify-between">
                     <div>
@@ -139,7 +139,7 @@
                     </div>
                     <div class="text-right">
                         <p class="text-xs text-neutral-400 uppercase tracking-wider mb-1">ID Member</p>
-                        <p class="font-mono font-bold text-base text-secondary-400 tracking-widest">{{ $memberId }}</p>
+                        <p class="font-mono font-bold text-base text-secondary-400 tracking-widest">{{ $pelanggan->member_id ?? '0000 0000 0000' }}</p>
                     </div>
                     <div class="text-right">
                         <p class="text-xs text-neutral-400 uppercase tracking-wider mb-1">Status</p>
@@ -155,7 +155,7 @@
 
     <!-- Borma Plus Membership -->
     @if(!$pelanggan->status_member_plus)
-    <div class="mb-10">
+    <div class="mb-10" id="borma-plus-membership">
         <div class="flex items-center justify-between mb-5">
             <div>
                 <h3 class="font-heading font-extrabold text-xl text-neutral-800 flex items-center gap-2">

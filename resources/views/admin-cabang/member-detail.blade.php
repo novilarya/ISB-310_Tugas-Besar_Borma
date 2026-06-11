@@ -36,6 +36,11 @@
                 </div>
                 
                 <div>
+                    <span class="text-xs text-slate-400 dark:text-white/40 font-semibold block">ID Member</span>
+                    <span class="font-mono font-bold text-slate-800 dark:text-white text-sm block mt-0.5">{{ $member->member_id ?? '-' }}</span>
+                </div>
+                
+                <div>
                     <span class="text-xs text-slate-400 dark:text-white/40 font-semibold block">Email</span>
                     <span class="font-bold text-slate-800 dark:text-white text-sm block mt-0.5">{{ $member->user->email ?? '-' }}</span>
                 </div>

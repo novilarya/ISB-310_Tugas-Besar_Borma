@@ -14,13 +14,13 @@ class MemberController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $pelanggan = null;
+        $pelanggan = $user ? $user->pelanggan : null;
 
-        if ($user) {
-            $pelanggan = Pelanggan::where('id_pengguna', $user->id_pengguna)->first();
+        if ($pelanggan && !$pelanggan->status_member_plus) {
+            return redirect()->to(route('pelanggan.profil') . '#borma-plus-membership');
         }
 
-        return view('pelanggan.member', compact('user', 'pelanggan'));
+        return redirect()->route('pelanggan.profil');
     }
 
     /**
@@ -51,7 +51,7 @@ class MemberController extends Controller
         ]);
 
         // Check if pelanggan record exists
-        $pelanggan = Pelanggan::where('id_pengguna', $user->id_pengguna)->first();
+        $pelanggan = Pelanggan::query()->where('id_pengguna', $user->id_pengguna)->first();
 
         if ($pelanggan) {
             // Update existing record
