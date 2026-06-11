@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\InvoiceMail;
 use Midtrans\Config;
 use Midtrans\Snap;
 use Midtrans\Notification;
@@ -343,7 +345,7 @@ class PaymentController extends Controller
                     // Activate membership status if this order is for membership activation
                     if ($pesanan->metode_pembayaran === 'Aktivasi Member Plus' || str_contains($pesanan->alamat_pengiriman, 'Aktivasi Borma Plus')) {
                         $pelanggan = $pesanan->pelanggan;
-                        if ($pelanggan) {
+                        if ($pelanggan && $pesanan->status_pesanan !== 'selesai') {
                             $months = 1;
                             if (str_contains(strtoupper($pesanan->alamat_pengiriman), '2_BULAN')) {
                                 $months = 2;
@@ -354,7 +356,19 @@ class PaymentController extends Controller
                                 'status_member_plus' => 1,
                                 'tanggal_berakhir_member_plus' => now()->addMonths($months)->toDateString()
                             ]);
+                            $pesanan->update(['status_pesanan' => 'selesai']);
                             Log::info("Pelanggan {$pelanggan->id_pelanggan} status_member_plus updated to 1 and expiration set to {$months} months via Webhook");
+
+                            // Send email receipt
+                            try {
+                                $user = $pelanggan->user;
+                                if ($user && $user->email) {
+                                    Mail::to($user->email)->send(new InvoiceMail($pesanan));
+                                    Log::info("Receipt email sent to {$user->email} via Webhook");
+                                }
+                            } catch (\Exception $mailEx) {
+                                Log::error("Failed to send receipt email via Webhook: " . $mailEx->getMessage());
+                            }
                         }
                     }
                 } elseif ($transactionStatus == 'pending') {
@@ -396,7 +410,7 @@ class PaymentController extends Controller
                 // If membership, activate it immediately
                 if ($pesanan->metode_pembayaran === 'Aktivasi Member Plus' || str_contains($pesanan->alamat_pengiriman, 'Aktivasi Borma Plus')) {
                     $pelanggan = $pesanan->pelanggan;
-                    if ($pelanggan) {
+                    if ($pelanggan && $pesanan->status_pesanan !== 'selesai') {
                         $months = 1;
                         if (str_contains(strtoupper($pesanan->alamat_pengiriman), '2_BULAN')) {
                             $months = 2;
@@ -407,7 +421,19 @@ class PaymentController extends Controller
                             'status_member_plus' => 1,
                             'tanggal_berakhir_member_plus' => now()->addMonths($months)->toDateString()
                         ]);
+                        $pesanan->update(['status_pesanan' => 'selesai']);
                         Log::info("Pelanggan {$pelanggan->id_pelanggan} membership_plus set to 1 and expiration set to {$months} months locally.");
+
+                        // Send email receipt
+                        try {
+                            $user = $pelanggan->user;
+                            if ($user && $user->email) {
+                                Mail::to($user->email)->send(new InvoiceMail($pesanan));
+                                Log::info("Receipt email sent to {$user->email} locally");
+                            }
+                        } catch (\Exception $mailEx) {
+                            Log::error("Failed to send receipt email locally: " . $mailEx->getMessage());
+                        }
                     }
                     return redirect()->route('pelanggan.profil')->with('success', 'Pembayaran berhasil! Status Anda telah berubah menjadi pelanggan Borma Plus.');
                 }

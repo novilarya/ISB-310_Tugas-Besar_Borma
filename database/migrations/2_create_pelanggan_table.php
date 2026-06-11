@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('id_pelanggan');
             $table->foreignId('id_pengguna')->constrained('pengguna', 'id_pengguna')->onDelete('cascade');
             $table->boolean('status_member_plus')->default(false);
+            $table->string('member_id')->unique();
             $table->integer('poin_member')->default(0);
             $table->date('tanggal_berakhir_member_plus')->nullable();
             $table->string('provinsi');
