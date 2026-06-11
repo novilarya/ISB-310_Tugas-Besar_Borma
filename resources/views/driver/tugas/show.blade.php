@@ -7,7 +7,787 @@
 {{-- Leaflet CSS --}}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-<link rel="stylesheet" href="{{ asset('css/driver/tugas-show.css') }}">
+
+<style>
+    /* ================================================
+       ORDER HEADER
+    ================================================ */
+    .order-header {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .order-id-card {
+        background: var(--color-surface);
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--radius-md);
+        padding: 14px 18px;
+        box-shadow: var(--shadow-card);
+    }
+
+    .order-id-label {
+        font-family: var(--font-body);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+    }
+
+    .order-id-value {
+        font-family: var(--font-headline);
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--color-neutral);
+        margin-top: 2px;
+    }
+
+    .order-status-card {
+        border-radius: var(--radius-md);
+        padding: 14px 18px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .order-status-card.status-pending { background: #FEF3CD; }
+    .order-status-card.status-diterima_driver { background: #d1fae5; }
+    .order-status-card.status-diambil { background: var(--color-primary-pale); }
+    .order-status-card.status-dalam_pengiriman { background: var(--color-primary); }
+    .order-status-card.status-diterima { background: #22c55e; }
+    .order-status-card.status-gagal { background: var(--color-tertiary); }
+
+    .order-status-label {
+        font-family: var(--font-body);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .order-status-card.status-dalam_pengiriman .order-status-label,
+    .order-status-card.status-diterima .order-status-label,
+    .order-status-card.status-gagal .order-status-label {
+        color: rgba(255,255,255,0.7);
+    }
+
+    .order-status-card.status-pending .order-status-label,
+    .order-status-card.status-diterima_driver .order-status-label,
+    .order-status-card.status-diambil .order-status-label {
+        color: var(--color-text-muted);
+    }
+
+    .order-status-value {
+        font-family: var(--font-headline);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .order-status-card.status-dalam_pengiriman .order-status-value,
+    .order-status-card.status-diterima .order-status-value,
+    .order-status-card.status-gagal .order-status-value {
+        color: white;
+    }
+
+    .order-status-card.status-pending .order-status-value { color: #92400e; }
+    .order-status-card.status-diterima_driver .order-status-value { color: #166534; }
+    .order-status-card.status-diambil .order-status-value { color: var(--color-primary); }
+
+    .order-status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        animation: pulse-dot 1.8s ease-in-out infinite;
+    }
+
+    .order-status-card.status-pending .order-status-dot { background: #f59e0b; }
+    .order-status-card.status-diterima_driver .order-status-dot { background: #22c55e; }
+    .order-status-card.status-diambil .order-status-dot { background: var(--color-primary); }
+    .order-status-card.status-dalam_pengiriman .order-status-dot { background: var(--color-secondary); }
+    .order-status-card.status-diterima .order-status-dot { background: white; }
+    .order-status-card.status-gagal .order-status-dot { background: #fca5a5; }
+
+    @keyframes pulse-dot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50%       { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    /* Order Extra Info */
+    .order-extra {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    .order-extra-item {
+        flex: 1;
+        background: var(--color-surface);
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--radius-sm);
+        padding: 10px 14px;
+        box-shadow: var(--shadow-card);
+    }
+
+    .order-extra-label {
+        font-family: var(--font-body);
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        margin-bottom: 2px;
+    }
+
+    .order-extra-value {
+        font-family: var(--font-headline);
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--color-neutral);
+    }
+
+    /* ================================================
+       MAP CONTAINER (Leaflet)
+    ================================================ */
+    .map-section {
+        margin-bottom: 20px;
+    }
+
+    .map-container {
+        width: 100%;
+        height: 240px;
+        background: #E8E6EE;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        position: relative;
+        border: 1.5px solid var(--color-border);
+        box-shadow: var(--shadow-card);
+    }
+
+    #delivery-map {
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+    }
+
+    /* Map loading overlay */
+    .map-loading-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(255,255,255,0.82);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        z-index: 900;
+        border-radius: var(--radius-md);
+        backdrop-filter: blur(2px);
+        transition: opacity 0.3s ease;
+    }
+
+    .map-loading-overlay.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .map-spinner {
+        width: 32px;
+        height: 32px;
+        border: 3px solid var(--color-primary-pale);
+        border-top-color: var(--color-primary);
+        border-radius: 50%;
+        animation: spin 0.75s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .map-loading-text {
+        font-family: var(--font-body);
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--color-primary);
+        letter-spacing: 0.06em;
+    }
+
+    /* Route info badge */
+    .map-route-info {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(51, 17, 108, 0.92);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-family: var(--font-body);
+        font-size: 11px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 800;
+        backdrop-filter: blur(4px);
+        box-shadow: 0 2px 10px rgba(51,17,108,0.35);
+        opacity: 0;
+        transition: opacity 0.4s ease 0.3s;
+        white-space: nowrap;
+    }
+
+    .map-route-info.visible { opacity: 1; }
+
+    .map-route-info i {
+        font-size: 12px;
+        opacity: 0.8;
+    }
+
+    .map-route-divider {
+        width: 1px;
+        height: 12px;
+        background: rgba(255,255,255,0.3);
+    }
+
+    /* Route error badge */
+    .map-route-error {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(235, 59, 2, 0.88);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-family: var(--font-body);
+        font-size: 10px;
+        font-weight: 600;
+        z-index: 800;
+        display: none;
+        white-space: nowrap;
+    }
+
+    .map-legend {
+        display: flex;
+        gap: 16px;
+        margin-top: 8px;
+        padding: 0 4px;
+    }
+
+    .map-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-body);
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    .legend-dot.gudang { background: var(--color-primary); }
+    .legend-dot.customer { background: var(--color-tertiary); }
+    .legend-dot.driver { background: #22c55e; }
+
+    .legend-route {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+    }
+
+    .legend-route-line {
+        width: 22px;
+        height: 3px;
+        background: #2563eb;
+        border-radius: 2px;
+    }
+
+    /* ================================================
+       INFO GRID (Customer + Ringkasan Item)
+    ================================================ */
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 480px) {
+        .info-grid { grid-template-columns: 1fr; }
+    }
+
+    .info-card {
+        background: var(--color-surface);
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        box-shadow: var(--shadow-card);
+    }
+
+    .info-card-title {
+        font-family: var(--font-headline);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-neutral);
+        margin-bottom: 14px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--color-primary-pale);
+    }
+
+    .info-row {
+        margin-bottom: 12px;
+    }
+
+    .info-row:last-child { margin-bottom: 0; }
+
+    .info-label {
+        font-family: var(--font-body);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        margin-bottom: 2px;
+    }
+
+    .info-value {
+        font-family: var(--font-body);
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--color-neutral);
+    }
+
+    .info-note {
+        background: var(--color-primary-pale);
+        border-radius: var(--radius-sm);
+        padding: 10px 12px;
+        margin-top: 10px;
+    }
+
+    .info-note-label {
+        font-family: var(--font-body);
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-primary);
+        margin-bottom: 4px;
+    }
+
+    .info-note-text {
+        font-family: var(--font-body);
+        font-size: 12px;
+        font-style: italic;
+        color: var(--color-neutral-soft);
+    }
+
+    /* ===== Ringkasan Item ===== */
+    .item-row {
+        padding: 8px 0;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .item-row:last-of-type { border-bottom: none; }
+
+    .item-name {
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--color-neutral);
+    }
+
+    .item-qty {
+        font-family: var(--font-body);
+        font-size: 11px;
+        color: var(--color-text-muted);
+    }
+
+    .item-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 10px;
+        margin-top: 8px;
+        border-top: 2px solid var(--color-primary-pale);
+    }
+
+    .item-total-label {
+        font-family: var(--font-body);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+    }
+
+    .item-total-value {
+        font-family: var(--font-headline);
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--color-primary);
+    }
+
+    .item-total-unit {
+        font-size: 12px;
+        font-weight: 600;
+        margin-left: 4px;
+        color: var(--color-text-muted);
+    }
+
+    /* ================================================
+       TIMELINE
+    ================================================ */
+    .timeline-section {
+        background: var(--color-surface);
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--radius-md);
+        padding: 18px;
+        margin-bottom: 20px;
+        box-shadow: var(--shadow-card);
+    }
+
+    .timeline-title {
+        font-family: var(--font-headline);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-neutral);
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--color-primary-pale);
+    }
+
+    .timeline-list {
+        position: relative;
+        padding-left: 28px;
+    }
+
+    .timeline-list::before {
+        content: '';
+        position: absolute;
+        left: 10px;
+        top: 4px;
+        bottom: 4px;
+        width: 2px;
+        background: var(--color-border);
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-bottom: 18px;
+    }
+
+    .timeline-item:last-child { padding-bottom: 0; }
+
+    .timeline-dot {
+        position: absolute;
+        left: -22px;
+        top: 2px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--color-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 8px;
+        color: white;
+    }
+
+    .timeline-dot.done {
+        background: var(--color-primary);
+    }
+
+    .timeline-dot.active {
+        background: var(--color-secondary);
+        color: var(--color-neutral);
+        box-shadow: 0 0 0 4px rgba(254, 213, 11, 0.3);
+    }
+
+    .timeline-dot.failed {
+        background: var(--color-tertiary);
+    }
+
+    .timeline-dot.pending {
+        background: var(--color-border);
+    }
+
+    .timeline-step-title {
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--color-neutral);
+    }
+
+    .timeline-step-time {
+        font-family: var(--font-body);
+        font-size: 11px;
+        color: var(--color-text-muted);
+        margin-top: 2px;
+    }
+
+    .timeline-item.is-pending .timeline-step-title {
+        color: var(--color-text-muted);
+    }
+
+    /* ================================================
+       BUKTI PENGIRIMAN
+    ================================================ */
+    .bukti-section {
+        background: var(--color-surface);
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--radius-md);
+        padding: 18px;
+        margin-bottom: 20px;
+        box-shadow: var(--shadow-card);
+    }
+
+    .bukti-title {
+        font-family: var(--font-headline);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-neutral);
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--color-primary-pale);
+    }
+
+    .bukti-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    @media (max-width: 400px) {
+        .bukti-grid { grid-template-columns: 1fr; }
+    }
+
+    .bukti-photo-box {
+        background: var(--color-bg);
+        border: 2px dashed var(--color-border);
+        border-radius: var(--radius-sm);
+        height: 140px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: border-color 0.2s, background 0.2s;
+        overflow: hidden;
+    }
+
+    .bukti-photo-box:hover {
+        border-color: var(--color-primary);
+        background: var(--color-primary-pale);
+    }
+
+    .bukti-photo-box i {
+        font-size: 28px;
+        color: var(--color-text-muted);
+    }
+
+    .bukti-photo-box span {
+        font-family: var(--font-body);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+    }
+
+    .bukti-photo-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: calc(var(--radius-sm) - 2px);
+    }
+
+    .bukti-form-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .form-field label {
+        font-family: var(--font-body);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        display: block;
+        margin-bottom: 6px;
+    }
+
+    .form-field input,
+    .form-field textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--radius-sm);
+        font-family: var(--font-body);
+        font-size: 13px;
+        color: var(--color-neutral);
+        background: var(--color-bg);
+        transition: border-color 0.2s;
+        outline: none;
+        resize: none;
+    }
+
+    .form-field input::placeholder,
+    .form-field textarea::placeholder {
+        color: var(--color-text-muted);
+        font-size: 12px;
+    }
+
+    .form-field input:focus,
+    .form-field textarea:focus {
+        border-color: var(--color-primary);
+    }
+
+    .btn-upload-bukti {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        margin-top: 14px;
+        background: var(--color-primary);
+        color: white;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-headline);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.15s;
+        text-align: center;
+    }
+
+    .btn-upload-bukti:hover {
+        background: var(--color-primary-light);
+        transform: translateY(-1px);
+    }
+
+    .btn-upload-bukti:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* ================================================
+       STATUS BUTTONS
+    ================================================ */
+    .status-buttons {
+        display: grid;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+
+    .status-buttons.single {
+        grid-template-columns: 1fr;
+    }
+
+    .status-buttons.double {
+        grid-template-columns: 2fr 1fr;
+    }
+
+    @media (max-width: 480px) {
+        .status-buttons.double { grid-template-columns: 1fr; }
+    }
+
+    .status-btn {
+        padding: 14px 12px;
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--radius-sm);
+        font-family: var(--font-headline);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        text-align: center;
+        cursor: pointer;
+        background: var(--color-surface);
+        color: var(--color-neutral);
+        transition: all 0.2s;
+    }
+
+    .status-btn-main {
+        background: var(--color-primary);
+        color: white;
+        border-color: var(--color-primary);
+    }
+
+    .status-btn-main:hover {
+        background: var(--color-primary-light, #4A1D9A);
+        border-color: var(--color-primary-light, #4A1D9A);
+        color: white;
+    }
+
+    .status-btn.btn-gagal {
+        border-color: var(--color-tertiary);
+        color: var(--color-tertiary);
+    }
+
+    .status-btn.btn-gagal:hover {
+        background: var(--color-tertiary);
+        color: white;
+    }
+
+    /* ================================================
+       ANIMATION
+    ================================================ */
+    .fade-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.5s ease forwards;
+    }
+
+    @keyframes fadeUp {
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .delay-1 { animation-delay: 0.05s; }
+    .delay-2 { animation-delay: 0.12s; }
+    .delay-3 { animation-delay: 0.20s; }
+    .delay-4 { animation-delay: 0.28s; }
+    .delay-5 { animation-delay: 0.36s; }
+    .delay-6 { animation-delay: 0.44s; }
+
+    /* ================================================
+       SWAL CUSTOM
+    ================================================ */
+    .swal2-popup {
+        font-family: var(--font-body) !important;
+        border-radius: var(--radius-md) !important;
+    }
+    .swal2-title {
+        font-family: var(--font-headline) !important;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -90,6 +870,10 @@
         </div>
     </div>
     <div class="map-legend">
+        <div class="map-legend-item">
+            <span class="legend-dot driver"></span>
+            Driver
+        </div>
         <div class="map-legend-item">
             <span class="legend-dot gudang"></span>
             Gudang
@@ -260,26 +1044,34 @@
 
 {{-- ===== STATUS BUTTONS ===== --}}
 @if(in_array($pesanan->status_pesanan, ['diterima_driver', 'diambil', 'dalam_pengiriman']))
-<div class="status-buttons fade-up delay-5" id="status-buttons">
-    @if($pesanan->status_pesanan === 'diterima_driver')
-        <button type="button" class="status-btn" style="grid-column: span 4;"
-                onclick="updateStatus('diambil')" data-status="diambil">
-            <i class="bi bi-box-seam me-1"></i> Tandai Diambil Dari Gudang
-        </button>
-    @elseif($pesanan->status_pesanan === 'diambil')
-        <button type="button" class="status-btn" style="grid-column: span 4;"
-                onclick="updateStatus('dalam_pengiriman')" data-status="dalam_pengiriman">
-            <i class="bi bi-truck me-1"></i> Mulai Pengiriman (Perjalanan)
-        </button>
-    @elseif($pesanan->status_pesanan === 'dalam_pengiriman')
-        <button type="button" class="status-btn" style="grid-column: span 2;"
-                onclick="openBuktiModal()" data-status="diterima">
-            <i class="bi bi-check-circle me-1"></i> Diterima / Selesai
-        </button>
-        <button type="button" class="status-btn btn-gagal" style="grid-column: span 2;"
-                onclick="updateStatusGagal()" data-status="gagal">
-            <i class="bi bi-x-circle me-1"></i> Gagal Kirim
-        </button>
+@php
+    $btnAction = '';
+    $btnText = '';
+    if ($pesanan->status_pesanan == 'diterima_driver') {
+        $btnAction = "updateStatus('diambil')";
+        $btnText = 'Ambil Pesanan';
+    } elseif ($pesanan->status_pesanan == 'diambil') {
+        $btnAction = "updateStatus('dalam_pengiriman')";
+        $btnText = 'Mulai Pengiriman';
+    } elseif ($pesanan->status_pesanan == 'dalam_pengiriman') {
+        $btnAction = "openBuktiModal()";
+        $btnText = 'Selesaikan Pengiriman';
+    }
+    
+    $isTahapAkhir = $pesanan->status_pesanan == 'dalam_pengiriman';
+@endphp
+
+<div class="status-buttons {{ $isTahapAkhir ? 'double' : 'single' }} fade-up delay-5" id="status-buttons">
+    <button type="button" class="status-btn status-btn-main"
+            onclick="{{ $btnAction }}">
+        <i class="bi bi-arrow-right-circle" style="margin-right: 6px;"></i> {{ $btnText }}
+    </button>
+    
+    @if($isTahapAkhir)
+    <button type="button" class="status-btn btn-gagal"
+            onclick="updateStatusGagal()">
+        <i class="bi bi-x-circle" style="margin-right: 6px;"></i> Gagal Kirim
+    </button>
     @endif
 </div>
 @endif

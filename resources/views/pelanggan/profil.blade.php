@@ -137,15 +137,21 @@
                         <p class="text-xs text-neutral-400 uppercase tracking-wider mb-1">Nama Pemegang</p>
                         <p class="font-bold text-lg text-white uppercase tracking-wide">{{ $user->nama }}</p>
                     </div>
-                    <div class="text-right">
-                        <p class="text-xs text-neutral-400 uppercase tracking-wider mb-1">ID Member</p>
-                        <p class="font-mono font-bold text-base text-secondary-400 tracking-widest">{{ $pelanggan->member_id ?? '0000 0000 0000' }}</p>
+                    <div class="text-center">
+                        <p class="text-xs text-neutral-400 uppercase tracking-wider mb-1">Masa Berakhir Member</p>
+                        <p class="font-mono font-bold text-base text-secondary-400 tracking-widest">
+                            @if($pelanggan->status_member_plus && $pelanggan->tanggal_berakhir_member_plus)
+                                {{ \Carbon\Carbon::parse($pelanggan->tanggal_berakhir_member_plus)->format('d/m/Y') }}
+                            @else
+                                --/--/----
+                            @endif
+                        </p>
                     </div>
                     <div class="text-right">
                         <p class="text-xs text-neutral-400 uppercase tracking-wider mb-1">Status</p>
                         <span class="inline-flex items-center gap-1.5 text-sm font-bold {{ $pelanggan->status_member_plus ? 'text-green-400' : 'text-neutral-400' }}">
                             <span class="w-2.5 h-2.5 rounded-full {{ $pelanggan->status_member_plus ? 'bg-green-400 animate-pulse' : 'bg-neutral-500' }}"></span>
-                            {{ $pelanggan->status_member_plus ? 'MEMBER PLUS' : 'MEMBER' }}
+                            {{ $pelanggan->status_member_plus ? 'PLUS' : 'REGULER' }}
                         </span>
                     </div>
                 </div>
@@ -228,17 +234,19 @@
                 <h3 class="font-heading font-extrabold text-2xl text-neutral-800 uppercase tracking-tight mb-1">Riwayat Pesanan</h3>
                 <p class="text-sm font-medium text-neutral-500 uppercase tracking-widest text-[11px]">{{ count($pesanans) }} Transaksi Terakhir</p>
             </div>
-            <a href="#" class="inline-flex items-center gap-1 font-bold text-sm text-primary-600 hover:text-primary-800 transition-colors group border-b-2 border-transparent hover:border-primary-600 pb-0.5 uppercase tracking-wide">
+            <a href="{{ route('pelanggan.pesanan.index') }}" class="inline-flex items-center gap-1 font-bold text-sm text-primary-600 hover:text-primary-800 transition-colors group border-b-2 border-transparent hover:border-primary-600 pb-0.5 uppercase tracking-wide">
                 Lihat Semua 
                 <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
             </a>
         </div>
         
         <!-- Orders List -->
-        <div class="space-y-4 relative z-10">
+        <div id="order-list-wrapper" class="space-y-4 relative z-10">
             @forelse($pesanans as $pesanan)
             @php
                 $statusMap = [
+                    'Menunggu' => ['label' => 'Menunggu', 'class' => 'bg-neutral-900 text-white'],
+                    'Disiapkan' => ['label' => 'Sedang Disiapkan', 'class' => 'bg-blue-100 text-blue-800'],
                     'mencari_driver' => ['label' => 'Diproses', 'class' => 'bg-neutral-900 text-white'],
                     'diterima_driver' => ['label' => 'Driver Ditemukan', 'class' => 'bg-primary-100 text-primary-700'],
                     'diambil' => ['label' => 'Diambil Dari Gudang', 'class' => 'bg-primary-100 text-primary-700'],
@@ -250,7 +258,7 @@
                 ];
                 $statusInfo = $statusMap[$pesanan->status_pesanan] ?? ['label' => $pesanan->status_pesanan, 'class' => 'bg-neutral-900 text-white'];
             @endphp
-            <div onclick="showOrderDetail(this)" data-pesanan="{{ json_encode($pesanan) }}" class="group bg-neutral-50 rounded-2xl p-4 sm:p-5 border border-neutral-200 hover:border-primary-300 hover:bg-white hover:shadow-md transition-all duration-300 flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center cursor-pointer">
+            <div onclick="showOrderDetail(this)" data-pesanan="{{ json_encode($pesanan) }}" class="order-card-item group bg-neutral-50 rounded-2xl p-4 sm:p-5 border border-neutral-200 hover:border-primary-300 hover:bg-white hover:shadow-md transition-all duration-300 flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center cursor-pointer">
                 
                 <!-- Order Icon -->
                 <div class="w-14 h-14 bg-white rounded-xl shadow-sm flex items-center justify-center shrink-0 border border-neutral-100 group-hover:bg-primary-50 group-hover:border-primary-200 transition-colors text-primary-400 group-hover:text-primary-700">
@@ -314,6 +322,8 @@
             </div>
             @endforelse
         </div>
+
+
     </div>
 
     <!-- Logout Button -->
@@ -595,6 +605,8 @@ let currentPesananId = null;
 
 let selectedPaketInfo = null;
 
+
+
 function activateMember(paket, harga) {
     const paketNames = {
         '1_bulan': 'Borma Plus - 1 Bulan',
@@ -705,6 +717,8 @@ function showOrderDetail(element) {
     const badge = document.getElementById('modalOrderStatusBadge');
     
     const statusMap = {
+        'Menunggu': { label: 'MENUNGGU', class: ['bg-neutral-900', 'text-white'] },
+        'Disiapkan': { label: 'SEDANG DISIAPKAN', class: ['bg-blue-100', 'text-blue-800'] },
         'mencari_driver': { label: 'DIPROSES', class: ['bg-neutral-900', 'text-white'] },
         'diterima_driver': { label: 'DRIVER DITEMUKAN', class: ['bg-primary-100', 'text-primary-700'] },
         'diambil': { label: 'DIAMBIL DARI GUDANG', class: ['bg-primary-100', 'text-primary-700'] },

@@ -11,6 +11,17 @@ $categories = [
 ];
 $activeCategory = request('kategori', '');
 @endphp
+<style>
+/* Hide scrollbar for Chrome, Safari and Opera */
+.sidebar-filter-container::-webkit-scrollbar {
+    display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.sidebar-filter-container {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+</style>
 <aside class="w-64 shrink-0 hidden lg:block">
     <div class="sticky top-24 bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm max-h-[calc(100vh-120px)] overflow-y-auto overscroll-contain sidebar-filter-container">
         <div class="mb-6">
@@ -89,5 +100,4 @@ $activeCategory = request('kategori', '');
                 </div>
             </div>
         </div>
-    </div>
 </aside>

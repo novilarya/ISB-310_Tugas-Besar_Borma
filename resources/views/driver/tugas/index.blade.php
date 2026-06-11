@@ -15,18 +15,14 @@
     <p>Pengiriman aktif yang ditugaskan kepada Anda.</p>
 </div>
 
-{{-- ===== FILTER TABS ===== --}}
-<div class="filter-tabs fade-up delay-1">
-    <a href="{{ route('driver.tugas.index') }}"
-       class="filter-tab {{ !request('status') ? 'active' : '' }}">Semua</a>
-    <a href="{{ route('driver.tugas.index', ['status' => 'mencari_driver']) }}"
-       class="filter-tab {{ request('status') == 'mencari_driver' ? 'active' : '' }}">Mencari Driver</a>
-    <a href="{{ route('driver.tugas.index', ['status' => 'diterima_driver']) }}"
-       class="filter-tab {{ request('status') == 'diterima_driver' ? 'active' : '' }}">Dikonfirmasi</a>
-    <a href="{{ route('driver.tugas.index', ['status' => 'diambil']) }}"
-       class="filter-tab {{ request('status') == 'diambil' ? 'active' : '' }}">Diambil</a>
-    <a href="{{ route('driver.tugas.index', ['status' => 'dalam_pengiriman']) }}"
-       class="filter-tab {{ request('status') == 'dalam_pengiriman' ? 'active' : '' }}">Dalam Pengiriman</a>
+{{-- ===== FILTER DROPDOWN ===== --}}
+<div class="filter-dropdown fade-up delay-1" style="margin-bottom: 20px;">
+    <select onchange="window.location.href=this.value" style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1.5px solid var(--color-border); background: var(--color-surface); font-family: var(--font-body); font-size: 13px; color: var(--color-neutral); outline: none; cursor: pointer;">
+        <option value="{{ route('driver.tugas.index') }}" {{ !request('status') ? 'selected' : '' }}>Semua</option>
+        <option value="{{ route('driver.tugas.index', ['status' => 'diterima_driver']) }}" {{ request('status') == 'diterima_driver' ? 'selected' : '' }}>Dikonfirmasi</option>
+        <option value="{{ route('driver.tugas.index', ['status' => 'diambil']) }}" {{ request('status') == 'diambil' ? 'selected' : '' }}>Diambil</option>
+        <option value="{{ route('driver.tugas.index', ['status' => 'dalam_pengiriman']) }}" {{ request('status') == 'dalam_pengiriman' ? 'selected' : '' }}>Dalam Pengiriman</option>
+    </select>
 </div>
 
 {{-- ===== TASK LIST ===== --}}

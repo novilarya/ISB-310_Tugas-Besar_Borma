@@ -32,7 +32,7 @@ class MemberController extends Controller
         }
 
         // Filter status member
-        if ($status === 'member_plus') {
+        if ($status === 'member_plus' || $status === 'member-plus') {
             $query->where('status_member_plus', true);
         } elseif ($status === 'member') {
             $query->where('status_member_plus', false);

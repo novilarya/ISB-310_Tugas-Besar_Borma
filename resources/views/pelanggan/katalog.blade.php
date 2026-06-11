@@ -143,6 +143,7 @@ $isMemberPlus = auth()->user() && auth()->user()->pelanggan && auth()->user()->p
 @vite(['resources/js/catalog-filter.js'])
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+
     // === Add to cart AJAX ===
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 

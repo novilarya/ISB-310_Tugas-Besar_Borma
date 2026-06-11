@@ -33,14 +33,14 @@ class ProfileController extends Controller
             $pelanggan->id_pelanggan = 0;
         }
 
-        // Fetch recent orders (up to 5)
+        // Fetch recent orders (up to 3)
         $pesanans = [];
         if ($pelanggan->id_pelanggan) {
             $pesanans = Pesanan::query()->where('id_pelanggan', $pelanggan->id_pelanggan)
                 ->with(['details.produk', 'cabang'])
                 ->withCount('details')
                 ->orderBy('tanggal_pemesanan', 'desc')
-                ->take(5)
+                ->limit(3)
                 ->get();
         }
 
@@ -159,5 +159,38 @@ class ProfileController extends Controller
         }
 
         return redirect()->route('pelanggan.profil')->with('success', 'Profil berhasil diperbarui.');
+    }
+
+    public function pesananList(Request $request)
+    {
+        $user = Auth::user();
+        $pelanggan = $user->pelanggan;
+        
+        if (!$pelanggan) {
+            return redirect()->route('pelanggan.dashboard')->with('error', 'Data pelanggan tidak ditemukan.');
+        }
+
+        $activeTab = strtolower($request->query('status', 'all'));
+
+        $query = Pesanan::query()
+            ->where('id_pelanggan', $pelanggan->id_pelanggan)
+            ->with(['details.produk', 'cabang'])
+            ->orderBy('tanggal_pemesanan', 'desc');
+
+        if ($activeTab === 'menunggu') {
+            $query->where('status_pesanan', 'Menunggu');
+        } elseif ($activeTab === 'disiapkan') {
+            $query->where('status_pesanan', 'Disiapkan');
+        } elseif ($activeTab === 'dalam_pengiriman') {
+            $query->whereIn('status_pesanan', ['mencari_driver', 'diterima_driver', 'diambil', 'dalam_pengiriman']);
+        } elseif ($activeTab === 'diterima') {
+            $query->where('status_pesanan', 'diterima');
+        } elseif ($activeTab === 'selesai') {
+            $query->where('status_pesanan', 'selesai');
+        }
+
+        $pesanans = $query->get();
+
+        return view('pelanggan.pesanan-list', compact('user', 'pelanggan', 'pesanans', 'activeTab'));
     }
 }

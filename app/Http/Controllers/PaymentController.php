@@ -30,6 +30,8 @@ class PaymentController extends Controller
             'customer_phone' => 'nullable|string',
             'items' => 'nullable|array',
             'shipping_address' => 'nullable|string',
+            'id_promo' => 'nullable|integer',
+            'diskon_voucher' => 'nullable|numeric',
         ]);
 
         if (!Auth::check()) {
@@ -50,6 +52,8 @@ class PaymentController extends Controller
 
         $paymentMethod = $request->input('payment_method');
         $total = (int) $request->input('total');
+        $idPromo = $request->input('id_promo');
+        $diskonVoucher = (int) $request->input('diskon_voucher', 0);
 
         // Check if this is a membership activation order
         $isMembership = false;
@@ -77,9 +81,25 @@ class PaymentController extends Controller
         }
 
         // Calculate totals
-        $biayaPengiriman = $isMembership ? 0 : 15000;
+        $biayaPengiriman = 0;
+        if (!$isMembership) {
+            if (!session('selected_cabang_id')) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Silakan pilih cabang Borma pengirim terlebih dahulu.'
+                ], 400);
+            }
+            $distance = session('selected_cabang_distance', 0);
+            if ($distance > 5) {
+                $additionalDistance = ceil($distance - 5);
+                $biayaPengiriman = 15000 + ($additionalDistance * 1000);
+            } else {
+                $biayaPengiriman = 15000;
+            }
+        }
         $totalBelanja = $isMembership ? $total : collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
-        $totalTagihan = $totalBelanja + $biayaPengiriman;
+        $totalTagihan = $totalBelanja + $biayaPengiriman - ($isMembership ? 0 : $diskonVoucher);
+        if ($totalTagihan < 1) $totalTagihan = 1;
 
         DB::beginTransaction();
         try {
@@ -100,11 +120,11 @@ class PaymentController extends Controller
                 'id_pelanggan' => $pelanggan->id_pelanggan,
                 'id_cabang' => session('selected_cabang_id', 1),
                 'id_kurir' => null,
-                'id_promo' => null,
+                'id_promo' => $isMembership ? null : $idPromo,
                 'tanggal_pemesanan' => now(),
                 'total_belanja' => $totalBelanja,
                 'biaya_pengiriman' => $biayaPengiriman,
-                'diskon_voucher' => 0,
+                'diskon_voucher' => $isMembership ? 0 : $diskonVoucher,
                 'total_tagihan' => $totalTagihan,
                 'metode_pembayaran' => $paymentMethodLabel,
                 'alamat_pengiriman' => $alamatPengiriman,
@@ -136,7 +156,13 @@ class PaymentController extends Controller
                 ]);
             } else {
                 foreach ($cart as $item) {
-                    $produk = \App\Models\Produk::query()->where('nama_produk', $item['name'])->first();
+                    $produk = null;
+                    if (isset($item['id_produk'])) {
+                        $produk = \App\Models\Produk::find($item['id_produk']);
+                    }
+                    if (!$produk) {
+                        $produk = \App\Models\Produk::query()->where('nama_produk', $item['name'])->first();
+                    }
                     if (!$produk) {
                         $produk = \App\Models\Produk::create([
                             'nama_produk' => $item['name'],
@@ -156,6 +182,21 @@ class PaymentController extends Controller
                         'subtotal' => $item['price'] * $item['quantity'],
                         'catatan_produk' => null,
                     ]);
+                }
+
+                // If promo has a free gift, insert it to pesanan_produks
+                if ($idPromo) {
+                    $promo = \App\Models\Promo::find($idPromo);
+                    if ($promo && $promo->id_produk_hadiah && $promo->kuantitas_hadiah > 0) {
+                        \App\Models\PesananProduk::create([
+                            'id_pesanan' => $pesanan->id_pesanan,
+                            'id_produk' => $promo->id_produk_hadiah,
+                            'jumlah' => $promo->kuantitas_hadiah,
+                            'harga_satuan' => 0,
+                            'subtotal' => 0,
+                            'catatan_produk' => 'Hadiah Gratis (' . $promo->nama_voucher . ')',
+                        ]);
+                    }
                 }
             }
 
@@ -196,12 +237,36 @@ class PaymentController extends Controller
                         'name' => strlen($item['name']) > 50 ? substr($item['name'], 0, 47) . '...' : $item['name'],
                     ];
                 }
+
+                // Add free gift to Midtrans details if applicable
+                if (!$isMembership && $idPromo) {
+                    $promo = \App\Models\Promo::find($idPromo);
+                    if ($promo && $promo->id_produk_hadiah && $promo->kuantitas_hadiah > 0) {
+                        $giftProduct = \App\Models\Produk::find($promo->id_produk_hadiah);
+                        $itemDetails[] = [
+                            'id' => 'GIFT-' . $promo->id_produk_hadiah,
+                            'price' => 0,
+                            'quantity' => (int) $promo->kuantitas_hadiah,
+                            'name' => 'Hadiah: ' . ($giftProduct ? $giftProduct->nama_produk : 'Produk Gratis'),
+                        ];
+                    }
+                }
+
                 $itemDetails[] = [
                     'id' => 'SHIPPING-FEE',
                     'price' => (int) $biayaPengiriman,
                     'quantity' => 1,
                     'name' => 'Ongkos Kirim Borma',
                 ];
+
+                if ($diskonVoucher > 0) {
+                    $itemDetails[] = [
+                        'id' => 'VOUCHER-DISCOUNT',
+                        'price' => -(int) $diskonVoucher,
+                        'quantity' => 1,
+                        'name' => 'Diskon Voucher Borma',
+                    ];
+                }
             }
 
             $payload = [
@@ -348,7 +413,7 @@ class PaymentController extends Controller
                             'status_member_plus' => 1,
                             'tanggal_berakhir_member_plus' => now()->addMonths($months)->toDateString()
                         ]);
-                        Log::info("Pelanggan {$pelanggan->id_pelanggan} membership set to 1 (plus) and expiration set to {$months} months locally.");
+                        Log::info("Pelanggan {$pelanggan->id_pelanggan} membership_plus set to 1 and expiration set to {$months} months locally.");
                     }
                     return redirect()->route('pelanggan.profil')->with('success', 'Pembayaran berhasil! Status Anda telah berubah menjadi pelanggan Borma Plus.');
                 }
