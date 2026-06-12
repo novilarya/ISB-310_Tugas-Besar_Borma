@@ -203,4 +203,111 @@ class ProfileController extends Controller
 
         return view('pelanggan.pesanan-list', compact('user', 'pelanggan', 'pesanans', 'activeTab'));
     }
+
+    public function getTrackingData($id)
+    {
+        try {
+            $user = Auth::user();
+            $pelanggan = $user->pelanggan;
+            
+            if (!$pelanggan) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data pelanggan tidak ditemukan.'
+                ], 403);
+            }
+
+            $pesanan = Pesanan::with(['cabang', 'kurir.user'])
+                ->where('id_pelanggan', $pelanggan->id_pelanggan)
+                ->findOrFail($id);
+
+            $cabangLat = -6.9147;
+            $cabangLng = 107.6542;
+            if ($pesanan->cabang && $pesanan->cabang->koordinat_gps) {
+                $coords = explode(',', $pesanan->cabang->koordinat_gps);
+                if (count($coords) === 2) {
+                    $cabangLat = floatval(trim($coords[0]));
+                    $cabangLng = floatval(trim($coords[1]));
+                }
+            }
+
+            $custLat = floatval($pesanan->latitude ?? -6.9215);
+            $custLng = floatval($pesanan->longitude ?? 107.6310);
+
+            $driverLat = null;
+            $driverLng = null;
+            $driverInfo = null;
+
+            if ($pesanan->kurir) {
+                $driverLat = $pesanan->kurir->driver_lat ? floatval($pesanan->kurir->driver_lat) : null;
+                $driverLng = $pesanan->kurir->driver_lng ? floatval($pesanan->kurir->driver_lng) : null;
+                
+                $driverInfo = [
+                    'nama' => $pesanan->kurir->user->nama ?? 'Kurir Borma',
+                    'no_telepon' => $pesanan->kurir->user->no_telepon ?? '-',
+                    'kendaraan' => $pesanan->kurir->kendaraan ?? 'Motor',
+                    'warna_kendaraan' => $pesanan->kurir->warna_kendaraan ?? '',
+                    'plat_nomor' => $pesanan->kurir->plat_nomor ?? '',
+                ];
+            }
+
+            // Calculate distances
+            $distanceDriverToCust = null;
+            $estimatedTime = null;
+
+            if ($driverLat !== null && $driverLng !== null) {
+                $distanceDriverToCust = $this->calculateDistance($driverLat, $driverLng, $custLat, $custLng);
+                // Assume average speed is 20-30 km/h in Bandung traffic, meaning 2.5 mins per km
+                $estimatedTime = max(1, round($distanceDriverToCust * 2.5)); 
+            } else {
+                // If driver location is not active yet, show distance from Gudang/Cabang to Customer
+                $distanceDriverToCust = $this->calculateDistance($cabangLat, $cabangLng, $custLat, $custLng);
+                $estimatedTime = max(1, round($distanceDriverToCust * 2.5));
+            }
+
+            return response()->json([
+                'success' => true,
+                'status_pesanan' => $pesanan->status_pesanan,
+                'cabang' => [
+                    'nama' => $pesanan->cabang->nama_cabang ?? 'Gudang Borma',
+                    'lat' => $cabangLat,
+                    'lng' => $cabangLng
+                ],
+                'pelanggan' => [
+                    'nama' => $user->nama,
+                    'alamat' => $pesanan->alamat_pengiriman,
+                    'lat' => $custLat,
+                    'lng' => $custLng
+                ],
+                'kurir' => [
+                    'lat' => $driverLat,
+                    'lng' => $driverLng,
+                    'info' => $driverInfo
+                ],
+                'distance' => $distanceDriverToCust, // in km
+                'estimated_time' => $estimatedTime // in minutes
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil data tracking: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function calculateDistance($lat1, $lon1, $lat2, $lon2)
+    {
+        $earthRadius = 6371; // km
+        $latDelta = deg2rad($lat2 - $lat1);
+        $lonDelta = deg2rad($lon2 - $lon1);
+        
+        $a = sin($latDelta / 2) * sin($latDelta / 2) +
+             cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+             sin($lonDelta / 2) * sin($lonDelta / 2);
+        
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+        $distance = $earthRadius * $c;
+        
+        return round($distance, 2); // km
+    }
 }

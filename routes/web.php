@@ -195,6 +195,10 @@ Route::post('/pelanggan/pesanan/{id}/confirm-received', [\App\Http\Controllers\P
     ->middleware('auth')
     ->name('pelanggan.pesanan.confirm-received');
 
+Route::get('/pelanggan/pesanan/{id}/tracking', [\App\Http\Controllers\ProfileController::class, 'getTrackingData'])
+    ->middleware('auth')
+    ->name('pelanggan.pesanan.tracking');
+
 Route::get('/pelanggan/member', [PelangganMemberController::class, 'index'])->name('pelanggan.member');
 Route::post('/pelanggan/member/activate', [PelangganMemberController::class, 'activate'])
     ->middleware('auth')

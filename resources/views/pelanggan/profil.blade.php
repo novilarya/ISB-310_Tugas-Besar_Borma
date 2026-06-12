@@ -362,20 +362,52 @@
                             <p class="text-[10px] text-neutral-400 font-bold uppercase tracking-wider mb-1">Alamat Pengiriman</p>
                             <p class="text-sm text-neutral-600 leading-relaxed font-medium" id="modalOrderAddress">-</p>
                         </div>
-                    </div>
+                    </div>                    <!-- Live Tracking Map Section -->
+                    <div id="modalOrderMapSection" class="hidden border border-neutral-200 rounded-2xl p-4 bg-neutral-50/50 space-y-4">
+                        <div class="flex items-center justify-between border-b border-neutral-100 pb-2.5">
+                            <div class="flex items-center gap-2">
+                                <span class="relative flex h-2.5 w-2.5">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                                </span>
+                                <p class="text-[11px] text-neutral-500 font-bold uppercase tracking-wider">Pelacakan Live Kurir</p>
+                            </div>
+                            <span id="modalOrderEstimatedTime" class="bg-primary-50 text-primary-700 text-[10px] font-extrabold px-2.5 py-1 rounded-md border border-primary-100 uppercase tracking-wide">Estimasi: -</span>
+                        </div>
 
-                    <!-- Live Tracking Map Section -->
-                    <div id="modalOrderMapSection" class="hidden border border-neutral-200 rounded-2xl p-4 bg-neutral-50/50 space-y-2">
-                        <p class="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">Live Tracking Lokasi Kurir</p>
-                        <div id="modalOrderMap" style="height: 240px; border-radius: 12px; border: 1.5px solid #E4E0EE; overflow: hidden; z-index: 1;"></div>
-                        <div class="flex gap-4 mt-2 px-1 text-[10px] font-bold text-neutral-500 uppercase tracking-wide">
+                        <!-- Info Card Kurir & Jarak (GoFood/ShopeeFood Style) -->
+                        <div class="bg-white border border-neutral-200 rounded-xl p-3.5 shadow-sm flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-primary-50 border border-primary-100 rounded-full flex items-center justify-center text-primary-700 shrink-0">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                </div>
+                                <div>
+                                    <h5 id="modalOrderDriverName" class="font-bold text-neutral-800 text-sm">-</h5>
+                                    <p id="modalOrderDriverVehicle" class="text-xs text-neutral-500 font-medium">-</p>
+                                </div>
+                            </div>
+                            <div class="text-right shrink-0 border-l border-neutral-100 pl-4">
+                                <p class="text-[10px] text-neutral-400 font-bold uppercase tracking-widest">Jarak Kurir</p>
+                                <p id="modalOrderDistanceVal" class="font-extrabold text-sm text-primary-700 mt-0.5">-</p>
+                            </div>
+                        </div>
+
+                        <!-- Map Element -->
+                        <div id="modalOrderMap" class="relative shadow-inner" style="height: 260px; border-radius: 12px; border: 1.5px solid #E4E0EE; overflow: hidden; z-index: 1;"></div>
+                        
+                        <!-- Legend -->
+                        <div class="flex flex-wrap gap-4 mt-1 px-1 text-[10px] font-bold text-neutral-500 uppercase tracking-wide">
                             <div class="flex items-center gap-1.5">
                                 <span style="background: #33116C; width: 8px; height: 8px; border-radius: 50%; display: inline-block;"></span>
-                                Gudang/Cabang
+                                Cabang Borma
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span style="background: #10B981; width: 8px; height: 8px; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 2px rgba(16,185,129,0.3);"></span>
+                                Lokasi Kurir (Live)
                             </div>
                             <div class="flex items-center gap-1.5">
                                 <span style="background: #EB3B02; width: 8px; height: 8px; border-radius: 50%; display: inline-block;"></span>
-                                Lokasi Anda
+                                Alamat Anda
                             </div>
                         </div>
                     </div>
@@ -582,6 +614,196 @@
 <script>
 let trackingMapInstance = null;
 let currentPesananId = null;
+let trackingIntervalId = null;
+let driverMarkerInstance = null;
+let customerMarkerInstance = null;
+let gudangMarkerInstance = null;
+let routePolylineInstance = null;
+let originalRoutePolylineInstance = null;
+
+function startTracking(pesananId) {
+    if (trackingIntervalId) {
+        clearInterval(trackingIntervalId);
+    }
+    
+    // Initial fetch
+    fetchTrackingData(pesananId);
+    
+    // Poll every 8 seconds
+    trackingIntervalId = setInterval(() => {
+        fetchTrackingData(pesananId);
+    }, 8000);
+}
+
+function stopTracking() {
+    if (trackingIntervalId) {
+        clearInterval(trackingIntervalId);
+        trackingIntervalId = null;
+    }
+    driverMarkerInstance = null;
+    customerMarkerInstance = null;
+    gudangMarkerInstance = null;
+    routePolylineInstance = null;
+    originalRoutePolylineInstance = null;
+}
+
+function fetchTrackingData(pesananId) {
+    const url = `/pelanggan/pesanan/${pesananId}/tracking`;
+    
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                console.warn('Failed to fetch tracking data:', data.message);
+                return;
+            }
+            
+            // If the status has changed from dalam_pengiriman, let's refresh page or close modal tracking
+            if (data.status_pesanan !== 'dalam_pengiriman') {
+                stopTracking();
+                return;
+            }
+
+            // Update UI elements
+            const driver = data.kurir.info || { nama: 'Kurir Borma', kendaraan: 'Motor', plat_nomor: '', warna_kendaraan: '' };
+            document.getElementById('modalOrderDriverName').textContent = driver.nama;
+            document.getElementById('modalOrderDriverVehicle').textContent = `${driver.kendaraan} ${driver.warna_kendaraan ? '· ' + driver.warna_kendaraan : ''} ${driver.plat_nomor ? '[' + driver.plat_nomor + ']' : ''}`;
+            
+            // Format Jarak
+            const distance = data.distance; // in km
+            let distanceStr = '-';
+            if (distance !== null) {
+                if (distance < 1) {
+                    distanceStr = Math.round(distance * 1000) + ' m';
+                } else {
+                    distanceStr = distance.toFixed(1) + ' km';
+                }
+            }
+            document.getElementById('modalOrderDistanceVal').textContent = distanceStr;
+            
+            // Format Estimasi
+            const estTime = data.estimated_time;
+            document.getElementById('modalOrderEstimatedTime').textContent = `Estimasi: ${estTime} Menit`;
+
+            const cabangLat = data.cabang.lat;
+            const cabangLng = data.cabang.lng;
+            const custLat = data.pelanggan.lat;
+            const custLng = data.pelanggan.lng;
+            
+            // Driver Lat/Lng (use Gudang if driver location is null/not yet updated)
+            const driverLat = data.kurir.lat !== null ? data.kurir.lat : cabangLat;
+            const driverLng = data.kurir.lng !== null ? data.kurir.lng : cabangLng;
+
+            // Update Map Markers
+            updateMapMarkers(cabangLat, cabangLng, data.cabang.nama, custLat, custLng, data.pelanggan.alamat, driverLat, driverLng, driver.nama);
+        })
+        .catch(err => {
+            console.error('Error fetching tracking data:', err);
+        });
+}
+
+function updateMapMarkers(cabangLat, cabangLng, cabangName, custLat, custLng, custAddress, driverLat, driverLng, driverName) {
+    if (!trackingMapInstance) return;
+
+    // Define icons
+    const gudangIcon = L.divIcon({
+        className: 'custom-marker',
+        html: `<div style="background: #33116C; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(51,17,108,0.4); border: 2.5px solid white;">
+                <svg width="12" height="12" fill="white" viewBox="0 0 16 16"><path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2l-2.218-.887zm3.564 1.426L5.596 5 8 5.961 14.154 3.5l-2.404-.961zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923l6.5 2.6zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464L7.443.184z"/></svg>
+               </div>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14]
+    });
+
+    const customerIcon = L.divIcon({
+        className: 'custom-marker',
+        html: `<div style="background: #EB3B02; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(235,59,2,0.4); border: 2.5px solid white;">
+                <svg width="12" height="12" fill="white" viewBox="0 0 16 16"><path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/><path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg>
+               </div>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 28]
+    });
+
+    const driverIcon = L.divIcon({
+        className: 'custom-marker',
+        html: `<div style="background: #10B981; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(16,185,129,0.5); border: 2.5px solid white; position: relative;">
+                <span class="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-40 animate-ping" style="animation-duration: 2s;"></span>
+                <svg width="14" height="14" fill="white" viewBox="0 0 24 24"><path fill="white" d="M19 13H5V9h14v4zm-2-7H7v2h10V6zM5 15c-1.1 0-2 .9-2 2v3c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-3c0-1.1-.9-2-2-2H5z"/></svg>
+               </div>`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16]
+    });
+
+    // Add or update Gudang marker
+    if (!gudangMarkerInstance) {
+        gudangMarkerInstance = L.marker([cabangLat, cabangLng], { icon: gudangIcon }).addTo(trackingMapInstance)
+            .bindPopup(`<b>Cabang: ${cabangName}</b>`);
+    } else {
+        gudangMarkerInstance.setLatLng([cabangLat, cabangLng]);
+    }
+
+    // Add or update Customer marker
+    if (!customerMarkerInstance) {
+        customerMarkerInstance = L.marker([custLat, custLng], { icon: customerIcon }).addTo(trackingMapInstance)
+            .bindPopup(`<b>Lokasi Anda</b><br>${custAddress}`);
+    } else {
+        customerMarkerInstance.setLatLng([custLat, custLng]);
+    }
+
+    // Add or update Driver marker
+    if (!driverMarkerInstance) {
+        driverMarkerInstance = L.marker([driverLat, driverLng], { icon: driverIcon }).addTo(trackingMapInstance)
+            .bindPopup(`<b>Kurir: ${driverName}</b><br>Sedang membawa pesanan Anda`);
+    } else {
+        driverMarkerInstance.setLatLng([driverLat, driverLng]);
+    }
+
+    // Polylines
+    // 1. Original path Gudang -> Customer (dashed, thin)
+    if (!originalRoutePolylineInstance) {
+        originalRoutePolylineInstance = L.polyline([
+            [cabangLat, cabangLng],
+            [custLat, custLng]
+        ], {
+            color: '#A3A3A3',
+            weight: 2,
+            opacity: 0.5,
+            dashArray: '4, 6',
+            lineCap: 'round'
+        }).addTo(trackingMapInstance);
+    } else {
+        originalRoutePolylineInstance.setLatLngs([
+            [cabangLat, cabangLng],
+            [custLat, custLng]
+        ]);
+    }
+
+    // 2. Courier active path Courier -> Customer (solid, primary color purple)
+    if (!routePolylineInstance) {
+        routePolylineInstance = L.polyline([
+            [driverLat, driverLng],
+            [custLat, custLng]
+        ], {
+            color: '#33116C',
+            weight: 3.5,
+            opacity: 0.8,
+            lineCap: 'round'
+        }).addTo(trackingMapInstance);
+    } else {
+        routePolylineInstance.setLatLngs([
+            [driverLat, driverLng],
+            [custLat, custLng]
+        ]);
+    }
+
+    // Fit bounds if it's the first time
+    const bounds = L.latLngBounds([
+        [cabangLat, cabangLng],
+        [custLat, custLng],
+        [driverLat, driverLng]
+    ]);
+    trackingMapInstance.fitBounds(bounds, { padding: [40, 40] });
+}
 
 let selectedPaketInfo = null;
 
@@ -767,78 +989,19 @@ function showOrderDetail(element) {
     if (status === 'dalam_pengiriman') {
         mapSection.classList.remove('hidden');
         
-        let cabangLat = -6.9147;
-        let cabangLng = 107.6542;
-        let cabangName = 'Gudang Borma';
-        if (pesanan.cabang) {
-            cabangName = pesanan.cabang.nama_cabang || 'Gudang Borma';
-            if (pesanan.cabang.koordinat_gps) {
-                const coords = pesanan.cabang.koordinat_gps.split(',');
-                if (coords.length === 2) {
-                    cabangLat = parseFloat(coords[0].trim());
-                    cabangLng = parseFloat(coords[1].trim());
-                }
-            }
-        }
-        
-        let custLat = pesanan.latitude ? parseFloat(pesanan.latitude) : -6.9215;
-        let custLng = pesanan.longitude ? parseFloat(pesanan.longitude) : 107.6310;
-        
-        const centerLat = (cabangLat + custLat) / 2;
-        const centerLng = (cabangLng + custLng) / 2;
-        
         // Initialize Map inside modal
         trackingMapInstance = L.map('modalOrderMap', {
             zoomControl: true,
             attributionControl: false
-        }).setView([centerLat, centerLng], 13);
+        }).setView([-6.9147, 107.6542], 13);
         
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
         }).addTo(trackingMapInstance);
         
-        const gudangIcon = L.divIcon({
-            className: 'custom-marker',
-            html: `<div style="background: #33116C; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(51,17,108,0.4); border: 2.5px solid white;">
-                    <svg width="12" height="12" fill="white" viewBox="0 0 16 16"><path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2l-2.218-.887zm3.564 1.426L5.596 5 8 5.961 14.154 3.5l-2.404-.961zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923l6.5 2.6zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464L7.443.184z"/></svg>
-                   </div>`,
-            iconSize: [28, 28],
-            iconAnchor: [14, 14]
-        });
-
-        const customerIcon = L.divIcon({
-            className: 'custom-marker',
-            html: `<div style="background: #EB3B02; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(235,59,2,0.4); border: 2.5px solid white;">
-                    <svg width="12" height="12" fill="white" viewBox="0 0 16 16"><path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/><path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg>
-                   </div>`,
-            iconSize: [28, 28],
-            iconAnchor: [14, 28]
-        });
+        // Start real-time tracking polling
+        startTracking(pesanan.id_pesanan);
         
-        L.marker([cabangLat, cabangLng], { icon: gudangIcon }).addTo(trackingMapInstance)
-            .bindPopup('<b>Gudang ' + cabangName + '</b>');
-
-        L.marker([custLat, custLng], { icon: customerIcon }).addTo(trackingMapInstance)
-            .bindPopup('<b>Lokasi Anda</b><br>' + pesanan.alamat_pengiriman);
-            
-        L.polyline([
-            [cabangLat, cabangLng],
-            [custLat, custLng]
-        ], {
-            color: '#33116C',
-            weight: 3,
-            opacity: 0.7,
-            dashArray: '6, 6',
-            lineCap: 'round'
-        }).addTo(trackingMapInstance);
-        
-        const bounds = L.latLngBounds([
-            [cabangLat, cabangLng],
-            [custLat, custLng]
-        ]);
-        trackingMapInstance.fitBounds(bounds, { padding: [20, 20] });
-        
-        // Invalidate map size after modal animation completes
         setTimeout(() => {
             if (trackingMapInstance) {
                 trackingMapInstance.invalidateSize();
@@ -878,6 +1041,7 @@ function showOrderDetail(element) {
 function closeOrderDetailModal() {
     document.getElementById('orderDetailModal').classList.add('hidden');
     document.body.style.overflow = '';
+    stopTracking();
     if (trackingMapInstance) {
         trackingMapInstance.remove();
         trackingMapInstance = null;
