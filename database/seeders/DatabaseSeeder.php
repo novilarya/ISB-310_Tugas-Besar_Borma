@@ -958,5 +958,23 @@ class DatabaseSeeder extends Seeder
         PesananProduk::create(['id_pesanan' => $fcfs10->id_pesanan, 'id_produk' => 2, 'jumlah' => 5, 'harga_satuan' => 35000, 'subtotal' => 175000]);
         PesananProduk::create(['id_pesanan' => $fcfs10->id_pesanan, 'id_produk' => 3, 'jumlah' => 3, 'harga_satuan' => 16000, 'subtotal' => 48000]);
         PesananProduk::create(['id_pesanan' => $fcfs10->id_pesanan, 'id_produk' => 4, 'jumlah' => 5, 'harga_satuan' => 18000, 'subtotal' => 90000]);
+
+        // ── Pengaturan Benefit Member Plus ──────────────────────────────
+        // Digunakan oleh Cabang::getNotifications() untuk menampilkan notifikasi
+        // kepada admin cabang ketika Super Admin mengubah benefit Member Plus.
+        DB::table('pengaturan')->insert([
+            [
+                'kunci'      => 'member_plus_persentase',
+                'nilai'      => '5',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()->subDays(3), // simulasi diubah 3 hari lalu → notifikasi aktif
+            ],
+            [
+                'kunci'      => 'member_plus_maksimal',
+                'nilai'      => '50000',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()->subDays(3),
+            ],
+        ]);
     }
 }

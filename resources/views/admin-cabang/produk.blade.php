@@ -372,4 +372,3 @@
 <script src="{{ asset('js/admin-cabang.js') }}"></script>
 <script src="{{ asset('js/admin-cabang/produk.js') }}"></script>
 @endpush
-@endsection
