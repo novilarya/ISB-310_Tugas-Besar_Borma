@@ -15,9 +15,14 @@
                     <!-- Header -->
                     <tr>
                         <td align="center" style="background: linear-gradient(135deg, #33116C 0%, #1c093d 100%); padding: 32px 24px; color: #ffffff;">
-                            <h1 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: 2px; color: #FED50B;">BORMA</h1>
-                            <p style="margin: 6px 0 0 0; font-size: 13px; color: #ffffff; opacity: 0.85; font-weight: 600; letter-spacing: 0.5px;">Toserba Borma — {{ $pesanan->cabang->nama_cabang ?? 'Antapani' }}</p>
-                            <p style="margin: 4px 0 0 0; font-size: 11px; color: #ffffff; opacity: 0.7; font-weight: 500;">{{ $pesanan->cabang->alamat_cabang ?? 'Jl. Terusan Jakarta No. 53, Bandung' }}</p>
+                            @if($pesanan->metode_pembayaran === 'Aktivasi Member Plus' || str_contains($pesanan->alamat_pengiriman, 'Aktivasi Borma Plus'))
+                                <h1 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: 2px; color: #FED50B;">BORMA PLUS</h1>
+                                <p style="margin: 6px 0 0 0; font-size: 13px; color: #ffffff; opacity: 0.85; font-weight: 600; letter-spacing: 0.5px;">Layanan Membership Digital Borma</p>
+                            @else
+                                <h1 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: 2px; color: #FED50B;">BORMA</h1>
+                                <p style="margin: 6px 0 0 0; font-size: 13px; color: #ffffff; opacity: 0.85; font-weight: 600; letter-spacing: 0.5px;">Toserba Borma — {{ $pesanan->cabang->nama_cabang ?? 'Antapani' }}</p>
+                                <p style="margin: 4px 0 0 0; font-size: 11px; color: #ffffff; opacity: 0.7; font-weight: 500;">{{ $pesanan->cabang->alamat_cabang ?? 'Jl. Terusan Jakarta No. 53, Bandung' }}</p>
+                            @endif
                         </td>
                     </tr>
 
@@ -92,6 +97,51 @@
                                         <a href="{{ route('public.pesanan.nota', $pesanan->id_pesanan) }}" target="_blank" style="background-color: #33116C; color: #ffffff; padding: 12px 32px; border-radius: 10px; font-weight: 800; font-size: 13px; text-decoration: none; display: inline-block; box-shadow: 0 4px 12px rgba(51, 17, 108, 0.15); letter-spacing: 0.5px; border: 2px solid #33116C; font-family: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif;">
                                             Cetak & Unduh PDF Nota Resmi
                                         </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    @endif
+
+                    <!-- Member Card (Only for Borma Plus Membership) -->
+                    @if($pesanan->metode_pembayaran === 'Aktivasi Member Plus' || str_contains($pesanan->alamat_pengiriman, 'Aktivasi Borma Plus'))
+                    <tr>
+                        <td style="padding: 12px 24px 24px 24px;" align="center">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background: linear-gradient(135deg, #1e1b4b 0%, #31105e 50%, #4c1d95 100%); border-radius: 20px; padding: 24px; color: #ffffff; box-shadow: 0 8px 30px rgba(49, 16, 94, 0.25);">
+                                <tr>
+                                    <td>
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                <td>
+                                                    <span style="font-size: 14px; font-weight: 800; color: #FED50B; letter-spacing: 1px; text-transform: uppercase; font-family: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif;">BORMA PLUS MEMBER</span>
+                                                    <span style="display: block; font-size: 10px; color: #a5b4fc; font-weight: 600; margin-top: 2px; font-family: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif;">DIGITAL PREMIUM CARD</span>
+                                                </td>
+                                                <td align="right">
+                                                    <div style="background: rgba(254, 213, 11, 0.1); border: 1.5px solid #FED50B; border-radius: 8px; padding: 4px 10px; font-size: 10px; font-weight: 800; color: #FED50B; text-transform: uppercase; font-family: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif;">ACTIVE</div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" style="padding-top: 28px; padding-bottom: 24px;">
+                                                    <span style="font-size: 11px; color: #a5b4fc; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px; font-family: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif;">Nomor Kartu Member</span>
+                                                    @php
+                                                        $rawId = str_pad($pesanan->pelanggan->id_pengguna * 7919 + 100000000000, 12, '0', STR_PAD_LEFT);
+                                                        $formattedId = substr($rawId, 0, 4) . ' ' . substr($rawId, 4, 4) . ' ' . substr($rawId, 8, 4);
+                                                    @endphp
+                                                    <span style="font-family: 'Courier New', Courier, monospace; font-size: 20px; font-weight: 800; color: #ffffff; letter-spacing: 2px;">{{ $formattedId }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span style="font-size: 9px; color: #a5b4fc; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; font-family: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif;">Nama Pemegang</span>
+                                                    <span style="font-size: 14px; font-weight: 800; color: #ffffff; text-transform: uppercase; font-family: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif;">{{ $pesanan->pelanggan->user->nama ?? 'Member Borma Plus' }}</span>
+                                                </td>
+                                                <td align="right">
+                                                    <span style="font-size: 9px; color: #a5b4fc; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; font-family: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif;">Berlaku Hingga</span>
+                                                    <span style="font-size: 14px; font-weight: 800; color: #FED50B; font-family: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif;">{{ $pesanan->pelanggan->tanggal_berakhir_member_plus ? \Carbon\Carbon::parse($pesanan->pelanggan->tanggal_berakhir_member_plus)->format('d/m/Y') : '--/--/----' }}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
                                     </td>
                                 </tr>
                             </table>
