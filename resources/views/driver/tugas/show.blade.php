@@ -1,13 +1,10 @@
 ﻿@extends('driver.layouts.app')
-
 @section('title', 'Detail Tugas #BRM-' . $pesanan->id_pesanan)
 @section('header_back', true)
-
 @push('styles')
 {{-- Leaflet CSS --}}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-
 <style>
     /* ================================================
        ORDER HEADER
@@ -18,7 +15,6 @@
         gap: 12px;
         margin-bottom: 16px;
     }
-
     .order-id-card {
         background: var(--color-surface);
         border: 1.5px solid var(--color-border);
@@ -26,7 +22,6 @@
         padding: 14px 18px;
         box-shadow: var(--shadow-card);
     }
-
     .order-id-label {
         font-family: var(--font-body);
         font-size: 10px;
@@ -35,7 +30,6 @@
         text-transform: uppercase;
         color: var(--color-text-muted);
     }
-
     .order-id-value {
         font-family: var(--font-headline);
         font-size: 22px;
@@ -43,7 +37,6 @@
         color: var(--color-neutral);
         margin-top: 2px;
     }
-
     .order-status-card {
         border-radius: var(--radius-md);
         padding: 14px 18px;
@@ -51,14 +44,12 @@
         flex-direction: column;
         justify-content: center;
     }
-
     .order-status-card.status-pending { background: #FEF3CD; }
     .order-status-card.status-diterima_driver { background: #d1fae5; }
     .order-status-card.status-diambil { background: var(--color-primary-pale); }
     .order-status-card.status-dalam_pengiriman { background: var(--color-primary); }
     .order-status-card.status-diterima { background: #22c55e; }
     .order-status-card.status-gagal { background: var(--color-tertiary); }
-
     .order-status-label {
         font-family: var(--font-body);
         font-size: 10px;
@@ -66,19 +57,16 @@
         letter-spacing: 0.12em;
         text-transform: uppercase;
     }
-
     .order-status-card.status-dalam_pengiriman .order-status-label,
     .order-status-card.status-diterima .order-status-label,
     .order-status-card.status-gagal .order-status-label {
         color: rgba(255,255,255,0.7);
     }
-
     .order-status-card.status-pending .order-status-label,
     .order-status-card.status-diterima_driver .order-status-label,
     .order-status-card.status-diambil .order-status-label {
         color: var(--color-text-muted);
     }
-
     .order-status-value {
         font-family: var(--font-headline);
         font-size: 13px;
@@ -90,17 +78,14 @@
         align-items: center;
         gap: 6px;
     }
-
     .order-status-card.status-dalam_pengiriman .order-status-value,
     .order-status-card.status-diterima .order-status-value,
     .order-status-card.status-gagal .order-status-value {
         color: white;
     }
-
     .order-status-card.status-pending .order-status-value { color: #92400e; }
     .order-status-card.status-diterima_driver .order-status-value { color: #166534; }
     .order-status-card.status-diambil .order-status-value { color: var(--color-primary); }
-
     .order-status-dot {
         width: 8px;
         height: 8px;
@@ -108,26 +93,22 @@
         flex-shrink: 0;
         animation: pulse-dot 1.8s ease-in-out infinite;
     }
-
     .order-status-card.status-pending .order-status-dot { background: #f59e0b; }
     .order-status-card.status-diterima_driver .order-status-dot { background: #22c55e; }
     .order-status-card.status-diambil .order-status-dot { background: var(--color-primary); }
     .order-status-card.status-dalam_pengiriman .order-status-dot { background: var(--color-secondary); }
     .order-status-card.status-diterima .order-status-dot { background: white; }
     .order-status-card.status-gagal .order-status-dot { background: #fca5a5; }
-
     @keyframes pulse-dot {
         0%, 100% { opacity: 1; transform: scale(1); }
         50%       { opacity: 0.5; transform: scale(0.8); }
     }
-
     /* Order Extra Info */
     .order-extra {
         display: flex;
         gap: 16px;
         margin-bottom: 16px;
     }
-
     .order-extra-item {
         flex: 1;
         background: var(--color-surface);
@@ -136,7 +117,6 @@
         padding: 10px 14px;
         box-shadow: var(--shadow-card);
     }
-
     .order-extra-label {
         font-family: var(--font-body);
         font-size: 9px;
@@ -146,21 +126,18 @@
         color: var(--color-text-muted);
         margin-bottom: 2px;
     }
-
     .order-extra-value {
         font-family: var(--font-headline);
         font-size: 13px;
         font-weight: 700;
         color: var(--color-neutral);
     }
-
     /* ================================================
        MAP CONTAINER (Leaflet)
     ================================================ */
     .map-section {
         margin-bottom: 20px;
     }
-
     .map-container {
         width: 100%;
         height: 240px;
@@ -171,13 +148,11 @@
         border: 1.5px solid var(--color-border);
         box-shadow: var(--shadow-card);
     }
-
     #delivery-map {
         width: 100%;
         height: 100%;
         z-index: 1;
     }
-
     /* Map loading overlay */
     .map-loading-overlay {
         position: absolute;
@@ -193,12 +168,10 @@
         backdrop-filter: blur(2px);
         transition: opacity 0.3s ease;
     }
-
     .map-loading-overlay.hidden {
         opacity: 0;
         pointer-events: none;
     }
-
     .map-spinner {
         width: 32px;
         height: 32px;
@@ -207,9 +180,7 @@
         border-radius: 50%;
         animation: spin 0.75s linear infinite;
     }
-
     @keyframes spin { to { transform: rotate(360deg); } }
-
     .map-loading-text {
         font-family: var(--font-body);
         font-size: 11px;
@@ -217,7 +188,6 @@
         color: var(--color-primary);
         letter-spacing: 0.06em;
     }
-
     /* Route info badge */
     .map-route-info {
         position: absolute;
@@ -241,20 +211,16 @@
         transition: opacity 0.4s ease 0.3s;
         white-space: nowrap;
     }
-
     .map-route-info.visible { opacity: 1; }
-
     .map-route-info i {
         font-size: 12px;
         opacity: 0.8;
     }
-
     .map-route-divider {
         width: 1px;
         height: 12px;
         background: rgba(255,255,255,0.3);
     }
-
     /* Route error badge */
     .map-route-error {
         position: absolute;
@@ -272,14 +238,12 @@
         display: none;
         white-space: nowrap;
     }
-
     .map-legend {
         display: flex;
         gap: 16px;
         margin-top: 8px;
         padding: 0 4px;
     }
-
     .map-legend-item {
         display: flex;
         align-items: center;
@@ -291,30 +255,25 @@
         text-transform: uppercase;
         letter-spacing: 0.06em;
     }
-
     .legend-dot {
         width: 10px;
         height: 10px;
         border-radius: 50%;
     }
-
     .legend-dot.gudang { background: var(--color-primary); }
     .legend-dot.customer { background: var(--color-tertiary); }
     .legend-dot.driver { background: #22c55e; }
-
     .legend-route {
         display: inline-flex;
         align-items: center;
         gap: 3px;
     }
-
     .legend-route-line {
         width: 22px;
         height: 3px;
         background: #2563eb;
         border-radius: 2px;
     }
-
     /* ================================================
        INFO GRID (Customer + Ringkasan Item)
     ================================================ */
@@ -324,11 +283,9 @@
         gap: 12px;
         margin-bottom: 20px;
     }
-
     @media (max-width: 480px) {
         .info-grid { grid-template-columns: 1fr; }
     }
-
     .info-card {
         background: var(--color-surface);
         border: 1.5px solid var(--color-border);
@@ -336,7 +293,6 @@
         padding: 16px;
         box-shadow: var(--shadow-card);
     }
-
     .info-card-title {
         font-family: var(--font-headline);
         font-size: 12px;
@@ -348,13 +304,10 @@
         padding-bottom: 8px;
         border-bottom: 2px solid var(--color-primary-pale);
     }
-
     .info-row {
         margin-bottom: 12px;
     }
-
     .info-row:last-child { margin-bottom: 0; }
-
     .info-label {
         font-family: var(--font-body);
         font-size: 10px;
@@ -364,21 +317,18 @@
         color: var(--color-text-muted);
         margin-bottom: 2px;
     }
-
     .info-value {
         font-family: var(--font-body);
         font-size: 14px;
         font-weight: 600;
         color: var(--color-neutral);
     }
-
     .info-note {
         background: var(--color-primary-pale);
         border-radius: var(--radius-sm);
         padding: 10px 12px;
         margin-top: 10px;
     }
-
     .info-note-label {
         font-family: var(--font-body);
         font-size: 9px;
@@ -388,35 +338,29 @@
         color: var(--color-primary);
         margin-bottom: 4px;
     }
-
     .info-note-text {
         font-family: var(--font-body);
         font-size: 12px;
         font-style: italic;
         color: var(--color-neutral-soft);
     }
-
     /* ===== Ringkasan Item ===== */
     .item-row {
         padding: 8px 0;
         border-bottom: 1px solid var(--color-border);
     }
-
     .item-row:last-of-type { border-bottom: none; }
-
     .item-name {
         font-family: var(--font-body);
         font-size: 13px;
         font-weight: 600;
         color: var(--color-neutral);
     }
-
     .item-qty {
         font-family: var(--font-body);
         font-size: 11px;
         color: var(--color-text-muted);
     }
-
     .item-total-row {
         display: flex;
         justify-content: space-between;
@@ -425,7 +369,6 @@
         margin-top: 8px;
         border-top: 2px solid var(--color-primary-pale);
     }
-
     .item-total-label {
         font-family: var(--font-body);
         font-size: 11px;
@@ -434,21 +377,18 @@
         text-transform: uppercase;
         color: var(--color-text-muted);
     }
-
     .item-total-value {
         font-family: var(--font-headline);
         font-size: 20px;
         font-weight: 800;
         color: var(--color-primary);
     }
-
     .item-total-unit {
         font-size: 12px;
         font-weight: 600;
         margin-left: 4px;
         color: var(--color-text-muted);
     }
-
     /* ================================================
        TIMELINE
     ================================================ */
@@ -460,7 +400,6 @@
         margin-bottom: 20px;
         box-shadow: var(--shadow-card);
     }
-
     .timeline-title {
         font-family: var(--font-headline);
         font-size: 12px;
@@ -472,12 +411,10 @@
         padding-bottom: 8px;
         border-bottom: 2px solid var(--color-primary-pale);
     }
-
     .timeline-list {
         position: relative;
         padding-left: 28px;
     }
-
     .timeline-list::before {
         content: '';
         position: absolute;
@@ -487,14 +424,11 @@
         width: 2px;
         background: var(--color-border);
     }
-
     .timeline-item {
         position: relative;
         padding-bottom: 18px;
     }
-
     .timeline-item:last-child { padding-bottom: 0; }
-
     .timeline-dot {
         position: absolute;
         left: -22px;
@@ -509,43 +443,35 @@
         font-size: 8px;
         color: white;
     }
-
     .timeline-dot.done {
         background: var(--color-primary);
     }
-
     .timeline-dot.active {
         background: var(--color-secondary);
         color: var(--color-neutral);
         box-shadow: 0 0 0 4px rgba(254, 213, 11, 0.3);
     }
-
     .timeline-dot.failed {
         background: var(--color-tertiary);
     }
-
     .timeline-dot.pending {
         background: var(--color-border);
     }
-
     .timeline-step-title {
         font-family: var(--font-body);
         font-size: 13px;
         font-weight: 600;
         color: var(--color-neutral);
     }
-
     .timeline-step-time {
         font-family: var(--font-body);
         font-size: 11px;
         color: var(--color-text-muted);
         margin-top: 2px;
     }
-
     .timeline-item.is-pending .timeline-step-title {
         color: var(--color-text-muted);
     }
-
     /* ================================================
        BUKTI PENGIRIMAN
     ================================================ */
@@ -557,7 +483,6 @@
         margin-bottom: 20px;
         box-shadow: var(--shadow-card);
     }
-
     .bukti-title {
         font-family: var(--font-headline);
         font-size: 12px;
@@ -569,17 +494,14 @@
         padding-bottom: 8px;
         border-bottom: 2px solid var(--color-primary-pale);
     }
-
     .bukti-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 14px;
     }
-
     @media (max-width: 400px) {
         .bukti-grid { grid-template-columns: 1fr; }
     }
-
     .bukti-photo-box {
         background: var(--color-bg);
         border: 2px dashed var(--color-border);
@@ -594,17 +516,14 @@
         transition: border-color 0.2s, background 0.2s;
         overflow: hidden;
     }
-
     .bukti-photo-box:hover {
         border-color: var(--color-primary);
         background: var(--color-primary-pale);
     }
-
     .bukti-photo-box i {
         font-size: 28px;
         color: var(--color-text-muted);
     }
-
     .bukti-photo-box span {
         font-family: var(--font-body);
         font-size: 10px;
@@ -613,20 +532,17 @@
         text-transform: uppercase;
         color: var(--color-text-muted);
     }
-
     .bukti-photo-box img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         border-radius: calc(var(--radius-sm) - 2px);
     }
-
     .bukti-form-fields {
         display: flex;
         flex-direction: column;
         gap: 12px;
     }
-
     .form-field label {
         font-family: var(--font-body);
         font-size: 10px;
@@ -637,7 +553,6 @@
         display: block;
         margin-bottom: 6px;
     }
-
     .form-field input,
     .form-field textarea {
         width: 100%;
@@ -652,18 +567,15 @@
         outline: none;
         resize: none;
     }
-
     .form-field input::placeholder,
     .form-field textarea::placeholder {
         color: var(--color-text-muted);
         font-size: 12px;
     }
-
     .form-field input:focus,
     .form-field textarea:focus {
         border-color: var(--color-primary);
     }
-
     .btn-upload-bukti {
         display: block;
         width: 100%;
@@ -682,18 +594,15 @@
         transition: background 0.2s, transform 0.15s;
         text-align: center;
     }
-
     .btn-upload-bukti:hover {
         background: var(--color-primary-light);
         transform: translateY(-1px);
     }
-
     .btn-upload-bukti:disabled {
         opacity: 0.5;
         cursor: not-allowed;
         transform: none;
     }
-
     /* ================================================
        STATUS BUTTONS
     ================================================ */
@@ -702,19 +611,15 @@
         gap: 12px;
         margin-bottom: 8px;
     }
-
     .status-buttons.single {
         grid-template-columns: 1fr;
     }
-
     .status-buttons.double {
         grid-template-columns: 2fr 1fr;
     }
-
     @media (max-width: 480px) {
         .status-buttons.double { grid-template-columns: 1fr; }
     }
-
     .status-btn {
         padding: 14px 12px;
         border: 1.5px solid var(--color-border);
@@ -730,29 +635,24 @@
         color: var(--color-neutral);
         transition: all 0.2s;
     }
-
     .status-btn-main {
         background: var(--color-primary);
         color: white;
         border-color: var(--color-primary);
     }
-
     .status-btn-main:hover {
         background: var(--color-primary-light, #4A1D9A);
         border-color: var(--color-primary-light, #4A1D9A);
         color: white;
     }
-
     .status-btn.btn-gagal {
         border-color: var(--color-tertiary);
         color: var(--color-tertiary);
     }
-
     .status-btn.btn-gagal:hover {
         background: var(--color-tertiary);
         color: white;
     }
-
     /* ================================================
        ANIMATION
     ================================================ */
@@ -761,18 +661,15 @@
         transform: translateY(20px);
         animation: fadeUp 0.5s ease forwards;
     }
-
     @keyframes fadeUp {
         to { opacity: 1; transform: translateY(0); }
     }
-
     .delay-1 { animation-delay: 0.05s; }
     .delay-2 { animation-delay: 0.12s; }
     .delay-3 { animation-delay: 0.20s; }
     .delay-4 { animation-delay: 0.28s; }
     .delay-5 { animation-delay: 0.36s; }
     .delay-6 { animation-delay: 0.44s; }
-
     /* ================================================
        SWAL CUSTOM
     ================================================ */
@@ -783,15 +680,12 @@
     .swal2-title {
         font-family: var(--font-headline) !important;
     }
-
     .hidden {
         display: none !important;
     }
 </style>
 @endpush
-
 @section('content')
-
 @php
     $statusLabels = [
         'mencari_driver' => 'Mencari Driver',
@@ -802,21 +696,17 @@
         'gagal' => 'Gagal Kirim',
         'ditolak_driver' => 'Ditolak',
     ];
-
     $statusFlow = ['diterima_driver', 'diambil', 'dalam_pengiriman', 'diterima'];
     $currentIndex = array_search($pesanan->status_pesanan, $statusFlow);
     $isGagal = $pesanan->status_pesanan === 'gagal';
-
     // Parse koordinat cabang
     $cabangKoordinat = explode(',', $pesanan->cabang->koordinat_gps ?? '-6.9147,107.6542');
     $cabangLat = trim($cabangKoordinat[0] ?? '-6.9147');
     $cabangLng = trim($cabangKoordinat[1] ?? '107.6542');
-
     // Koordinat customer
     $custLat = $pesanan->latitude ?? -6.9215;
     $custLng = $pesanan->longitude ?? 107.6310;
 @endphp
-
 {{-- ===== ORDER HEADER ===== --}}
 <div class="order-header fade-up">
     <div class="order-id-card">
@@ -831,7 +721,6 @@
         </p>
     </div>
 </div>
-
 {{-- ===== ORDER EXTRA INFO ===== --}}
 <div class="order-extra fade-up delay-1">
     <div class="order-extra-item">
@@ -843,18 +732,15 @@
         <p class="order-extra-value">{{ $pesanan->cabang->nama_cabang ?? '-' }}</p>
     </div>
 </div>
-
 {{-- ===== MAP (Leaflet.js + OSRM Routing) ===== --}}
 <div class="map-section fade-up delay-1">
     <div class="map-container">
         <div id="delivery-map"></div>
-
         {{-- Loading overlay --}}
         <div class="map-loading-overlay" id="map-loading">
             <div class="map-spinner"></div>
             <span class="map-loading-text">Memuat rute jalan...</span>
         </div>
-
         {{-- Route info badge --}}
         <div class="map-route-info" id="map-route-info">
             <i class="bi bi-signpost-2-fill"></i>
@@ -863,7 +749,6 @@
             <i class="bi bi-clock-fill"></i>
             <span id="route-duration">-</span>
         </div>
-
         {{-- Error badge --}}
         <div class="map-route-error" id="map-route-error">
             <i class="bi bi-exclamation-triangle-fill"></i> Rute jalan tidak tersedia
@@ -890,7 +775,6 @@
         </div>
     </div>
 </div>
-
 {{-- ===== INFO CUSTOMER + RINGKASAN ITEM ===== --}}
 <div class="info-grid fade-up delay-2">
     {{-- Info Customer --}}
@@ -908,7 +792,6 @@
             <p class="info-label">Alamat</p>
             <p class="info-value">{{ $pesanan->alamat_pengiriman }}</p>
         </div>
-
         @if($pesanan->catatan_pengiriman)
         <div class="info-note">
             <p class="info-note-label">Catatan</p>
@@ -916,7 +799,6 @@
         </div>
         @endif
     </div>
-
     {{-- Ringkasan Item --}}
     <div class="info-card">
         <h2 class="info-card-title">Ringkasan Item</h2>
@@ -930,25 +812,25 @@
         @empty
             <p style="font-size: 12px; color: var(--color-text-muted); padding: 8px 0;">Tidak ada item.</p>
         @endforelse
-
         <div class="item-total-row">
             <span class="item-total-label">Total Item</span>
             <span class="item-total-value">{{ $totalUnit }}<span class="item-total-unit">Unit</span></span>
         </div>
+        <div class="item-total-row" style="margin-top: 4px; padding-top: 10px; border-top: 1px dashed var(--color-border);">
+            <span class="item-total-label">Total Belanja</span>
+            <span class="item-total-value" style="font-size: 16px; color: var(--color-neutral);">Rp {{ number_format($pesanan->total_belanja ?? 0, 0, ',', '.') }}</span>
+        </div>
     </div>
 </div>
-
 {{-- ===== TIMELINE ===== --}}
 <div class="timeline-section fade-up delay-3">
     <h2 class="timeline-title">Timeline</h2>
     <div class="timeline-list">
-
         @php
             $trackingMap = [];
             foreach ($pesanan->pengirimanTracking as $t) {
                 $trackingMap[$t->status] = $t;
             }
-
             $timelineSteps = [
                 ['status' => 'diterima_driver', 'label' => 'Pesanan Dikonfirmasi', 'icon' => 'bi-check', 'desc' => 'Driver mengkonfirmasi pesanan'],
                 ['status' => 'diambil', 'label' => 'Pesanan Diambil', 'icon' => 'bi-box-seam', 'desc' => $pesanan->cabang->nama_cabang ?? 'Gudang'],
@@ -956,7 +838,6 @@
                 ['status' => 'diterima', 'label' => 'Pesanan Diterima', 'icon' => 'bi-check-all', 'desc' => 'Diterima oleh pelanggan'],
             ];
         @endphp
-
         @foreach($timelineSteps as $step)
             @php
                 $tracking = $trackingMap[$step['status']] ?? null;
@@ -964,7 +845,6 @@
                 $isDone = $currentIndex !== false && $stepIndex !== false && $stepIndex < $currentIndex;
                 $isActive = $pesanan->status_pesanan === $step['status'];
                 $isPending = !$isDone && !$isActive;
-
                 if ($isGagal) {
                     // Jika gagal, semua step sebelum gagal = done
                     $isDone = false;
@@ -972,7 +852,6 @@
                     $isPending = true;
                     if ($tracking) $isDone = true;
                 }
-
                 $dotClass = $isDone ? 'done' : ($isActive ? 'active' : 'pending');
             @endphp
             <div class="timeline-item {{ $isPending && !$isDone ? 'is-pending' : '' }}">
@@ -993,7 +872,6 @@
                 </p>
             </div>
         @endforeach
-
         {{-- Gagal Kirim --}}
         @if($isGagal)
         <div class="timeline-item">
@@ -1012,7 +890,6 @@
         @endif
     </div>
 </div>
-
 {{-- ===== BUKTI PENGIRIMAN (READ ONLY) ===== --}}
 @if($pesanan->status_pesanan === 'diterima' && $pesanan->bukti_pengiriman)
 <div class="bukti-section fade-up delay-4">
@@ -1041,7 +918,6 @@
     </div>
 </div>
 @endif
-
 {{-- ===== STATUS BUTTONS ===== --}}
 @if(in_array($pesanan->status_pesanan, ['diterima_driver', 'diambil', 'dalam_pengiriman']))
 @php
@@ -1060,7 +936,6 @@
     
     $isTahapAkhir = $pesanan->status_pesanan == 'dalam_pengiriman';
 @endphp
-
 <div class="status-buttons {{ $isTahapAkhir ? 'double' : 'single' }} fade-up delay-5" id="status-buttons">
     <button type="button" class="status-btn status-btn-main"
             onclick="{{ $btnAction }}">
@@ -1075,21 +950,16 @@
     @endif
 </div>
 @endif
-
 @endsection
-
 @push('scripts')
 {{-- Leaflet JS --}}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
 {{-- SweetAlert2 --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
     const pesananId = {{ $pesanan->id_pesanan }};
-
     // =============================================
     // LEAFLET MAP
     // =============================================
@@ -1098,21 +968,17 @@
         const gudangLng = {{ $cabangLng }};
         const custLat = {{ $custLat }};
         const custLng = {{ $custLng }};
-
         // Pusat map di tengah antara gudang dan customer
         const centerLat = (gudangLat + custLat) / 2;
         const centerLng = (gudangLng + custLng) / 2;
-
         const map = L.map('delivery-map', {
             zoomControl: true,
             attributionControl: false
         }).setView([centerLat, centerLng], 13);
-
         // Tile layer OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
         }).addTo(map);
-
         // Custom icon gudang (ungu)
         const gudangIcon = L.divIcon({
             className: 'custom-marker',
@@ -1123,7 +989,6 @@
             iconAnchor: [16, 16],
             popupAnchor: [0, -20],
         });
-
         // Custom icon customer (merah)
         const customerIcon = L.divIcon({
             className: 'custom-marker',
@@ -1134,28 +999,22 @@
             iconAnchor: [16, 32],
             popupAnchor: [0, -34],
         });
-
         // Markers
         let gudangMarker = L.marker([gudangLat, gudangLng], { icon: gudangIcon })
             .addTo(map)
             .bindPopup('<b>Gudang {{ $pesanan->cabang->nama_cabang ?? "Borma" }}</b><br>{{ $pesanan->cabang->alamat_cabang ?? "" }}');
-
         let customerMarker = L.marker([custLat, custLng], { icon: customerIcon })
             .addTo(map)
             .bindPopup('<b>Lokasi Penerima</b><br>{{ $pesanan->alamat_pengiriman }}');
-
         // Fit bounds awal (before route loads)
         const bounds = L.latLngBounds([
             [gudangLat, gudangLng],
             [custLat, custLng]
         ]);
         map.fitBounds(bounds, { padding: [40, 40] });
-
         // Fix map rendering setelah animasi
         setTimeout(() => { map.invalidateSize(); }, 600);
-
         const STATUS = '{{ $pesanan->status_pesanan }}';
-
         // Checkmark Icon
         const checkIcon = L.divIcon({
             className: 'custom-marker',
@@ -1166,7 +1025,6 @@
             iconAnchor: [16, 16],
             popupAnchor: [0, -20],
         });
-
         // Driver Motor Icon
         const driverIcon = L.divIcon({
             className: 'custom-marker',
@@ -1177,11 +1035,9 @@
             iconAnchor: [16, 32],
             popupAnchor: [0, -34],
         });
-
         let driverMarker;
         let driverLat = gudangLat - 0.008; // ~800m away
         let driverLng = gudangLng + 0.008;
-
         // Atur marker icon saja untuk diterima
         if (STATUS === 'diterima') {
             customerMarker.setIcon(checkIcon); 
@@ -1191,13 +1047,11 @@
                 .addTo(map)
                 .bindPopup('<b>Posisi Driver Saat Ini</b>');
         }
-
         // =============================================
         // ROUTING BERDASARKAN STATUS
         // =============================================
         const loadingEl = document.getElementById('map-loading');
         const routeInfoEl = document.getElementById('map-route-info');
-
         function drawFallbackRoute(lat1, lng1, lat2, lng2, isGray = false) {
             L.polyline([[lat1, lng1], [lat2, lng2]], {
                 color: isGray ? '#9ca3af' : '#33116C',
@@ -1210,17 +1064,14 @@
             loadingEl.classList.add('hidden');
             document.getElementById('map-route-error').style.display = 'flex';
         }
-
         function drawOsrmRoute(startLat, startLng, endLat, endLng) {
             const osrmUrl =
                 `https://router.project-osrm.org/route/v1/driving/` +
                 `${startLng},${startLat};${endLng},${endLat}` +
                 `?overview=full&geometries=geojson&steps=false`;
-
             const timeoutId = setTimeout(() => {
                 drawFallbackRoute(startLat, startLng, endLat, endLng, STATUS === 'diterima');
             }, 6000);
-
             fetch(osrmUrl)
                 .then(res => { if (!res.ok) throw new Error('err'); return res.json(); })
                 .then(data => {
@@ -1232,10 +1083,8 @@
                     const mins    = Math.round(route.duration / 60);
                     const hrs     = Math.floor(mins / 60);
                     const rem     = mins % 60;
-
                     document.getElementById('route-distance').textContent = `${km} km`;
                     document.getElementById('route-duration').textContent = hrs > 0 ? `${hrs} jam ${rem} mnt` : `${rem} mnt`;
-
                     if (STATUS === 'diterima') {
                         // Full gray route
                         L.polyline(latLngs, { color: '#e5e7eb', weight: 7, opacity: 0.5, lineCap: 'round' }).addTo(map);
@@ -1251,7 +1100,6 @@
                         
                         let passedPath = latLngs.slice(0, posIndex + 1);
                         let upcomingPath = latLngs.slice(posIndex);
-
                         // draw gray for passed
                         if (passedPath.length > 1) {
                             L.polyline(passedPath, { color: '#9ca3af', weight: 4.5, opacity: 0.8, lineCap: 'round' }).addTo(map);
@@ -1262,17 +1110,14 @@
                             L.polyline(upcomingPath, { color: '#2563eb', weight: 4.5, opacity: 0.92, lineCap: 'round' }).addTo(map);
                         }
                         map.fitBounds(L.polyline(latLngs).getBounds(), { padding: [36, 36] });
-
                         // place driver marker exactly on the route
                         L.marker(latLngs[posIndex], { icon: driverIcon }).addTo(map).bindPopup('<b>Posisi Driver Saat Ini</b>');
-
                     } else {
                         // diterima_driver
                         L.polyline(latLngs, { color: '#1d4ed8', weight: 7, opacity: 0.25, lineCap: 'round' }).addTo(map);
                         const line = L.polyline(latLngs, { color: '#2563eb', weight: 4.5, opacity: 0.92, lineCap: 'round' }).addTo(map);
                         map.fitBounds(line.getBounds(), { padding: [36, 36] });
                     }
-
                     loadingEl.classList.add('hidden');
                     routeInfoEl.classList.add('visible');
                 })
@@ -1281,19 +1126,12 @@
                     drawFallbackRoute(startLat, startLng, endLat, endLng, STATUS === 'diterima');
                 });
         }
-
         if (STATUS === 'diterima_driver') {
             drawOsrmRoute(driverLat, driverLng, gudangLat, gudangLng);
         } else {
             drawOsrmRoute(gudangLat, gudangLng, custLat, custLng);
         }
     });
-
-
-
-
-
-
     // =============================================
     // UPDATE STATUS via AJAX
     // =============================================
@@ -1309,13 +1147,11 @@
             Swal.fire('Tidak Sesuai Urutan!', 'Pesanan harus diambil dari gudang terlebih dahulu sebelum dikirim.', 'warning');
             return;
         }
-
         const statusLabels = {
             'diambil': 'DIAMBIL',
             'dalam_pengiriman': 'DALAM PENGIRIMAN',
             'diterima': 'DITERIMA',
         };
-
         Swal.fire({
             title: 'Update Status',
             text: `Ubah status pesanan menjadi "${statusLabels[status]}"?`,
@@ -1336,7 +1172,6 @@
             }
         });
     }
-
     function updateStatusGagal() {
         const currentStatus = "{{ $pesanan->status_pesanan }}";
         
@@ -1344,7 +1179,6 @@
             Swal.fire('Tidak Sesuai Urutan!', 'Pesanan harus berada pada status Dalam Pengiriman sebelum dapat ditandai sebagai Gagal Kirim.', 'warning');
             return;
         }
-
         Swal.fire({
             title: 'Gagal Kirim',
             html: `
@@ -1382,7 +1216,6 @@
             }
         });
     }
-
     function sendStatusUpdate(status, alasanGagal = null) {
         Swal.fire({
             title: 'Memproses...',
@@ -1391,10 +1224,8 @@
             allowEscapeKey: false,
             didOpen: () => { Swal.showLoading(); }
         });
-
         const body = { status: status };
         if (alasanGagal) body.alasan_gagal = alasanGagal;
-
         fetch(`/driver/tugas/${pesananId}/update-status`, {
             method: 'POST',
             headers: {
@@ -1433,7 +1264,6 @@
             });
         });
     }
-
     // =============================================
     // MODAL BUKTI PENGIRIMAN
     // =============================================
@@ -1505,7 +1335,6 @@
             }
         });
     }
-
     window.previewModalFoto = function(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
@@ -1517,7 +1346,6 @@
             reader.readAsDataURL(input.files[0]);
         }
     }
-
     function submitBuktiModal(data) {
         Swal.fire({
             title: 'Mengunggah...',
@@ -1526,12 +1354,10 @@
             allowEscapeKey: false,
             didOpen: () => { Swal.showLoading(); }
         });
-
         const formData = new FormData();
         formData.append('foto_bukti', data.file);
         formData.append('nama_penerima', data.namaPenerima);
         formData.append('catatan_driver', data.catatanDriver);
-
         fetch(`/driver/tugas/${pesananId}/upload-proof`, {
             method: 'POST',
             headers: {
@@ -1571,4 +1397,3 @@
     }
 </script>
 @endpush
-

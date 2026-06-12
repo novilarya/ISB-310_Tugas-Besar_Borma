@@ -1,7 +1,5 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -9,11 +7,9 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Pesanan;
 use App\Models\PesananProduk;
-
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
@@ -62,7 +58,6 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ]
         ]);
-
         // 2. Data Detail Pelanggan (Relasi ke Pengguna 4)
         DB::table('pelanggan')->insert([
             [
@@ -80,7 +75,6 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ]
         ]);
-
         // 3. Data Cabang
         DB::table('cabang')->insert([
             [
@@ -210,7 +204,6 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ]
         ]);
-
         // 4. Data Detail Admin Cabang (Relasi ke Pengguna 2 & Cabang 1)
         DB::table('admin_cabang')->insert([
             [
@@ -223,7 +216,6 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ]
         ]);
-
         // 5. Data Master Produk
         $originalProducts = [
             [
@@ -317,7 +309,6 @@ class DatabaseSeeder extends Seeder
                 'gambar_produk' => 'produk10.jpg',
             ],
         ];
-
         $catalogProducts = [
             // Sembako (10 products)
             ['name' => 'Beras Pandan Wangi 5kg', 'cat' => 'Sembako & Bahan Pokok', 'price' => 78000, 'sale' => 72000, 'img' => 'beras-wangi-5kg.jpg'],
@@ -330,7 +321,6 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Garam Dapur Cap Kapal 500g', 'cat' => 'Sembako & Bahan Pokok', 'price' => 5000, 'sale' => 0, 'img' => 'garamdapur-500gr.jpg'],
             ['name' => 'Santan Kara 200ml', 'cat' => 'Sembako & Bahan Pokok', 'price' => 8500, 'sale' => 7000, 'img' => 'santankara-200ml.jpg'],
             ['name' => 'Saus Tomat ABC 335ml', 'cat' => 'Sembako & Bahan Pokok', 'price' => 12000, 'sale' => 0, 'img' => 'saustomatABC-335ml.jpg'],
-
             // Sayur & Buah (11 products)
             ['name' => 'Apel Fuji Premium 1kg', 'cat' => 'Sayur & Buah', 'price' => 45000, 'sale' => 36000, 'img' => 'apelfuji-1kg.jpg'],
             ['name' => 'Wortel Lokal Organik 500g', 'cat' => 'Sayur & Buah', 'price' => 12000, 'sale' => 0, 'img' => 'wortel500gr.jpg'],
@@ -343,7 +333,6 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Kentang Dieng 1kg', 'cat' => 'Sayur & Buah', 'price' => 16000, 'sale' => 0, 'img' => 'kentang1kg.jpg'],
             ['name' => 'Kangkung Segar (Ikat)', 'cat' => 'Sayur & Buah', 'price' => 3500, 'sale' => 0, 'img' => 'kangkung.jpg'],
             ['name' => 'Mangga Harum Manis 1kg', 'cat' => 'Sayur & Buah', 'price' => 28000, 'sale' => 24000, 'img' => 'manggaharummanis.jpg'],
-
             // Daging & Ikan (10 products)
             ['name' => 'Daging Sapi Has Dalam 500g', 'cat' => 'Daging & Ikan', 'price' => 75000, 'sale' => 0, 'img' => 'daginghasdalam.jpg'],
             ['name' => 'Ayam Potong Broiler 1kg', 'cat' => 'Daging & Ikan', 'price' => 38000, 'sale' => 34000, 'img' => 'ayampotong.jpg'],
@@ -355,7 +344,6 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Nugget Fiesta 500g', 'cat' => 'Daging & Ikan', 'price' => 38000, 'sale' => 0, 'img' => 'nuggetfiesta.jpg'],
             ['name' => 'Cumi-Cumi Segar 500g', 'cat' => 'Daging & Ikan', 'price' => 45000, 'sale' => 0, 'img' => 'cumicumi.jpg'],
             ['name' => 'Daging Giling Sapi 500g', 'cat' => 'Daging & Ikan', 'price' => 60000, 'sale' => 55000, 'img' => 'daginggiling.jpg'],
-
             // Susu & Olahan (10 products)
             ['name' => 'Susu Ultra Milk Full Cream 1L', 'cat' => 'Susu & Olahan', 'price' => 21000, 'sale' => 18500, 'img' => 'susuultramilk.jpg'],
             ['name' => 'Keju Kraft Cheddar 165g', 'cat' => 'Susu & Olahan', 'price' => 18000, 'sale' => 0, 'img' => 'kejucheddar.jpg'],
@@ -367,7 +355,6 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Cream Cheese Yummy 250g', 'cat' => 'Susu & Olahan', 'price' => 42000, 'sale' => 0, 'img' => 'krimkeju.jpg'],
             ['name' => 'Susu Bear Brand Gold 140ml', 'cat' => 'Susu & Olahan', 'price' => 12000, 'sale' => 10500, 'img' => 'susuberuang.jpg'],
             ['name' => 'Butter Wijsman 200g', 'cat' => 'Susu & Olahan', 'price' => 55000, 'sale' => 0, 'img' => 'wisman.jpg'],
-
             // Minuman (10 products)
             ['name' => 'Teh Botol Sosro 450ml', 'cat' => 'Minuman', 'price' => 5000, 'sale' => 0, 'img' => 'sosro.jpg'],
             ['name' => 'Coca Cola 1.5L', 'cat' => 'Minuman', 'price' => 16000, 'sale' => 14000, 'img' => 'coke.jpg'],
@@ -379,7 +366,6 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Le Minerale 330ml (6pcs)', 'cat' => 'Minuman', 'price' => 11000, 'sale' => 0, 'img' => 'leminerale.jpg'],
             ['name' => 'Fanta Strawberry 1.5L', 'cat' => 'Minuman', 'price' => 14000, 'sale' => 0, 'img' => 'fantastrawberry.jpg'],
             ['name' => 'Nutrisari Jeruk Peras 10s', 'cat' => 'Minuman', 'price' => 12000, 'sale' => 10000, 'img' => 'nutrisari.jpg'],
-
             // Snack & Camilan (10 products)
             ['name' => 'Chitato Sapi Panggang 68g', 'cat' => 'Snack & Camilan', 'price' => 10000, 'sale' => 0, 'img' => 'chitatosapi.jpg'],
             ['name' => 'Oreo Vanilla 133g', 'cat' => 'Snack & Camilan', 'price' => 12000, 'sale' => 10000, 'img' => 'oreovanilla.jpg'],
@@ -391,7 +377,6 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Biskuit Roma Kelapa 300g', 'cat' => 'Snack & Camilan', 'price' => 8000, 'sale' => 6500, 'img' => 'biskuit-roma.jpg'],
             ['name' => 'Kacang Garuda 100g', 'cat' => 'Snack & Camilan', 'price' => 12000, 'sale' => 0, 'img' => 'kacang-garuda.jpg'],
             ['name' => 'Nabati Richeese 150g', 'cat' => 'Snack & Camilan', 'price' => 11000, 'sale' => 9500, 'img' => 'nabati.jpg'],
-
             // Kebutuhan Rumah (10 products)
             ['name' => 'Deterjen Rinso Anti Noda 800g', 'cat' => 'Kebutuhan Rumah', 'price' => 22000, 'sale' => 0, 'img' => 'rinso.jpg'],
             ['name' => 'Sabun Cuci Piring Sunlight 800ml', 'cat' => 'Kebutuhan Rumah', 'price' => 16000, 'sale' => 14000, 'img' => 'sunlight.jpg'],
@@ -403,7 +388,6 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Baygon Aerosol 600ml', 'cat' => 'Kebutuhan Rumah', 'price' => 35000, 'sale' => 30000, 'img' => 'baygon.jpg'],
             ['name' => 'Ember Plastik 20L', 'cat' => 'Kebutuhan Rumah', 'price' => 28000, 'sale' => 0, 'img' => 'ember.jpg'],
             ['name' => 'Trash Bag Roll 45x50 20pcs', 'cat' => 'Kebutuhan Rumah', 'price' => 12000, 'sale' => 0, 'img' => 'trash-bag.jpg'],
-
             // Perawatan Diri (10 products)
             ['name' => 'Shampo Pantene 400ml', 'cat' => 'Perawatan Diri', 'price' => 42000, 'sale' => 38000, 'img' => 'shampo.jpg'],
             ['name' => 'Sabun Lifebuoy 100g (4pcs)', 'cat' => 'Perawatan Diri', 'price' => 18000, 'sale' => 0, 'img' => 'sabun-lifebuoy.jpg'],
@@ -416,7 +400,6 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Conditioner Dove 320ml', 'cat' => 'Perawatan Diri', 'price' => 35000, 'sale' => 30000, 'img' => 'conditioner.jpg'],
             ['name' => 'Sabun Cair Dettol 300ml', 'cat' => 'Perawatan Diri', 'price' => 32000, 'sale' => 0, 'img' => 'sabun-cair.jpg'],
         ];
-
         $productsToInsert = [];
         $nextId = 11;
         
@@ -433,7 +416,6 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => Carbon::now(),
             ];
         }
-
         foreach ($catalogProducts as $cp) {
             $productsToInsert[] = [
                 'id_produk' => $nextId++,
@@ -447,9 +429,7 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => Carbon::now(),
             ];
         }
-
         DB::table('produk')->insert($productsToInsert);
-
         // 6. Data Stok Produk di Cabang
         $produkCabangRows = [];
         $idProdukCabang = 1;
@@ -480,11 +460,9 @@ class DatabaseSeeder extends Seeder
                 }
             }
         }
-
         foreach (array_chunk($produkCabangRows, 200) as $chunk) {
             DB::table('produk_cabang')->insert($chunk);
         }
-
         // 7. Data Detail Kurir (Relasi ke Pengguna 3 & Cabang 1)
         DB::table('kurir')->insert([
             'id_kurir' => 1,
@@ -512,7 +490,7 @@ class DatabaseSeeder extends Seeder
                 'biaya_pengiriman' => 15000,
                 'diskon_voucher' => 0,
                 'total_tagihan' => 325000,
-                'metode_pembayaran' => 'Transfer / Pembayaran Online',
+                'metode_pembayaran' => 'Cash On Delivery',
                 'alamat_pengiriman' => 'Jl. Contoh No. 123',
                 'status_pesanan' => 'diterima',
                 'estimasi_tiba' => Carbon::now(),
@@ -533,7 +511,7 @@ class DatabaseSeeder extends Seeder
                 'biaya_pengiriman' => 15000,
                 'diskon_voucher' => 0,
                 'total_tagihan' => 218000,
-                'metode_pembayaran' => 'Transfer / Pembayaran Online',
+                'metode_pembayaran' => 'Transfer',
                 'alamat_pengiriman' => 'Jl. Contoh No. 123',
                 'status_pesanan' => 'dalam_pengiriman',
                 'estimasi_tiba' => Carbon::now(),
@@ -544,7 +522,6 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ],
         ]);
-
         // 9. Data Detail Produk yang Dipesan
         DB::table('pesanan_produk')->insert([
             [
@@ -603,7 +580,6 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ],
         ]);
-
         // 10. Data Tracking Pengiriman
         DB::table('pengiriman_tracking')->insert([
             [
@@ -663,7 +639,6 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ]
         ]);
-
         // 11. Data History Produk (Perubahan Harga)
         DB::table('history_produk')->insert([
             [
@@ -687,7 +662,6 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => Carbon::now()->subDays(5)
             ]
         ]);
-
         // 12. Data Promo & Voucher
         DB::table('promo')->insert([
             [
@@ -700,7 +674,7 @@ class DatabaseSeeder extends Seeder
                 'kuantitas_hadiah' => 1,
                 'potongan_harga' => 0,
                 'min_transaksi' => 70000,
-                'max_promo' => 50, // 50% — batas maksimal potongan dari total belanja
+                'max_promo' => 35000,
                 'kuota_promo' => 100,
                 'tanggal_mulai' => Carbon::now()->subDays(2)->toDateString(),
                 'tanggal_berakhir' => Carbon::now()->addDays(7)->toDateString(),
@@ -717,7 +691,7 @@ class DatabaseSeeder extends Seeder
                 'kuantitas_hadiah' => 0,
                 'potongan_harga' => 15000,
                 'min_transaksi' => 240000,
-                'max_promo' => 100, // 100% — potongan tetap Rp 15.000 (flat), tidak dibatasi persentase
+                'max_promo' => 15000,
                 'kuota_promo' => 50,
                 'tanggal_mulai' => Carbon::now()->subDays(1)->toDateString(),
                 'tanggal_berakhir' => Carbon::now()->addDays(14)->toDateString(),
@@ -726,7 +700,6 @@ class DatabaseSeeder extends Seeder
             ]
         ]);
         // ===== ANTREAN TUGAS FCFS (id_kurir = null, status = pending) =====
-
         // FCFS 1
         $fcfs1 = Pesanan::create([
             'id_pelanggan' => 1,
@@ -738,14 +711,16 @@ class DatabaseSeeder extends Seeder
             'biaya_pengiriman' => 25000,
             'diskon_voucher' => 0,
             'total_tagihan' => 525000,
-            'metode_pembayaran' => 'Transfer / Pembayaran Online',
+            'metode_pembayaran' => 'transfer',
             'alamat_pengiriman' => 'Jl. Gatot Subroto No. 123, Bandung',
             'status_pesanan' => 'mencari_driver',
             'estimasi_tiba' => now()->addHours(2),
             'latitude' => -6.9215, 'longitude' => 107.6310,
             'catatan_pengiriman' => 'Gedung utama, lantai 5. Hubungi customer sebelum tiba.',
         ]);
-
+        PesananProduk::create(['id_pesanan' => $fcfs1->id_pesanan, 'id_produk' => 1, 'jumlah' => 4, 'harga_satuan' => 75000, 'subtotal' => 300000]);
+        PesananProduk::create(['id_pesanan' => $fcfs1->id_pesanan, 'id_produk' => 2, 'jumlah' => 2, 'harga_satuan' => 35000, 'subtotal' => 70000]);
+        PesananProduk::create(['id_pesanan' => $fcfs1->id_pesanan, 'id_produk' => 5, 'jumlah' => 1, 'harga_satuan' => 130000, 'subtotal' => 130000]);
         // 13. Data Hak Akses Menu
         DB::table('hak_akses_menu')->insert([
             // Super Admin (id_pengguna: 1)
@@ -755,7 +730,6 @@ class DatabaseSeeder extends Seeder
             ['id_pengguna' => 1, 'menu_key' => 'superadmin_member', 'akses' => true, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
             ['id_pengguna' => 1, 'menu_key' => 'superadmin_pengemudi', 'akses' => true, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
             ['id_pengguna' => 1, 'menu_key' => 'superadmin_promo', 'akses' => true, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-
             // Admin Cabang (id_pengguna: 2)
             ['id_pengguna' => 2, 'menu_key' => 'admincabang_dashboard', 'akses' => true, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
             ['id_pengguna' => 2, 'menu_key' => 'admincabang_produk', 'akses' => true, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
@@ -776,7 +750,7 @@ class DatabaseSeeder extends Seeder
             'biaya_pengiriman' => 15000,
             'diskon_voucher' => 0,
             'total_tagihan' => 215000,
-            'metode_pembayaran' => 'Transfer / Pembayaran Online',
+            'metode_pembayaran' => 'cash',
             'alamat_pengiriman' => 'Jl. Diponegoro No. 45, Bandung',
             'status_pesanan' => 'mencari_driver',
             'estimasi_tiba' => now()->addHours(1),
@@ -785,7 +759,6 @@ class DatabaseSeeder extends Seeder
         ]);
         PesananProduk::create(['id_pesanan' => $fcfs2->id_pesanan, 'id_produk' => 3, 'jumlah' => 12, 'harga_satuan' => 16000, 'subtotal' => 192000]);
         PesananProduk::create(['id_pesanan' => $fcfs2->id_pesanan, 'id_produk' => 5, 'jumlah' => 1, 'harga_satuan' => 12000, 'subtotal' => 12000]);
-
         // FCFS 3
         $fcfs3 = Pesanan::create([
             'id_pelanggan' => 1,
@@ -797,7 +770,7 @@ class DatabaseSeeder extends Seeder
             'biaya_pengiriman' => 35000,
             'diskon_voucher' => 50000,
             'total_tagihan' => 835000,
-            'metode_pembayaran' => 'Transfer / Pembayaran Online',
+            'metode_pembayaran' => 'transfer',
             'alamat_pengiriman' => 'Jl. Braga No. 10, Bandung',
             'status_pesanan' => 'mencari_driver',
             'estimasi_tiba' => now()->addHours(3),
@@ -807,7 +780,6 @@ class DatabaseSeeder extends Seeder
         PesananProduk::create(['id_pesanan' => $fcfs3->id_pesanan, 'id_produk' => 1, 'jumlah' => 8, 'harga_satuan' => 75000, 'subtotal' => 600000]);
         PesananProduk::create(['id_pesanan' => $fcfs3->id_pesanan, 'id_produk' => 4, 'jumlah' => 10, 'harga_satuan' => 18000, 'subtotal' => 180000]);
         PesananProduk::create(['id_pesanan' => $fcfs3->id_pesanan, 'id_produk' => 3, 'jumlah' => 5, 'harga_satuan' => 16000, 'subtotal' => 80000]);
-
         // FCFS 4
         $fcfs4 = Pesanan::create([
             'id_pelanggan' => 1,
@@ -819,7 +791,7 @@ class DatabaseSeeder extends Seeder
             'biaya_pengiriman' => 20000,
             'diskon_voucher' => 0,
             'total_tagihan' => 395000,
-            'metode_pembayaran' => 'Transfer / Pembayaran Online',
+            'metode_pembayaran' => 'transfer',
             'alamat_pengiriman' => 'Jl. Pahlawan No. 1, Bandung',
             'status_pesanan' => 'mencari_driver',
             'estimasi_tiba' => now()->addHours(2),
@@ -829,7 +801,6 @@ class DatabaseSeeder extends Seeder
         PesananProduk::create(['id_pesanan' => $fcfs4->id_pesanan, 'id_produk' => 1, 'jumlah' => 3, 'harga_satuan' => 75000, 'subtotal' => 225000]);
         PesananProduk::create(['id_pesanan' => $fcfs4->id_pesanan, 'id_produk' => 2, 'jumlah' => 2, 'harga_satuan' => 35000, 'subtotal' => 70000]);
         PesananProduk::create(['id_pesanan' => $fcfs4->id_pesanan, 'id_produk' => 4, 'jumlah' => 5, 'harga_satuan' => 18000, 'subtotal' => 90000]);
-
         // FCFS 5
         $fcfs5 = Pesanan::create([
             'id_pelanggan' => 1,
@@ -841,7 +812,7 @@ class DatabaseSeeder extends Seeder
             'biaya_pengiriman' => 10000,
             'diskon_voucher' => 0,
             'total_tagihan' => 138000,
-            'metode_pembayaran' => 'Transfer / Pembayaran Online',
+            'metode_pembayaran' => 'cash',
             'alamat_pengiriman' => 'Jl. Sukajadi No. 2, Bandung',
             'status_pesanan' => 'mencari_driver',
             'estimasi_tiba' => now()->addMinutes(90),
@@ -849,7 +820,6 @@ class DatabaseSeeder extends Seeder
             'catatan_pengiriman' => 'Kios sebelah warung nasi. Hubungi dulu via telepon.',
         ]);
         PesananProduk::create(['id_pesanan' => $fcfs5->id_pesanan, 'id_produk' => 3, 'jumlah' => 8, 'harga_satuan' => 16000, 'subtotal' => 128000]);
-
         // FCFS 6
         $fcfs6 = Pesanan::create([
             'id_pelanggan' => 1,
@@ -861,7 +831,7 @@ class DatabaseSeeder extends Seeder
             'biaya_pengiriman' => 30000,
             'diskon_voucher' => 0,
             'total_tagihan' => 690000,
-            'metode_pembayaran' => 'Transfer / Pembayaran Online',
+            'metode_pembayaran' => 'transfer',
             'alamat_pengiriman' => 'Jl. Pasteur No. 123, Sukajadi, Bandung',
             'status_pesanan' => 'mencari_driver',
             'estimasi_tiba' => now()->addHours(2),
@@ -871,7 +841,6 @@ class DatabaseSeeder extends Seeder
         PesananProduk::create(['id_pesanan' => $fcfs6->id_pesanan, 'id_produk' => 1, 'jumlah' => 6, 'harga_satuan' => 75000, 'subtotal' => 450000]);
         PesananProduk::create(['id_pesanan' => $fcfs6->id_pesanan, 'id_produk' => 2, 'jumlah' => 4, 'harga_satuan' => 35000, 'subtotal' => 140000]);
         PesananProduk::create(['id_pesanan' => $fcfs6->id_pesanan, 'id_produk' => 5, 'jumlah' => 6, 'harga_satuan' => 12000, 'subtotal' => 72000]);
-
         // FCFS 7
         $fcfs7 = Pesanan::create([
             'id_pelanggan' => 1,
@@ -883,7 +852,7 @@ class DatabaseSeeder extends Seeder
             'biaya_pengiriman' => 18000,
             'diskon_voucher' => 0,
             'total_tagihan' => 288000,
-            'metode_pembayaran' => 'Transfer / Pembayaran Online',
+            'metode_pembayaran' => 'cash',
             'alamat_pengiriman' => 'Jl. Merdeka 45, Bandung',
             'status_pesanan' => 'mencari_driver',
             'estimasi_tiba' => now()->addMinutes(75),
@@ -891,7 +860,6 @@ class DatabaseSeeder extends Seeder
             'catatan_pengiriman' => 'Lantai 3 apartemen, unit 305. Lift dari lobi utama.',
         ]);
         PesananProduk::create(['id_pesanan' => $fcfs7->id_pesanan, 'id_produk' => 4, 'jumlah' => 15, 'harga_satuan' => 18000, 'subtotal' => 270000]);
-
         // FCFS 8
         $fcfs8 = Pesanan::create([
             'id_pelanggan' => 1,
@@ -903,7 +871,7 @@ class DatabaseSeeder extends Seeder
             'biaya_pengiriman' => 22000,
             'diskon_voucher' => 20000,
             'total_tagihan' => 434000,
-            'metode_pembayaran' => 'Transfer / Pembayaran Online',
+            'metode_pembayaran' => 'transfer',
             'alamat_pengiriman' => 'Jl. Ahmad Yani 234, Bandung',
             'status_pesanan' => 'mencari_driver',
             'estimasi_tiba' => now()->addHours(2),
@@ -913,7 +881,6 @@ class DatabaseSeeder extends Seeder
         PesananProduk::create(['id_pesanan' => $fcfs8->id_pesanan, 'id_produk' => 1, 'jumlah' => 4, 'harga_satuan' => 75000, 'subtotal' => 300000]);
         PesananProduk::create(['id_pesanan' => $fcfs8->id_pesanan, 'id_produk' => 3, 'jumlah' => 4, 'harga_satuan' => 16000, 'subtotal' => 64000]);
         PesananProduk::create(['id_pesanan' => $fcfs8->id_pesanan, 'id_produk' => 5, 'jumlah' => 3, 'harga_satuan' => 12000, 'subtotal' => 36000]);
-
         // FCFS 9
         $fcfs9 = Pesanan::create([
             'id_pelanggan' => 1,
@@ -925,7 +892,7 @@ class DatabaseSeeder extends Seeder
             'biaya_pengiriman' => 12000,
             'diskon_voucher' => 0,
             'total_tagihan' => 168000,
-            'metode_pembayaran' => 'Transfer / Pembayaran Online',
+            'metode_pembayaran' => 'cash',
             'alamat_pengiriman' => 'Jl. Pahlawan No. 1, Bandung',
             'status_pesanan' => 'mencari_driver',
             'estimasi_tiba' => now()->addMinutes(60),
@@ -935,7 +902,6 @@ class DatabaseSeeder extends Seeder
         PesananProduk::create(['id_pesanan' => $fcfs9->id_pesanan, 'id_produk' => 2, 'jumlah' => 2, 'harga_satuan' => 35000, 'subtotal' => 70000]);
         PesananProduk::create(['id_pesanan' => $fcfs9->id_pesanan, 'id_produk' => 4, 'jumlah' => 3, 'harga_satuan' => 18000, 'subtotal' => 54000]);
         PesananProduk::create(['id_pesanan' => $fcfs9->id_pesanan, 'id_produk' => 5, 'jumlah' => 3, 'harga_satuan' => 12000, 'subtotal' => 36000]);
-
         // FCFS 10
         $fcfs10 = Pesanan::create([
             'id_pelanggan' => 1,
@@ -947,7 +913,7 @@ class DatabaseSeeder extends Seeder
             'biaya_pengiriman' => 40000,
             'diskon_voucher' => 100000,
             'total_tagihan' => 990000,
-            'metode_pembayaran' => 'Transfer / Pembayaran Online',
+            'metode_pembayaran' => 'transfer',
             'alamat_pengiriman' => 'Jl. Sukajadi No. 2, Bandung',
             'status_pesanan' => 'mencari_driver',
             'estimasi_tiba' => now()->addHours(3),
@@ -958,23 +924,5 @@ class DatabaseSeeder extends Seeder
         PesananProduk::create(['id_pesanan' => $fcfs10->id_pesanan, 'id_produk' => 2, 'jumlah' => 5, 'harga_satuan' => 35000, 'subtotal' => 175000]);
         PesananProduk::create(['id_pesanan' => $fcfs10->id_pesanan, 'id_produk' => 3, 'jumlah' => 3, 'harga_satuan' => 16000, 'subtotal' => 48000]);
         PesananProduk::create(['id_pesanan' => $fcfs10->id_pesanan, 'id_produk' => 4, 'jumlah' => 5, 'harga_satuan' => 18000, 'subtotal' => 90000]);
-
-        // ── Pengaturan Benefit Member Plus ──────────────────────────────
-        // Digunakan oleh Cabang::getNotifications() untuk menampilkan notifikasi
-        // kepada admin cabang ketika Super Admin mengubah benefit Member Plus.
-        DB::table('pengaturan')->insert([
-            [
-                'kunci'      => 'member_plus_persentase',
-                'nilai'      => '5',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()->subDays(3), // simulasi diubah 3 hari lalu → notifikasi aktif
-            ],
-            [
-                'kunci'      => 'member_plus_maksimal',
-                'nilai'      => '50000',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()->subDays(3),
-            ],
-        ]);
     }
 }
