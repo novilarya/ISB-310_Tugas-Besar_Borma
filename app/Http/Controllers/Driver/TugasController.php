@@ -21,7 +21,7 @@ class TugasController extends Controller
     public function index(Request $request)
     {
         $user  = Auth::check() ? Auth::user() : \App\Models\User::where('role', 'kurir')->first();
-        $kurir = $user ? Kurir::where('id_user', $user->id_user)->first() : null;
+        $kurir = $user ? Kurir::where('id_pengguna', $user->id_pengguna)->first() : null;
 
         $query = Pesanan::where('id_kurir', $kurir->id_kurir ?? 0)
             ->where('id_cabang', $kurir->id_cabang ?? 0) // filter cabang
