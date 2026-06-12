@@ -62,7 +62,11 @@ Route::prefix('superadmin')->middleware(['auth', 'superadmin'])->name('superadmi
     Route::put('/super-admin/{id}', [SuperAdminManagementController::class, 'update'])->name('super_admin.update');
     Route::delete('/super-admin/{id}', [SuperAdminManagementController::class, 'destroy'])->name('super_admin.destroy');
 
+    Route::get('/pengaturan', [SuperAdminManagementController::class, 'pengaturan'])->name('pengaturan');
+    Route::put('/pengaturan/update', [SuperAdminManagementController::class, 'updatePengaturan'])->name('pengaturan.update');
+
     Route::get('/member', [MemberController::class, 'member'])->name('member');
+    Route::post('/member/benefit', [MemberController::class, 'updateBenefit'])->name('member.benefit.update');
     Route::get('/member/density', [MemberController::class, 'memberDensity'])->name('member.density');
     Route::get('/member/{id}', [MemberController::class, 'detailMember'])->name('member.detail');
     Route::put('/member/{id}', [MemberController::class, 'updateMember'])->name('member.update');

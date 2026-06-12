@@ -23,7 +23,7 @@
             $isAdminCabang = auth()->user() && in_array(strtolower(auth()->user()->role), ['admin cabang', 'admin']);
         @endphp
 
-        @if($isAdminCabang || $isSuperAdmin)
+        @if($isAdminCabang)
         <!-- Notifications Dropdown -->
         <div class="relative inline-block text-left" id="notif-dropdown-container">
             <button id="notif-dropdown-btn" type="button" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:text-borma-purple dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-all flex items-center justify-center relative focus:outline-none">
@@ -41,38 +41,6 @@
                     </div>
                 </div>
                 <div class="max-h-[300px] overflow-y-auto divide-y divide-slate-100 dark:divide-white/5">
-                    @if($isSuperAdmin)
-                    <a href="{{ route('superadmin.cabang') }}" class="flex items-start gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors notif-item animate-pulse">
-                        <div class="w-8 h-8 rounded-full bg-amber-100 dark:bg-borma-yellow/10 text-amber-600 dark:text-borma-yellow flex items-center justify-center flex-shrink-0 text-xs">
-                            <i class="fa-solid fa-store"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-xs font-bold text-slate-800 dark:text-white truncate">Cabang Baru Terdaftar</p>
-                            <p class="text-[11px] text-slate-500 dark:text-white/60 truncate">Borma Dago resmi ditambahkan ke sistem.</p>
-                            <p class="text-[10px] text-slate-400 dark:text-white/40 mt-1 flex items-center gap-1"><i class="fa-regular fa-clock"></i> 5 menit lalu</p>
-                        </div>
-                    </a>
-                    <a href="{{ route('superadmin.pengemudi') }}" class="flex items-start gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors notif-item">
-                        <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 flex items-center justify-center flex-shrink-0 text-xs">
-                            <i class="fa-solid fa-users"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-xs font-bold text-slate-800 dark:text-white truncate">Registrasi Pengemudi Baru</p>
-                            <p class="text-[11px] text-slate-500 dark:text-white/60 truncate">Budi Gunawan terverifikasi di Cabang Gempol.</p>
-                            <p class="text-[10px] text-slate-400 dark:text-white/40 mt-1 flex items-center gap-1"><i class="fa-regular fa-clock"></i> 1 jam lalu</p>
-                        </div>
-                    </a>
-                    <a href="{{ route('superadmin.promo') }}" class="flex items-start gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors notif-item">
-                        <div class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 flex items-center justify-center flex-shrink-0 text-xs">
-                            <i class="fa-solid fa-ticket"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-xs font-bold text-slate-800 dark:text-white truncate">Promo Global Baru Aktif</p>
-                            <p class="text-[11px] text-slate-500 dark:text-white/60 truncate">Promo 'Semarak Lebaran' telah aktif.</p>
-                            <p class="text-[10px] text-slate-400 dark:text-white/40 mt-1 flex items-center gap-1"><i class="fa-regular fa-clock"></i> 2 jam lalu</p>
-                        </div>
-                    </a>
-                    @else
                     <a href="{{ route('admin-cabang.pesanan') }}" class="flex items-start gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors notif-item animate-pulse">
                         <div class="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0 text-xs">
                             <i class="fa-solid fa-cart-shopping"></i>
@@ -103,10 +71,9 @@
                             <p class="text-[10px] text-slate-400 dark:text-white/40 mt-1 flex items-center gap-1"><i class="fa-regular fa-clock"></i> 2 jam lalu</p>
                         </div>
                     </a>
-                    @endif
                 </div>
                 <div class="p-3 border-t border-slate-200 dark:border-white/10 text-center bg-slate-50 dark:bg-black/20">
-                    <a href="{{ $isSuperAdmin ? route('superadmin.notifikasi') : route('admin-cabang.notifikasi') }}" class="text-xs font-bold text-borma-purple dark:text-borma-yellow hover:underline transition-all">Lihat Semua</a>
+                    <a href="{{ route('admin-cabang.notifikasi') }}" class="text-xs font-bold text-borma-purple dark:text-borma-yellow hover:underline transition-all">Lihat Semua</a>
                 </div>
             </div>
         </div>
@@ -114,7 +81,7 @@
         
         @if(auth()->user() && in_array(strtolower(auth()->user()->role), ['super admin', 'admin super', 'staf operasional']))
         <!-- Settings Gear -->
-        <a href="#" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:text-borma-purple dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-all flex items-center justify-center">
+        <a href="{{ route('superadmin.pengaturan') }}" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:text-borma-purple dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-all flex items-center justify-center" title="Pengaturan Profil">
             <i class="fa-solid fa-gear"></i>
         </a>
         @endif

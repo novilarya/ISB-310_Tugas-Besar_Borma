@@ -46,47 +46,44 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Nama Lengkap</label>
-                    <input type="text" name="nama" value="{{ old('nama', $member->user->nama ?? '') }}" required class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all">
+                    <input type="text" value="{{ $member->user->nama ?? '' }}" disabled class="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-500 dark:text-white/50 cursor-not-allowed">
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Email</label>
-                    <input type="email" name="email" value="{{ old('email', $member->user->email ?? '') }}" required class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all">
+                    <input type="email" value="{{ $member->user->email ?? '' }}" disabled class="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-500 dark:text-white/50 cursor-not-allowed">
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Password <span class="text-xs text-slate-500 font-normal">(Kosongkan jika tidak diubah)</span></label>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Password</label>
                     <div class="relative">
-                        <input type="password" name="password" id="edit_password" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" placeholder="Min. 8 karakter (huruf & angka/simbol)">
-                        <button type="button" onclick="togglePasswordVisibility('edit_password', 'edit_password_icon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-borma-purple dark:hover:text-borma-yellow transition-colors">
-                            <i class="fa-solid fa-eye" id="edit_password_icon"></i>
-                        </button>
+                        <input type="password" disabled class="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 pr-10 text-sm text-slate-500 dark:text-white/50 cursor-not-allowed" value="********">
                     </div>
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Nomor Telepon</label>
-                    <input type="text" name="no_telepon" value="{{ old('no_telepon', $member->user->no_telepon ?? '') }}" required class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all">
+                    <input type="text" value="{{ $member->user->no_telepon ?? '' }}" disabled class="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-500 dark:text-white/50 cursor-not-allowed">
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Provinsi</label>
-                    <input type="text" name="provinsi" value="{{ old('provinsi', $member->provinsi) }}" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" placeholder="Contoh: Jawa Barat">
+                    <input type="text" value="{{ $member->provinsi }}" disabled class="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-500 dark:text-white/50 cursor-not-allowed">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Kota / Kabupaten</label>
-                    <input type="text" name="kota_kabupaten" value="{{ old('kota_kabupaten', $member->kota_kabupaten) }}" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" placeholder="Contoh: Kota Bandung">
+                    <input type="text" value="{{ $member->kota_kabupaten }}" disabled class="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-500 dark:text-white/50 cursor-not-allowed">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Kecamatan</label>
-                    <input type="text" name="kecamatan" value="{{ old('kecamatan', $member->kecamatan) }}" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" placeholder="Contoh: Coblong">
+                    <input type="text" value="{{ $member->kecamatan }}" disabled class="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-500 dark:text-white/50 cursor-not-allowed">
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Alamat Detail <span class="text-xs text-slate-400 font-normal">(jalan, no. rumah, patokan)</span></label>
-                    <textarea name="alamat" rows="3" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" placeholder="Contoh: Jl. Dipatiukur No. 12, dekat kampus">{{ old('alamat', $member->alamat) }}</textarea>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Alamat Detail</label>
+                    <textarea rows="3" disabled class="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-500 dark:text-white/50 cursor-not-allowed">{{ $member->alamat }}</textarea>
                 </div>
                 
                 <div class="grid grid-cols-2 gap-4">
@@ -102,6 +99,18 @@
                         </select>
                     </div>
                 </div>
+                
+                @if($member->tanggal_berakhir_member_plus)
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Masa Berlaku Member Plus</label>
+                    <div class="w-full bg-purple-50 dark:bg-white/5 border border-purple-100 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-borma-purple dark:text-borma-yellow font-medium">
+                        {{ \Carbon\Carbon::parse($member->tanggal_berakhir_member_plus)->translatedFormat('d F Y') }}
+                        @if(\Carbon\Carbon::parse($member->tanggal_berakhir_member_plus)->isPast())
+                            <span class="ml-2 text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">(Kedaluwarsa)</span>
+                        @endif
+                    </div>
+                </div>
+                @endif
             </div>
             
             <div class="mt-8 pt-6 border-t border-slate-200 dark:border-white/10">
@@ -177,19 +186,5 @@
     </div>
 </div>
 
-<script>
-    function togglePasswordVisibility(inputId, iconId) {
-        const input = document.getElementById(inputId);
-        const icon = document.getElementById(iconId);
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            input.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
-    }
 </script>
 @endsection

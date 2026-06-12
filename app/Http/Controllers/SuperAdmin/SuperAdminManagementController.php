@@ -83,4 +83,44 @@ class SuperAdminManagementController extends Controller
 
         return redirect()->route('superadmin.super_admin')->with('success', 'Super Admin berhasil dihapus.');
     }
+
+    public function pengaturan()
+    {
+        $user = auth()->user();
+        return view('super-admin.pengaturan', compact('user'));
+    }
+
+    public function updatePengaturan(Request $request)
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'email' => 'required|email|unique:pengguna,email,'.$user->id_pengguna.',id_pengguna',
+            'no_telepon' => 'required|string|max:15',
+            'password_baru' => [
+                'nullable',
+                'string',
+                'min:8',
+                'regex:/[a-zA-Z]/',
+                'regex:/[0-9@$!%*#?&_\-]/',
+                'confirmed'
+            ],
+            'password_lama' => 'required_with:password_baru'
+        ]);
+
+        if ($request->filled('password_baru')) {
+            if (!\Hash::check($request->password_lama, $user->password)) {
+                return back()->withErrors(['password_lama' => 'Kata sandi saat ini tidak cocok.']);
+            }
+            $user->password = bcrypt($request->password_baru);
+        }
+
+        $user->nama = $request->nama;
+        $user->email = $request->email;
+        $user->no_telepon = $request->no_telepon;
+        $user->save();
+
+        return redirect()->route('superadmin.pengaturan')->with('success', 'Pengaturan profil berhasil diperbarui.');
+    }
 }

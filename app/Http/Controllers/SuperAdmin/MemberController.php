@@ -16,7 +16,42 @@ class MemberController extends Controller
         // Data density per kecamatan untuk density map
         $memberDensity = $this->buildDensityData();
 
-        return view('super-admin.member', compact('members', 'memberDensity'));
+        $persenBenefit = \App\Models\Pengaturan::where('kunci', 'member_plus_persentase')->value('nilai') ?? 0;
+        $maksimalBenefit = \App\Models\Pengaturan::where('kunci', 'member_plus_maksimal')->value('nilai') ?? 0;
+
+        return view('super-admin.member', compact('members', 'memberDensity', 'persenBenefit', 'maksimalBenefit'));
+    }
+
+    public function updateBenefit(Request $request)
+    {
+        $request->validate([
+            'persentase' => 'required|numeric|min:0|max:100',
+            'maksimal' => 'required|numeric|min:0'
+        ]);
+
+        $persentase = $request->persentase;
+        $maksimal = $request->maksimal;
+
+        \App\Models\Pengaturan::updateOrCreate(
+            ['kunci' => 'member_plus_persentase'],
+            ['nilai' => $persentase]
+        );
+
+        \App\Models\Pengaturan::updateOrCreate(
+            ['kunci' => 'member_plus_maksimal'],
+            ['nilai' => $maksimal]
+        );
+
+        // Update semua harga_member_plus di produk
+        \App\Models\Produk::chunk(100, function($produk) use ($persentase, $maksimal) {
+            foreach ($produk as $p) {
+                $diskon = min(($p->harga_member * $persentase / 100), $maksimal);
+                $p->harga_member_plus = max(0, $p->harga_member - $diskon);
+                $p->save();
+            }
+        });
+
+        return redirect()->route('superadmin.member')->with('success', 'Benefit Member Plus berhasil diperbarui dan diterapkan ke semua produk.');
     }
 
     public function detailMember($id)
@@ -31,44 +66,15 @@ class MemberController extends Controller
     public function updateMember(Request $request, $id)
     {
         $member = \App\Models\Pelanggan::findOrFail($id);
-        $user = $member->user;
 
         $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:pengguna,email,'.$user->id_pengguna.',id_pengguna',
-            'password' => [
-                'nullable',
-                'string',
-                'min:8',
-                'regex:/[a-zA-Z]/',
-                'regex:/[0-9@$!%*#?&_\-]/',
-            ],
-            'no_telepon' => 'required|string|max:15',
             'status_member_plus' => 'required|boolean',
             'poin_member' => 'required|integer|min:0',
-            'provinsi' => 'nullable|string|max:100',
-            'kota_kabupaten' => 'nullable|string|max:100',
-            'kecamatan' => 'nullable|string|max:100',
-            'alamat' => 'nullable|string',
         ]);
-
-        $user->update([
-            'nama' => $request->nama,
-            'email' => $request->email,
-            'no_telepon' => $request->no_telepon,
-        ]);
-
-        if ($request->filled('password')) {
-            $user->update(['password' => bcrypt($request->password)]);
-        }
 
         $member->update([
             'status_member_plus' => $request->status_member_plus,
             'poin_member' => $request->poin_member,
-            'provinsi' => $request->provinsi,
-            'kota_kabupaten' => $request->kota_kabupaten,
-            'kecamatan' => $request->kecamatan,
-            'alamat' => $request->alamat,
         ]);
 
         return redirect()->route('superadmin.member.detail', $member->id_pelanggan)->with('success', 'Data member berhasil diperbarui.');

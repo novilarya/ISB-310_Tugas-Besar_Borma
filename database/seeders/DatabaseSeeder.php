@@ -53,8 +53,8 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'id_pengguna' => 4,
-                'nama' => 'Agus Lele',
-                'email' => 'ariebagush@gmail.com',
+                'nama' => 'Novila Arya',
+                'email' => 'novila.arya@mhs.itenas.ac.id',
                 'password' => Hash::make('12345678'),
                 'no_telepon' => '081234567894',
                 'role' => 'Pelanggan',

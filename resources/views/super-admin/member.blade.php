@@ -93,6 +93,49 @@
     </div>
 
     {{-- ═══════════════════════════════════════════════════════════
+         PENGATURAN BENEFIT MEMBER PLUS
+    ═══════════════════════════════════════════════════════════ --}}
+    <div class="bg-white dark:bg-white/5 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none rounded-3xl p-6">
+        <div class="mb-5 border-b border-slate-200 dark:border-white/10 pb-4">
+            <h4 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-percent text-borma-purple dark:text-borma-yellow"></i>
+                Pengaturan Benefit Harga Member Plus
+            </h4>
+            <p class="text-xs text-slate-500 dark:text-white/40 mt-1">Atur persentase potongan harga dan batas maksimal potongan harga untuk produk khusus Member Plus.</p>
+        </div>
+
+        <form action="{{ route('superadmin.member.benefit.update') }}" method="POST">
+            @csrf
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Persentase Potongan (%)</label>
+                    <div class="relative">
+                        <input type="number" step="0.01" name="persentase" value="{{ old('persentase', $persenBenefit) }}" min="0" max="100" required class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl pl-4 pr-10 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all font-bold text-borma-purple dark:text-borma-yellow">
+                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                            <span class="text-slate-500 dark:text-white/50 font-bold">%</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Maksimal Potongan (Rp)</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="text-slate-500 dark:text-white/50 font-bold">Rp</span>
+                        </div>
+                        <input type="number" name="maksimal" value="{{ old('maksimal', $maksimalBenefit) }}" min="0" required class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all font-bold text-green-600 dark:text-green-400">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end">
+                <button type="submit" class="bg-borma-purple hover:bg-purple-800 dark:bg-borma-yellow dark:hover:bg-yellow-500 text-white dark:text-slate-900 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md flex items-center gap-2">
+                    <i class="fa-solid fa-save"></i> Terapkan Benefit
+                </button>
+            </div>
+        </form>
+    </div>
+
+    {{-- ═══════════════════════════════════════════════════════════
          TABEL MEMBER
     ═══════════════════════════════════════════════════════════ --}}
     <div class="bg-white dark:bg-white/5 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none rounded-3xl p-6">

@@ -18,7 +18,7 @@
                 <i class="fa-solid fa-user"></i>
             </div>
             <h5 class="font-bold text-xl text-slate-800 dark:text-white">{{ $kurir->user->nama ?? '-' }}</h5>
-            <span class="text-sm text-slate-500 dark:text-white/50 mt-1">Kurir / Driver</span>
+            <span class="text-sm text-slate-500 dark:text-white/50 mt-1">Pengemudi / Kurir</span>
         </div>
 
         <div class="space-y-4">

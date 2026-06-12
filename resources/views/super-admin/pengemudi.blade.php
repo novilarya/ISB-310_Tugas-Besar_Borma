@@ -93,7 +93,7 @@
                             <!-- Kalkulasi Benefit -->
                             <div>
                                 <h5 class="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                                    <i class="fa-solid fa-wallet text-green-500"></i> Total Benefit & Gaji
+                                    <i class="fa-solid fa-wallet text-green-500"></i> Pendapatan Kotor
                                 </h5>
                                 <div class="bg-gradient-to-br from-borma-purple to-purple-900 dark:from-borma-purple/40 dark:to-transparent rounded-2xl p-5 text-white shadow-md mb-4">
                                     <p class="text-white/70 text-sm mb-1">Total Pendapatan Ongkir</p>
