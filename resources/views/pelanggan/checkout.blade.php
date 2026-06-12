@@ -246,6 +246,10 @@
                                 }
                             }
                             $minTrxText = $voucher->id_produk_pemicu ? '' : "Min. Belanja Rp " . number_format($voucher->min_transaksi, 0, ',', '.');
+                            $discountText = "Potongan Rp " . number_format($voucher->potongan_harga, 0, ',', '.');
+                            if ($voucher->max_promo > 0) {
+                                $discountText .= " (Maks. " . number_format($voucher->max_promo, 0) . "%)";
+                            }
                         @endphp
                         <div class="voucher-option flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-primary-50 transition-all border-b border-neutral-100" 
                              data-voucher-id="{{ $voucher->id_promo }}" 
@@ -255,7 +259,10 @@
                             </div>
                             <div class="flex-1">
                                 <p class="text-sm font-bold text-neutral-800">{{ $voucher->nama_voucher }}</p>
-                                <p class="text-[10px] font-semibold text-primary-700 mt-0.5 uppercase tracking-wide bg-primary-50 border border-primary-200 px-1.5 py-0.5 rounded inline-block">{{ $voucher->kode_voucher }}</p>
+                                <div class="flex flex-wrap gap-1 mt-0.5">
+                                    <p class="text-[10px] font-semibold text-primary-700 uppercase tracking-wide bg-primary-50 border border-primary-200 px-1.5 py-0.5 rounded inline-block">{{ $voucher->kode_voucher }}</p>
+                                    <p class="text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded inline-block">{{ $discountText }}</p>
+                                </div>
                                 <p class="text-[10px] text-neutral-400 mt-1">
                                     @if($minTrxText)
                                         {{ $minTrxText }}
@@ -854,7 +861,10 @@
         }
 
         selectedVoucherId = voucher.id_promo;
-        appliedDiscount = parseInt(voucher.potongan_harga) || 0;
+        const baseDiscount = parseInt(voucher.potongan_harga) || 0;
+        const maxPromoPercent = parseFloat(voucher.max_promo) || 0;
+        const maxDiscountLimit = maxPromoPercent > 0 ? Math.round(subtotal * maxPromoPercent / 100) : baseDiscount;
+        appliedDiscount = Math.min(baseDiscount, maxDiscountLimit);
         
         document.getElementById('selectedVoucherLabel').textContent = voucher.nama_voucher;
         

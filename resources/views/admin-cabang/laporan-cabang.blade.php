@@ -272,7 +272,19 @@
         <tbody>
                 @forelse($semuaPesanan as $p)
                  @php
-                     $stCls = ['Menunggu'=>'status-pending','Disiapkan'=>'status-siap','mencari_driver'=>'status-cari-driver','diterima_driver'=>'status-siap','diambil'=>'status-siap','dalam_pengiriman'=>'status-dikirim','diterima'=>'status-selesai','selesai'=>'status-selesai','gagal'=>'status-pending','ditolak_driver'=>'status-pending'][$p->status_pesanan] ?? 'status-pending';
+                     $statusMap = [
+                         'Menunggu'         => ['class'=>'status-pending',    'label'=>'Menunggu'],
+                         'Disiapkan'        => ['class'=>'status-siap',       'label'=>'Disiapkan'],
+                         'mencari_driver'   => ['class'=>'status-cari-driver','label'=>'Mencari Kurir'],
+                         'diterima_driver'  => ['class'=>'status-siap',       'label'=>'Diterima Driver'],
+                         'diambil'          => ['class'=>'status-siap',       'label'=>'Diambil Driver'],
+                         'dalam_pengiriman' => ['class'=>'status-dikirim',    'label'=>'Dikirim'],
+                         'diterima'         => ['class'=>'status-pending',    'label'=>'Pesanan Tiba'],
+                         'selesai'          => ['class'=>'status-selesai',    'label'=>'Selesai'],
+                         'gagal'            => ['class'=>'status-pending',    'label'=>'Gagal Kirim'],
+                         'ditolak_driver'   => ['class'=>'status-pending',    'label'=>'Ditolak Driver'],
+                     ];
+                     $st = $statusMap[$p->status_pesanan] ?? ['class'=>'status-pending', 'label'=>$p->status_pesanan];
                  @endphp
                 <tr>
                 <td><strong style="font-family:monospace;color:var(--borma-primary);">#BRM-9{{ str_pad($p->id_pesanan,3,'0',STR_PAD_LEFT) }}</strong></td>
@@ -283,7 +295,7 @@
                 <td style="color:#059669;font-weight:700;">{{ $p->diskon_voucher > 0 ? '-Rp '.number_format($p->diskon_voucher,0,',','.') : '—' }}</td>
                 <td style="font-weight:800;color:var(--borma-tertiary);">Rp {{ number_format($p->total_tagihan,0,',','.') }}</td>
                 <td style="font-size:.78rem;">{{ $p->metode_pembayaran }}</td>
-                <td><span class="status-badge-modern {{ $stCls }}" style="font-size:.65rem;">{{ $p->status_pesanan }}</span></td>
+                <td><span class="status-badge-modern {{ $st['class'] }}" style="font-size:.65rem;">{{ $st['label'] }}</span></td>
             </tr>
                 @empty
             <tr>

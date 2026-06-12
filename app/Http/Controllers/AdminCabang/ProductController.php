@@ -126,10 +126,12 @@ class ProductController extends Controller
 
         $topProduk = $produkCabangs->sortByDesc('period_sales')->take(3);
         $bottomProduk = $produkCabangs->sortBy('period_sales')->take(3);
-
         // Stats tambahan
         $stokHabis   = $produkCabangs->where('jumlah_stok', '<=', 0)->count();
         $lastUpdated = $produkCabangs->max(fn($pc) => $pc->produk?->updated_at);
+
+        $persenBenefit = \App\Models\Pengaturan::where('kunci', 'member_plus_persentase')->value('nilai') ?? 0;
+        $maksimalBenefit = \App\Models\Pengaturan::where('kunci', 'member_plus_maksimal')->value('nilai') ?? 0;
 
         return view('admin-cabang.produk', compact(
             'produkCabangs',
@@ -143,12 +145,14 @@ class ProductController extends Controller
             'lastUpdated',
             'period',
             'topProduk',
-            'bottomProduk'
+            'bottomProduk',
+            'persenBenefit',
+            'maksimalBenefit'
         ));
     }
 
     /**
-     * READ — Detail satu produk cabang.
+     * READ — Detail informasi produk cabang.
      */
     public function detail(Request $request)
     {
@@ -170,8 +174,12 @@ class ProductController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        return view('admin-cabang.detail-produk', compact('produkCabang', 'riwayatHarga'));
+        $persenBenefit = \App\Models\Pengaturan::where('kunci', 'member_plus_persentase')->value('nilai') ?? 0;
+        $maksimalBenefit = \App\Models\Pengaturan::where('kunci', 'member_plus_maksimal')->value('nilai') ?? 0;
+
+        return view('admin-cabang.detail-produk', compact('produkCabang', 'riwayatHarga', 'persenBenefit', 'maksimalBenefit'));
     }
+
 
     /**
      * CREATE — Simpan produk baru ke produks + produk_cabang.
@@ -191,36 +199,29 @@ class ProductController extends Controller
         $idCabang    = $this->getIdCabang();
         $harga_member = (int) $request->harga_member;
 
-        if ($request->filled('harga_member')) {
+        $persenBenefit = \App\Models\Pengaturan::where('kunci', 'member_plus_persentase')->value('nilai') ?? 0;
+        $maksimalBenefit = \App\Models\Pengaturan::where('kunci', 'member_plus_maksimal')->value('nilai') ?? 0;
+
+        if ($request->filled('harga_member_plus')) {
             $harga_member_plus = (int) $request->harga_member_plus;
             $potongan = $harga_member - $harga_member_plus;
+            $maxDiskon = min(($harga_member * $persenBenefit / 100), $maksimalBenefit);
 
-            if ($harga_member < 50000) {
-                // Potongan persen: range 1% - 2.5%
-                $minPotongan = $harga_member * 0.01;
-                $maxPotongan = $harga_member * 0.025;
-                if ($potongan < $minPotongan || $potongan > $maxPotongan) {
-                    return back()->withErrors([
-                        'harga_member' => "Untuk harga member di bawah Rp 50.000, potongan harga member plus wajib berupa persentase 1% s/d 2,5% (potongan saat ini: Rp " . number_format($potongan, 0, ',', '.') . " atau sekitar " . round($potongan / $harga_member * 100, 2) . "%, range diperbolehkan: Rp " . number_format($minPotongan, 0, ',', '.') . " s/d Rp " . number_format($maxPotongan, 0, ',', '.') . ")."
-                    ])->withInput();
-                }
-            } else {
-                // Potongan rupiah flat: range 1.000 - 2.500
-                if ($potongan < 1000 || $potongan > 2500) {
-                    return back()->withErrors([
-                        'harga_member' => "Untuk harga member Rp 50.000 ke atas, potongan harga member plus wajib berkisar antara Rp 1.000 s/d Rp 2.500 (potongan saat ini: Rp " . number_format($potongan, 0, ',', '.') . ")."
-                    ])->withInput();
-                }
+            if ($potongan < 0) {
+                return back()->withErrors([
+                    'harga_member_plus' => "Harga Member Plus tidak boleh lebih besar dari Harga Member."
+                ])->withInput();
+            }
+
+            if ($potongan > $maxDiskon) {
+                return back()->withErrors([
+                    'harga_member_plus' => "Potongan harga Member Plus (Rp " . number_format($potongan, 0, ',', '.') . ") melebihi batas diskon benefit dari Super Admin (Maksimal Rp " . number_format($maxDiskon, 0, ',', '.') . ")."
+                ])->withInput();
             }
         } else {
-            // Otomatis hitung jika kosong
-            if ($harga_member < 50000) {
-                // Default 2% potongan
-                $harga_member_plus = (int) round($harga_member * 0.98);
-            } else {
-                // Default Rp 2.000 potongan
-                $harga_member_plus = $harga_member - 2000;
-            }
+            // Otomatis hitung jika kosong berdasarkan benefit super admin
+            $diskon = min(($harga_member * $persenBenefit / 100), $maksimalBenefit);
+            $harga_member_plus = max(0, $harga_member - $diskon);
         }
 
         // Upload gambar
@@ -291,36 +292,29 @@ class ProductController extends Controller
         $oldHargaMember  = $product->harga_member_plus;
         $newHarga        = (int) $request->harga_member;
 
-        if ($request->filled('harga_member')) {
+        $persenBenefit = \App\Models\Pengaturan::where('kunci', 'member_plus_persentase')->value('nilai') ?? 0;
+        $maksimalBenefit = \App\Models\Pengaturan::where('kunci', 'member_plus_maksimal')->value('nilai') ?? 0;
+
+        if ($request->filled('harga_member_plus')) {
             $newHargaMemberPlus = (int) $request->harga_member_plus;
             $potongan = $newHarga - $newHargaMemberPlus;
+            $maxDiskon = min(($newHarga * $persenBenefit / 100), $maksimalBenefit);
 
-            if ($newHarga < 50000) {
-                // Potongan persen: range 1% - 2.5%
-                $minPotongan = $newHarga * 0.01;
-                $maxPotongan = $newHarga * 0.025;
-                if ($potongan < $minPotongan || $potongan > $maxPotongan) {
-                    return back()->withErrors([
-                        'harga_member_plus' => "Untuk harga member di bawah Rp 50.000, potongan harga member plus wajib berupa persentase 1% s/d 2,5% (potongan saat ini: Rp " . number_format($potongan, 0, ',', '.') . " atau sekitar " . round($potongan / $newHarga * 100, 2) . "%, range diperbolehkan: Rp " . number_format($minPotongan, 0, ',', '.') . " s/d Rp " . number_format($maxPotongan, 0, ',', '.') . ")."
-                    ])->withInput();
-                }
-            } else {
-                // Potongan rupiah flat: range 1.000 - 2.500
-                if ($potongan < 1000 || $potongan > 2500) {
-                    return back()->withErrors([
-                        'harga_member_plus' => "Untuk harga member Rp 50.000 ke atas, potongan harga member plus wajib berkisar antara Rp 1.000 s/d Rp 2.500 (potongan saat ini: Rp " . number_format($potongan, 0, ',', '.') . ")."
-                    ])->withInput();
-                }
+            if ($potongan < 0) {
+                return back()->withErrors([
+                    'harga_member_plus' => "Harga Member Plus tidak boleh lebih besar dari Harga Member."
+                ])->withInput();
+            }
+
+            if ($potongan > $maxDiskon) {
+                return back()->withErrors([
+                    'harga_member_plus' => "Potongan harga Member Plus (Rp " . number_format($potongan, 0, ',', '.') . ") melebihi batas diskon benefit dari Super Admin (Maksimal Rp " . number_format($maxDiskon, 0, ',', '.') . ")."
+                ])->withInput();
             }
         } else {
-            // Otomatis hitung jika kosong
-            if ($newHarga < 50000) {
-                // Default 2% potongan
-                $newHargaMemberPlus = (int) round($newHarga * 0.98);
-            } else {
-                // Default Rp 2.000 potongan
-                $newHargaMemberPlus = $newHarga - 2000;
-            }
+            // Otomatis hitung jika kosong berdasarkan benefit super admin
+            $diskon = min(($newHarga * $persenBenefit / 100), $maksimalBenefit);
+            $newHargaMemberPlus = max(0, $newHarga - $diskon);
         }
 
         $dataToUpdate = [

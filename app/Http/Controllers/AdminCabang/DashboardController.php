@@ -138,6 +138,9 @@ class DashboardController extends Controller
 
     public function notifikasi()
     {
-        return view('admin-cabang.notifikasi');
+        $idCabang = $this->getIdCabang();
+        $cabang = \App\Models\Cabang::find($idCabang);
+        $notifications = $cabang ? $cabang->getNotifications() : [];
+        return view('admin-cabang.notifikasi', compact('notifications'));
     }
 }

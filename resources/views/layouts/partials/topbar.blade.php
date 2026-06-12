@@ -24,53 +24,44 @@
         @endphp
 
         @if($isAdminCabang)
+        @php
+            $cabang = auth()->user()?->adminCabang?->cabang;
+            $topbarNotifications = $cabang ? $cabang->getNotifications() : [];
+            $unreadCount = count(array_filter($topbarNotifications, fn($n) => $n['unread'] ?? false));
+        @endphp
         <!-- Notifications Dropdown -->
         <div class="relative inline-block text-left" id="notif-dropdown-container">
             <button id="notif-dropdown-btn" type="button" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:text-borma-purple dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-all flex items-center justify-center relative focus:outline-none">
                 <i class="fa-solid fa-bell"></i>
-                <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 dark:bg-borma-yellow rounded-full badge-notif"></span>
+                <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 dark:bg-borma-yellow rounded-full badge-notif {{ $unreadCount > 0 ? '' : 'hidden' }}"></span>
             </button>
             <div id="notif-dropdown-menu" class="hidden absolute right-0 p-0 border border-slate-200 dark:border-white/10 bg-white dark:bg-borma-dark shadow-xl rounded-2xl overflow-hidden z-50 w-[320px] mt-3">
                 <div class="p-4 border-b border-slate-200 dark:border-white/10 flex justify-between items-center bg-slate-50 dark:bg-black/20">
                     <h6 class="m-0 font-bold text-slate-800 dark:text-white text-sm">Notifikasi</h6>
                     <div class="flex items-center gap-2">
-                        <span class="badge bg-red-500 text-white rounded-full badge-count-text text-[10px] px-2 py-0.5">3 Baru</span>
+                        <span class="badge bg-red-500 text-white rounded-full badge-count-text text-[10px] px-2 py-0.5">{{ $unreadCount }} Baru</span>
                         <a href="#" onclick="markAllAsReadFromTopbar(event)" class="text-slate-400 hover:text-borma-purple dark:hover:text-borma-yellow transition-colors" title="Tandai semua dibaca">
                             <i class="fa-solid fa-check-double text-xs"></i>
                         </a>
                     </div>
                 </div>
                 <div class="max-h-[300px] overflow-y-auto divide-y divide-slate-100 dark:divide-white/5">
-                    <a href="{{ route('admin-cabang.pesanan') }}" class="flex items-start gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors notif-item animate-pulse">
-                        <div class="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0 text-xs">
-                            <i class="fa-solid fa-cart-shopping"></i>
+                    @forelse($topbarNotifications as $n)
+                    <a href="{{ $n['url'] }}" data-id="{{ $n['id'] }}" class="flex items-start gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors notif-item {{ $n['unread'] ? 'notif-unread animate-pulse' : '' }}">
+                        <div class="w-8 h-8 rounded-full {{ $n['icon_bg'] }} flex items-center justify-center flex-shrink-0 text-xs">
+                            <i class="fa-solid {{ $n['icon'] }}"></i>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-xs font-bold text-slate-800 dark:text-white truncate">Pesanan Baru #BRM-9021</p>
-                            <p class="text-[11px] text-slate-500 dark:text-white/60 truncate">Budi Santoso - 3 Item</p>
-                            <p class="text-[10px] text-slate-400 dark:text-white/40 mt-1 flex items-center gap-1"><i class="fa-regular fa-clock"></i> 2 menit lalu</p>
+                            <p class="text-xs font-bold text-slate-800 dark:text-white truncate">{{ $n['title'] }}</p>
+                            <p class="text-[11px] text-slate-500 dark:text-white/60 truncate">{{ $n['message'] }}</p>
+                            <p class="text-[10px] text-slate-400 dark:text-white/40 mt-1 flex items-center gap-1"><i class="fa-regular fa-clock"></i> {{ $n['time'] }}</p>
                         </div>
                     </a>
-                    <a href="{{ route('admin-cabang.pesanan') }}" class="flex items-start gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors notif-item">
-                        <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 flex items-center justify-center flex-shrink-0 text-xs">
-                            <i class="fa-solid fa-truck"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-xs font-bold text-slate-800 dark:text-white truncate">Pesanan #BRM-9018 Selesai</p>
-                            <p class="text-[11px] text-slate-500 dark:text-white/60 truncate">Kurir: Asep telah mengonfirmasi.</p>
-                            <p class="text-[10px] text-slate-400 dark:text-white/40 mt-1 flex items-center gap-1"><i class="fa-regular fa-clock"></i> 1 jam lalu</p>
-                        </div>
-                    </a>
-                    <a href="{{ route('admin-cabang.produk') }}" class="flex items-start gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors notif-item">
-                        <div class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 flex items-center justify-center flex-shrink-0 text-xs">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-xs font-bold text-slate-800 dark:text-white truncate">Stok Menipis</p>
-                            <p class="text-[11px] text-slate-500 dark:text-white/60 truncate">Minyak Goreng 2L tersisa 5 unit.</p>
-                            <p class="text-[10px] text-slate-400 dark:text-white/40 mt-1 flex items-center gap-1"><i class="fa-regular fa-clock"></i> 2 jam lalu</p>
-                        </div>
-                    </a>
+                    @empty
+                    <div class="p-4 text-center text-slate-400 dark:text-white/40">
+                        <p class="text-xs">Tidak ada notifikasi saat ini.</p>
+                    </div>
+                    @endforelse
                 </div>
                 <div class="p-3 border-t border-slate-200 dark:border-white/10 text-center bg-slate-50 dark:bg-black/20">
                     <a href="{{ route('admin-cabang.notifikasi') }}" class="text-xs font-bold text-borma-purple dark:text-borma-yellow hover:underline transition-all">Lihat Semua</a>
@@ -126,52 +117,6 @@
     </div>
 </header>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Dropdown toggle logic
-    const notifBtn = document.getElementById('notif-dropdown-btn');
-    const notifMenu = document.getElementById('notif-dropdown-menu');
-
-    if (notifBtn && notifMenu) {
-        notifBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            notifMenu.classList.toggle('hidden');
-        });
-
-        document.addEventListener('click', function(e) {
-            if (!notifMenu.contains(e.target) && e.target !== notifBtn && !notifBtn.contains(e.target)) {
-                notifMenu.classList.add('hidden');
-            }
-        });
-    }
-
-    if (localStorage.getItem('all_notifs_read') === 'true') {
-        const badge = document.querySelector('.badge-notif');
-        if (badge) badge.style.display = 'none';
-
-        const countText = document.querySelector('.badge-count-text');
-        if (countText) countText.innerText = '0 Baru';
-
-        const unreadItems = document.querySelectorAll('.notif-unread');
-        unreadItems.forEach(item => {
-            item.classList.remove('notif-unread');
-        });
-    }
-});
-
-function markAllAsReadFromTopbar(e) {
-    if (e) e.preventDefault();
-    localStorage.setItem('all_notifs_read', 'true');
-
-    const badge = document.querySelector('.badge-notif');
-    if (badge) badge.style.display = 'none';
-
-    const countText = document.querySelector('.badge-count-text');
-    if (countText) countText.innerText = '0 Baru';
-
-    const unreadItems = document.querySelectorAll('.notif-unread');
-    unreadItems.forEach(item => {
-        item.classList.remove('notif-unread');
-    });
-}
-</script>
+@if($isAdminCabang)
+<script src="{{ asset('js/admin-cabang/topbar.js') }}"></script>
+@endif

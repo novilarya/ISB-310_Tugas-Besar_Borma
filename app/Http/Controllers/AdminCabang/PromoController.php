@@ -177,6 +177,8 @@ class PromoController extends Controller
             ->where('id_cabang', $idCabang)
             ->findOrFail($id);
             
-        return view('admin-cabang.promo-detail', compact('promo'));
+        $produkList = ProdukCabang::with('produk')->where('id_cabang', $idCabang)->get();
+            
+        return view('admin-cabang.promo-detail', compact('promo', 'produkList'));
     }
 }

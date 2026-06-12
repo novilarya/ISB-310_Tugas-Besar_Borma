@@ -172,7 +172,7 @@
                         <span class="text-xs text-slate-400 dark:text-white/50">Maks. Potongan Promo</span>
                         <h6 class="text-sm font-bold text-slate-800 dark:text-white mt-0.5">
                             @if($promo->max_promo > 0)
-                                Rp {{ number_format($promo->max_promo, 0, ',', '.') }}
+                                {{ number_format($promo->max_promo, 0) }}% Potongan Maksimal
                             @else
                                 Tidak Terbatas (Unlimited)
                             @endif

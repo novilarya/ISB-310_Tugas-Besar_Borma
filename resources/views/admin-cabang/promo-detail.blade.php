@@ -19,6 +19,21 @@
             <p class="text-sm text-slate-500 dark:text-white/50 mt-1">ID Promo: {{ $promo->id_promo }} &bull; {{ $promo->cabang->nama_cabang ?? 'Promo Global' }}</p>
         </div>
     </div>
+    
+    <div class="flex items-center gap-3">
+        <form action="{{ route('admin-cabang.promo.delete', $promo->id_promo) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus promo ini?');" class="m-0 p-0">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-sm flex items-center gap-2">
+                <i class="fa-solid fa-trash"></i> Hapus Promo
+            </button>
+        </form>
+        <button class="bg-borma-purple hover:bg-purple-800 dark:bg-borma-yellow dark:hover:bg-yellow-500 text-white dark:text-slate-900 px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-md flex items-center gap-2" 
+            data-bs-toggle="modal" 
+            data-bs-target="#editPromoModal">
+            <i class="fa-solid fa-pen-to-square"></i> Edit Informasi
+        </button>
+    </div>
 </div>
 
 @php
@@ -184,7 +199,7 @@
                         <span class="text-xs text-slate-400 dark:text-white/40 block">Maks. Potongan Promo</span>
                         <h6 class="text-sm font-bold text-slate-800 dark:text-white mt-0.5">
                             @if($promo->max_promo > 0)
-                                Rp {{ number_format($promo->max_promo, 0, ',', '.') }}
+                                {{ number_format($promo->max_promo, 0) }}% Potongan Maksimal
                             @else
                                 Tidak Terbatas (Unlimited)
                             @endif
@@ -195,4 +210,5 @@
         </div>
     </div>
 </div>
+@include('admin-cabang.modal.edit-promo')
 @endsection

@@ -245,19 +245,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Kartu Aksi Cepat -->
-        <div class="bg-white dark:bg-white/5 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none rounded-3xl p-6">
-            <h4 class="font-bold text-slate-800 dark:text-white mb-3">Aksi Cepat</h4>
-            <div class="flex flex-col gap-3">
-                <button class="w-full bg-borma-purple hover:bg-purple-800 dark:bg-borma-yellow dark:hover:bg-yellow-500 text-white dark:text-slate-900 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md flex items-center justify-center gap-2" data-bs-toggle="modal" data-bs-target="#editProdukModal">
-                    <i class="fa-solid fa-pen-to-square"></i> Edit Produk
-                </button>
-                <a href="{{ route('admin-cabang.produk') }}" class="w-full border border-slate-200 dark:border-white/10 py-2.5 rounded-xl text-sm font-bold text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 transition-all text-center flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-arrow-left"></i> Kembali ke Daftar
-                </a>
-            </div>
-        </div>
     </div>
 </div>
 

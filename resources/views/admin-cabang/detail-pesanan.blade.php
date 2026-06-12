@@ -12,18 +12,22 @@
             <div class="flex items-center gap-3">
                 <h1 class="text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">Detail Pesanan</h1>
                 @php
-                    $statusClasses = [
-                        'Diterima' => 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20',
-                        'Sedang Dikirim' => 'bg-yellow-100 dark:bg-borma-yellow/20 text-yellow-700 dark:text-borma-yellow border-yellow-200 dark:border-borma-yellow/20',
-                        'Menunggu' => 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20',
-                        'Disiapkan' => 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
-                        'dalam_pengiriman' => 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',
-                        'selesai' => 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20',
+                    $statusMap = [
+                        'Menunggu'         => ['class' => 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20', 'label' => 'Menunggu'],
+                        'Disiapkan'        => ['class' => 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20', 'label' => 'Disiapkan'],
+                        'mencari_driver'   => ['class' => 'bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-400 border-sky-200 dark:border-sky-500/20', 'label' => 'Mencari Kurir'],
+                        'diterima_driver'  => ['class' => 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20', 'label' => 'Diterima Driver'],
+                        'diambil'          => ['class' => 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20', 'label' => 'Diambil Driver'],
+                        'dalam_pengiriman' => ['class' => 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20', 'label' => 'Dalam Pengiriman'],
+                        'diterima'         => ['class' => 'bg-yellow-100 dark:bg-borma-yellow/20 text-yellow-700 dark:text-borma-yellow border-yellow-200 dark:border-borma-yellow/20', 'label' => 'Pesanan Tiba'],
+                        'selesai'          => ['class' => 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20', 'label' => 'Selesai'],
+                        'gagal'            => ['class' => 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20', 'label' => 'Gagal Kirim'],
+                        'ditolak_driver'   => ['class' => 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20', 'label' => 'Ditolak Driver'],
                     ];
-                    $classes = $statusClasses[$pesanan->status_pesanan] ?? 'bg-slate-100 dark:bg-gray-500/20 text-slate-700 dark:text-gray-400 border-slate-200 dark:border-gray-500/20';
+                    $st = $statusMap[$pesanan->status_pesanan] ?? ['class' => 'bg-slate-100 dark:bg-gray-500/20 text-slate-700 dark:text-gray-400 border-slate-200 dark:border-gray-500/20', 'label' => $pesanan->status_pesanan];
                 @endphp
-                <span class="px-2.5 py-1 rounded-lg text-xs font-bold border {{ $classes }}">
-                    {{ $pesanan->status_pesanan }}
+                <span class="px-2.5 py-1 rounded-lg text-xs font-bold border {{ $st['class'] }}">
+                    {{ $st['label'] }}
                 </span>
             </div>
             <p class="text-sm text-slate-500 dark:text-white/50 mt-1">ORD-{{ str_pad($pesanan->id_pesanan, 4, '0', STR_PAD_LEFT) }} &bull; {{ \Carbon\Carbon::parse($pesanan->tanggal_pemesanan)->format('d M Y, H:i') }} WIB</p>

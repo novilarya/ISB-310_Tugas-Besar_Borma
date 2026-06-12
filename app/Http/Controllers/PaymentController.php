@@ -100,6 +100,34 @@ class PaymentController extends Controller
             }
         }
         $totalBelanja = $isMembership ? $total : collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+        
+        $diskonVoucher = 0;
+        if (!$isMembership && $idPromo) {
+            $promo = \App\Models\Promo::find($idPromo);
+            if ($promo) {
+                // Verify if this voucher has already been used by the user
+                $alreadyUsed = \App\Models\Pesanan::where('id_pelanggan', $pelanggan->id_pelanggan)
+                    ->where('id_promo', $idPromo)
+                    ->where('status_pesanan', '!=', 'gagal')
+                    ->exists();
+
+                if ($alreadyUsed) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Anda sudah menggunakan voucher ini sebelumnya.'
+                    ], 400);
+                }
+
+                // Verify minimal transaction trigger
+                if ($totalBelanja >= $promo->min_transaksi) {
+                    $baseDiscount = (int) $promo->potongan_harga;
+                    $maxPromoPercent = (float) $promo->max_promo;
+                    $maxDiscountLimit = $maxPromoPercent > 0 ? (int) round($totalBelanja * $maxPromoPercent / 100) : $baseDiscount;
+                    $diskonVoucher = min($baseDiscount, $maxDiscountLimit);
+                }
+            }
+        }
+
         $totalTagihan = $totalBelanja + $biayaPengiriman - ($isMembership ? 0 : $diskonVoucher);
         if ($totalTagihan < 1) $totalTagihan = 1;
 

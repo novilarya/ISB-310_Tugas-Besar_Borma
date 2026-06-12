@@ -21,9 +21,6 @@
         <button class="btn-primary-custom" data-bs-toggle="modal" data-bs-target="#tambahProdukModal" style="padding: 10px 24px;"><i class="bi bi-plus-lg me-2"></i> Tambah Produk</button>
     </div>
 </div>
-
-
-
 <!-- KPI Cards -->
 <div class="row g-4 mb-5">
     <div class="col-md-3">
@@ -173,7 +170,11 @@
                         </span>
                     </div>
                     <div style="height: 220px; position:relative;">
-                        <canvas id="kategoriStokChart"></canvas>
+                        <canvas id="kategoriStokChart" 
+                            data-labels="{{ json_encode($chartKategoriLabels) }}" 
+                            data-stok="{{ json_encode($chartKategoriStok) }}" 
+                            data-sku="{{ json_encode($chartKategoriSku) }}">
+                        </canvas>
                     </div>
                 </div>
 
@@ -369,81 +370,6 @@
 
 @push('scripts')
 <script src="{{ asset('js/admin-cabang.js') }}"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-
-    const rootStyle = getComputedStyle(document.documentElement);
-    const bormaPrimary = rootStyle.getPropertyValue('--borma-primary').trim() || '#33116C';
-    const bormaSecondary = rootStyle.getPropertyValue('--borma-secondary').trim() || '#FED50B';
-    const bormaTertiary = rootStyle.getPropertyValue('--borma-tertiary').trim() || '#EB3B02';
-
-    const isDark = document.documentElement.classList.contains('dark');
-    const textColor = isDark ? 'rgba(255, 255, 255, 0.7)' : '#6B7280';
-    const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0,0,0,0.04)';
-
-    const kategoriLabels = @json($chartKategoriLabels);
-    const kategoriStok   = @json($chartKategoriStok);
-    const kategoriSku    = @json($chartKategoriSku);
-
-    const colors = [
-        bormaPrimary, bormaSecondary, bormaTertiary, '#6366F1',
-        '#10B981', '#F59E0B', '#3B82F6', '#EC4899'
-    ];
-
-    const ctx = document.getElementById('kategoriStokChart');
-    if (!ctx) return;
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: kategoriLabels.length ? kategoriLabels : ['Belum ada data'],
-            datasets: [{
-                label: 'Total Stok',
-                data: kategoriStok.length ? kategoriStok : [0],
-                backgroundColor: colors.slice(0, kategoriLabels.length),
-                borderRadius: 8,
-                borderSkipped: false,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        title: (items) => items[0].label,
-                        label: (ctx) => {
-                            const idx = ctx.dataIndex;
-                            return [
-                                ' Stok: ' + ctx.parsed.y.toLocaleString('id-ID') + ' unit',
-                                ' SKU : ' + (kategoriSku[idx] ?? 0) + ' produk'
-                            ];
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { color: gridColor },
-                    ticks: {
-                        font: { size: 11, weight: '700' },
-                        color: textColor
-                    }
-                },
-                x: {
-                    grid: { display: false },
-                    ticks: {
-                        display: false,
-                        font: { size: 11, weight: '700' },
-                        color: textColor
-                    }
-                }
-            }
-        }
-    });
-
-});
-</script>
+<script src="{{ asset('js/admin-cabang/produk.js') }}"></script>
 @endpush
+@endsection

@@ -254,10 +254,17 @@ class CartController extends Controller
         }
         unset($item);
 
-        // Fetch active promos/vouchers
+        // Fetch active promos/vouchers that the user has NOT used yet (excluding failed ones)
+        $usedPromoIds = \App\Models\Pesanan::where('id_pelanggan', $pelanggan->id_pelanggan)
+            ->whereNotNull('id_promo')
+            ->where('status_pesanan', '!=', 'gagal')
+            ->pluck('id_promo')
+            ->toArray();
+
         $vouchers = \App\Models\Promo::query()
             ->where('tanggal_mulai', '<=', now()->toDateString())
             ->where('tanggal_berakhir', '>=', now()->toDateString())
+            ->whereNotIn('id_promo', $usedPromoIds)
             ->get();
 
         // Get additional addresses from database

@@ -62,8 +62,8 @@
                             <input type="number" name="min_transaksi" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" placeholder="0" min="0">
                         </div>
                         <div class="md:col-span-4">
-                            <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Maks. Potongan (Rp)</label>
-                            <input type="number" name="max_promo" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" placeholder="0" min="0">
+                            <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Maks. Potongan (%)</label>
+                            <input type="number" name="max_promo" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" placeholder="Contoh: 10" min="0" max="100">
                         </div>
                         <div class="md:col-span-6">
                             <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Tanggal Mulai <span class="text-danger">*</span></label>
@@ -152,8 +152,8 @@
                             <input type="number" name="min_transaksi" id="eMin" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" min="0">
                         </div>
                         <div class="md:col-span-4">
-                            <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Maks. Potongan (Rp)</label>
-                            <input type="number" name="max_promo" id="eMax" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" min="0">
+                            <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Maks. Potongan (%)</label>
+                            <input type="number" name="max_promo" id="eMax" class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-borma-purple dark:focus:ring-borma-yellow text-slate-800 dark:text-white transition-all" placeholder="Contoh: 10" min="0" max="100">
                         </div>
                         <div class="md:col-span-6">
                             <label class="block text-sm font-medium text-slate-700 dark:text-white/80 mb-2">Tanggal Mulai <span class="text-danger">*</span></label>

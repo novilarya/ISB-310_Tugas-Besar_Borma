@@ -144,9 +144,9 @@
                 </td>
                 <td>
                     <div style="display:flex;gap:6px;align-items:center;">
-                        {{-- Edit --}}
-                        <button class="btn-icon-member btn-edit-member" title="Edit Promo" data-bs-toggle="modal" data-bs-target="#editPromoModal"
+                        <button class="btn-icon-member btn-edit-promo-trigger" title="Edit Promo" data-bs-toggle="modal" data-bs-target="#editPromoModal"
                             data-id="{{ $promo->id_promo }}"
+                            data-action="{{ route('admin-cabang.promo.update', $promo->id_promo) }}"
                             data-nama="{{ $promo->nama_voucher }}"
                             data-kode="{{ $promo->kode_voucher }}"
                             data-pemicu="{{ $promo->id_produk_pemicu }}"
@@ -195,25 +195,6 @@
 @include('admin-cabang.modal.promo')
 
 @push('scripts')
-<script>
-document.querySelectorAll('.btn-edit-member[data-bs-target="#editPromoModal"]').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-        var d = this.dataset;
-        document.getElementById('eNama').value      = d.nama;
-        document.getElementById('eKode').value      = d.kode || '';
-        document.getElementById('ePemicu').value    = d.pemicu;
-        document.getElementById('eHadiah').value    = d.hadiah || '';
-        document.getElementById('eQtyPemicu').value = d.qtyPemicu;
-        document.getElementById('eQtyHadiah').value = d.qtyHadiah;
-        document.getElementById('ePotongan').value  = d.potongan;
-        document.getElementById('eMin').value       = d.min;
-        document.getElementById('eMax').value       = d.max;
-        document.getElementById('eKuota').value     = d.kuota;
-        document.getElementById('eMulai').value     = d.mulai;
-        document.getElementById('eBerakhir').value  = d.berakhir;
-        document.getElementById('editPromoForm').action = '/admin-cabang/promo/update/' + d.id;
-    });
-});
-</script>
+<script src="{{ asset('js/admin-cabang/promo.js') }}"></script>
 @endpush
 @endsection
