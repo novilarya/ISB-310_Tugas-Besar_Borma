@@ -52,24 +52,39 @@ class ProfileController extends Controller
     public function confirmReceived($id)
     {
         try {
-            $pesanan = Pesanan::with('details')->findOrFail($id);
-            
+            $user      = Auth::user();
+            $pelanggan = $user?->pelanggan;
+
+            // SECURITY: Pastikan pesanan adalah milik pelanggan yang sedang login
+            if (!$pelanggan) {
+                return response()->json(['success' => false, 'message' => 'Akses tidak diizinkan.'], 403);
+            }
+
+            $pesanan = Pesanan::with('details')
+                ->where('id_pesanan', $id)
+                ->where('id_pelanggan', $pelanggan->id_pelanggan)
+                ->first();
+
+            if (!$pesanan) {
+                return response()->json(['success' => false, 'message' => 'Pesanan tidak ditemukan.'], 404);
+            }
+
             if ($pesanan->status_pesanan !== 'diterima') {
                 return response()->json([
                     'success' => false,
                     'message' => 'Pesanan harus dalam status Diterima (oleh Kurir) untuk dikonfirmasi.'
                 ], 400);
             }
-            
+
             $pesanan->status_pesanan = 'selesai';
             $pesanan->save();
-            
+
             \App\Models\PengirimanTracking::create([
                 'id_pesanan' => $id,
-                'status' => 'selesai',
+                'status'     => 'selesai',
                 'keterangan' => 'Pesanan telah diterima dan dikonfirmasi selesai oleh pelanggan'
             ]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Pesanan berhasil dikonfirmasi selesai.'

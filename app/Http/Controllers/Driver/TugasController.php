@@ -43,13 +43,27 @@ class TugasController extends Controller
 
     public function show($id)
     {
+        $user  = Auth::user();
+        $kurir = Kurir::where('id_pengguna', $user->id_pengguna)->first();
+
+        // SECURITY: Driver hanya bisa lihat detail pesanan yang diassign padanya
+        // atau pesanan berstatus 'mencari_driver' dari cabangnya (antrian)
         $pesanan = Pesanan::with([
             'pelanggan.user',
             'cabang',
             'details.produk',
             'pengirimanTracking',
             'kurir',
-        ])->findOrFail($id);
+        ])
+        ->where('id_pesanan', $id)
+        ->where(function ($q) use ($kurir) {
+            $q->where('id_kurir', $kurir?->id_kurir)
+              ->orWhere(function ($q2) use ($kurir) {
+                  $q2->where('status_pesanan', 'mencari_driver')
+                     ->where('id_cabang', $kurir?->id_cabang);
+              });
+        })
+        ->firstOrFail();
 
         return view('driver.tugas.show', compact('pesanan'));
     }
@@ -62,7 +76,16 @@ class TugasController extends Controller
     public function confirm(Request $request, $id)
     {
         try {
-            $pesanan = Pesanan::findOrFail($id);
+            $user  = Auth::check() ? Auth::user() : \App\Models\User::where('role', 'kurir')->first();
+            $kurir = Kurir::where('id_pengguna', $user->id_pengguna)->first();
+
+            // SECURITY: Driver hanya bisa konfirmasi pesanan miliknya
+            $pesanan = Pesanan::where('id_pesanan', $id)
+                ->where('id_kurir', $kurir?->id_kurir)
+                ->first();
+            if (!$pesanan) {
+                return response()->json(['success' => false, 'message' => 'Pesanan tidak ditemukan atau bukan milik Anda.'], 404);
+            }
 
             if ($pesanan->status_pesanan !== 'diterima_driver') {
                 return response()->json([
@@ -103,9 +126,16 @@ class TugasController extends Controller
                 'alasan' => 'required|string|min:10',
             ]);
 
-            $pesanan = Pesanan::findOrFail($id);
-            $user    = Auth::check() ? Auth::user() : \App\Models\User::where('role', 'kurir')->first();
-            $kurir   = Kurir::where('id_user', $user->id_user)->first();
+            $user  = Auth::check() ? Auth::user() : \App\Models\User::where('role', 'kurir')->first();
+            $kurir = Kurir::where('id_pengguna', $user->id_pengguna)->first();
+
+            // SECURITY: Driver hanya bisa tolak pesanan dari cabangnya yang sedang mencari driver
+            $pesanan = Pesanan::where('id_pesanan', $id)
+                ->where('id_cabang', $kurir?->id_cabang)
+                ->first();
+            if (!$pesanan) {
+                return response()->json(['success' => false, 'message' => 'Pesanan tidak ditemukan atau bukan dari cabang Anda.'], 404);
+            }
 
             if ($pesanan->status_pesanan !== 'mencari_driver') {
                 return response()->json([
@@ -151,11 +181,20 @@ class TugasController extends Controller
     {
         try {
             $request->validate([
-                'status'      => 'required|string',
+                'status'       => 'required|string',
                 'alasan_gagal' => 'nullable|string|min:10',
             ]);
 
-            $pesanan   = Pesanan::findOrFail($id);
+            $user  = Auth::check() ? Auth::user() : \App\Models\User::where('role', 'kurir')->first();
+            $kurir = Kurir::where('id_pengguna', $user->id_pengguna)->first();
+
+            // SECURITY: Driver hanya bisa update status pesanan miliknya
+            $pesanan = Pesanan::where('id_pesanan', $id)
+                ->where('id_kurir', $kurir?->id_kurir)
+                ->first();
+            if (!$pesanan) {
+                return response()->json(['success' => false, 'message' => 'Pesanan tidak ditemukan atau bukan milik Anda.'], 404);
+            }
             $newStatus = $request->status;
 
             $allowedStatuses = ['diambil', 'dalam_pengiriman', 'diterima', 'gagal'];
@@ -250,7 +289,16 @@ class TugasController extends Controller
                 'catatan_driver' => 'nullable|string|max:500',
             ]);
 
-            $pesanan = Pesanan::findOrFail($id);
+            $user  = Auth::check() ? Auth::user() : \App\Models\User::where('role', 'kurir')->first();
+            $kurir = Kurir::where('id_pengguna', $user->id_pengguna)->first();
+
+            // SECURITY: Driver hanya bisa upload bukti untuk pesanan miliknya
+            $pesanan = Pesanan::where('id_pesanan', $id)
+                ->where('id_kurir', $kurir?->id_kurir)
+                ->first();
+            if (!$pesanan) {
+                return response()->json(['success' => false, 'message' => 'Pesanan tidak ditemukan atau bukan milik Anda.'], 404);
+            }
 
             if ($pesanan->status_pesanan !== 'dalam_pengiriman') {
                 return response()->json([
@@ -389,7 +437,16 @@ class TugasController extends Controller
                 'lng' => 'required|numeric|between:-180,180',
             ]);
 
-            $pesanan = Pesanan::findOrFail($id);
+            $user  = Auth::check() ? Auth::user() : \App\Models\User::where('role', 'kurir')->first();
+            $kurir = Kurir::where('id_pengguna', $user->id_pengguna)->first();
+
+            // SECURITY: Driver hanya bisa update lokasi pesanan yang diassign padanya
+            $pesanan = Pesanan::where('id_pesanan', $id)
+                ->where('id_kurir', $kurir?->id_kurir)
+                ->first();
+            if (!$pesanan) {
+                return response()->json(['success' => false, 'message' => 'Pesanan tidak ditemukan atau bukan milik Anda.'], 404);
+            }
 
             $activeStatuses = ['diterima_driver', 'diambil', 'dalam_pengiriman'];
             if (!in_array($pesanan->status_pesanan, $activeStatuses)) {

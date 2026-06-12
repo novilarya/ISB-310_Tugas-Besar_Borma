@@ -247,6 +247,35 @@ class OrderController extends Controller
             ->where('id_pesanan', $id)
             ->firstOrFail();
 
-        return view('admin-cabang.nota-pesanan', compact('pesanan'));
+        $user = auth()->user();
+
+        // SECURITY: Harus login terlebih dahulu
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Silakan login untuk melihat nota pesanan.');
+        }
+
+        $role = strtolower($user->role ?? '');
+
+        // Super Admin / Admin Super / Staf Operasional → akses penuh
+        if (in_array($role, ['super admin', 'admin super', 'staf operasional'])) {
+            return view('admin-cabang.nota-pesanan', compact('pesanan'));
+        }
+
+        // Admin Cabang → hanya bisa akses nota dari cabangnya sendiri
+        if (in_array($role, ['admin cabang', 'admin'])) {
+            $idCabangAdmin = $user?->adminCabang?->id_cabang;
+            if ($idCabangAdmin && $pesanan->id_cabang === $idCabangAdmin) {
+                return view('admin-cabang.nota-pesanan', compact('pesanan'));
+            }
+            abort(403, 'Anda tidak memiliki akses ke nota pesanan ini.');
+        }
+
+        // Pelanggan → hanya bisa akses nota pesanannya sendiri
+        $idPelanggan = $user?->pelanggan?->id_pelanggan;
+        if ($idPelanggan && $pesanan->id_pelanggan === $idPelanggan) {
+            return view('admin-cabang.nota-pesanan', compact('pesanan'));
+        }
+
+        abort(403, 'Anda tidak memiliki akses ke nota pesanan ini.');
     }
 }

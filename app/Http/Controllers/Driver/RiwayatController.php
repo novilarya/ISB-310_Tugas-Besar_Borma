@@ -49,13 +49,20 @@ class RiwayatController extends Controller
 
     public function show($id)
     {
+        $user  = Auth::user();
+        $kurir = Kurir::where('id_pengguna', $user->id_pengguna)->with(['cabang', 'user'])->first();
+
+        // SECURITY: Driver hanya bisa lihat detail riwayat pengiriman miliknya
         $pesanan = Pesanan::with([
-            'pelanggan.user', 
-            'cabang', 
+            'pelanggan.user',
+            'cabang',
             'details.produk',
             'pengirimanTracking',
             'penolakanPengiriman'
-        ])->findOrFail($id);
+        ])
+        ->where('id_pesanan', $id)
+        ->where('id_kurir', $kurir?->id_kurir)
+        ->firstOrFail();
 
         return view('driver.pengiriman.detail', compact('pesanan'));
     }

@@ -144,7 +144,7 @@
                 </td>
                 <td>
                     <div style="display:flex;gap:6px;align-items:center;">
-                        <button class="btn-icon-member btn-edit-promo-trigger" title="Edit Promo" data-bs-toggle="modal" data-bs-target="#editPromoModal"
+                        <button class="btn-icon-member btn-edit-member btn-edit-promo-trigger" title="Edit Promo" data-bs-toggle="modal" data-bs-target="#editPromoModal"
                             data-id="{{ $promo->id_promo }}"
                             data-action="{{ route('admin-cabang.promo.update', $promo->id_promo) }}"
                             data-nama="{{ $promo->nama_voucher }}"

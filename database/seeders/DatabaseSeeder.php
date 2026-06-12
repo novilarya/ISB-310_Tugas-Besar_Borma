@@ -700,7 +700,7 @@ class DatabaseSeeder extends Seeder
                 'kuantitas_hadiah' => 1,
                 'potongan_harga' => 0,
                 'min_transaksi' => 70000,
-                'max_promo' => 35000,
+                'max_promo' => 50, // 50% — batas maksimal potongan dari total belanja
                 'kuota_promo' => 100,
                 'tanggal_mulai' => Carbon::now()->subDays(2)->toDateString(),
                 'tanggal_berakhir' => Carbon::now()->addDays(7)->toDateString(),
@@ -717,7 +717,7 @@ class DatabaseSeeder extends Seeder
                 'kuantitas_hadiah' => 0,
                 'potongan_harga' => 15000,
                 'min_transaksi' => 240000,
-                'max_promo' => 15000,
+                'max_promo' => 100, // 100% — potongan tetap Rp 15.000 (flat), tidak dibatasi persentase
                 'kuota_promo' => 50,
                 'tanggal_mulai' => Carbon::now()->subDays(1)->toDateString(),
                 'tanggal_berakhir' => Carbon::now()->addDays(14)->toDateString(),
